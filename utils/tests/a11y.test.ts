@@ -1,0 +1,40 @@
+import { describe, expect, it } from "vitest";
+
+import { createFocusVisibleState, reduceMotionTiming } from "../a11y";
+import { resolveMotionPreference } from "../motion";
+
+describe("createFocusVisibleState", () => {
+  it("marks keyboard focus as visible and pointer focus as not visible", () => {
+    const focusState = createFocusVisibleState();
+
+    focusState.onPointerDown();
+    expect(focusState.isFocusVisible()).toBe(false);
+
+    focusState.onKeyDown({ key: "Tab" });
+    expect(focusState.isFocusVisible()).toBe(true);
+  });
+});
+
+describe("reduce motion helpers", () => {
+  it("resolves system mode based on preference", () => {
+    expect(resolveMotionPreference("system", true)).toBe("reduced");
+    expect(resolveMotionPreference("system", false)).toBe("full");
+  });
+
+  it("reduces timing for reduced and off modes", () => {
+    expect(reduceMotionTiming({ durationMs: 200, delayMs: 50 }, "full")).toEqual({
+      durationMs: 200,
+      delayMs: 50,
+    });
+
+    expect(reduceMotionTiming({ durationMs: 200, delayMs: 50 }, "reduced")).toEqual({
+      durationMs: 100,
+      delayMs: 0,
+    });
+
+    expect(reduceMotionTiming({ durationMs: 200, delayMs: 50 }, "off")).toEqual({
+      durationMs: 0,
+      delayMs: 0,
+    });
+  });
+});

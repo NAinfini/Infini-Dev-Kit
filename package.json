@@ -1,0 +1,21 @@
+{
+  "name": "infini-dev-kit",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.29.1",
+  "scripts": {
+    "build": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@types/node": "^22.12.0",
+    "antd": "^5.24.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.8.0",
+    "vitest": "^2.1.8"
+  }
+}
