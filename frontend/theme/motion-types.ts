@@ -91,6 +91,10 @@ export interface DepthButtonProps {
   after?: ReactNode;
   /** Show ripple effect on press (default: true) */
   ripple?: boolean;
+  /** Enable pointer-position-aware 3D tilt on hover (default: true) */
+  hoverTilt?: boolean;
+  /** Tilt pressure intensity — higher = more skew (default: 1) */
+  hoverPressure?: number;
   disabled?: boolean;
   size?: "sm" | "md" | "lg";
   className?: string;
@@ -100,7 +104,7 @@ export type ProgressButtonPhase = "idle" | "loading" | "success" | "error";
 
 export interface ProgressButtonProps {
   children: ReactNode;
-  /** Async callback — button tracks its promise lifecycle */
+  /** Async callback — button tracks its promise lifecycle. Throw to trigger error state. Throw an Error with a message to use it as the error label. */
   onPress: () => Promise<void>;
   /** Label shown during loading (default: "Processing…") */
   loadingLabel?: string;
@@ -191,6 +195,10 @@ export interface GlitchOverlayProps {
   pulseScale?: number;
   /** Glitch time envelope — fraction of loop where glitch peaks (default: full loop) */
   glitchTimeSpan?: { start: number; end: number };
+  /** Custom CSS filter chain for slice layers (e.g. "blur(3px) brightness(0.8)"). Overrides hue-rotate when set. */
+  cssFilters?: string;
+  /** Clip glitch layers to the element bounds (default: false) */
+  hideOverflow?: boolean;
   /** Imperative API ref for manual trigger mode */
   apiRef?: import("react").MutableRefObject<GlitchOverlayAPI | null>;
   className?: string;
@@ -338,8 +346,12 @@ export interface AnimatedTextProps {
   style?: import("react").CSSProperties;
 }
 
+export type GlowCardVariant = "spotlight" | "laser" | "cosmic" | "glitch";
+
 export interface GlowCardProps {
   children: ReactNode;
+  /** Glow variant (default: "spotlight") */
+  variant?: GlowCardVariant;
   /** Glow color (default: theme primary) */
   glowColor?: string;
   /** Glow intensity 0–1 (default: 0.6) */
@@ -538,5 +550,358 @@ export interface GrainyBackgroundProps {
   animated?: boolean;
   /** Animation cycle duration in seconds (default: 8) */
   duration?: number;
+  className?: string;
+}
+
+// ── batch 5: tier 1 + tier 2 components ──
+
+export interface AnimatedTabItem {
+  /** Unique key for this tab */
+  key: string;
+  /** Tab label */
+  label: ReactNode;
+  /** Tab content */
+  content: ReactNode;
+  /** Disable this tab */
+  disabled?: boolean;
+}
+
+export interface AnimatedTabsProps {
+  /** Tab items */
+  items: AnimatedTabItem[];
+  /** Currently active tab key (controlled) */
+  activeKey?: string;
+  /** Default active tab key (uncontrolled) */
+  defaultActiveKey?: string;
+  /** Callback when tab changes */
+  onChange?: (key: string) => void;
+  /** Underline indicator color (default: theme primary) */
+  indicatorColor?: string;
+  /** Content transition type (default: "fade") */
+  contentTransition?: "fade" | "slide" | "none";
+  className?: string;
+}
+
+export interface MotionToastData {
+  /** Unique id (auto-generated if omitted) */
+  id?: string;
+  /** Toast title */
+  title?: string;
+  /** Toast message */
+  message: ReactNode;
+  /** Toast variant */
+  variant?: "info" | "success" | "warning" | "error";
+  /** Auto-dismiss duration in ms (default: 4000, 0 = manual) */
+  duration?: number;
+  /** Action button */
+  action?: { label: string; onClick: () => void };
+}
+
+export interface MotionToastProps {
+  /** Toast data */
+  toast: MotionToastData;
+  /** Dismiss callback */
+  onDismiss: (id: string) => void;
+}
+
+export interface MotionToastContainerProps {
+  /** Position on screen (default: "top-right") */
+  position?: "top-right" | "top-left" | "bottom-right" | "bottom-left" | "top-center" | "bottom-center";
+  /** Max visible toasts (default: 5) */
+  maxVisible?: number;
+  /** Toast entrance direction (default: "right") */
+  entranceFrom?: "left" | "right" | "top" | "bottom";
+  className?: string;
+}
+
+export interface FloatingLabelInputProps {
+  /** Input label */
+  label: string;
+  /** Current value (controlled) */
+  value?: string;
+  /** Default value (uncontrolled) */
+  defaultValue?: string;
+  /** Change callback */
+  onChange?: (value: string) => void;
+  /** Input type (default: "text") */
+  type?: string;
+  /** Placeholder shown when focused and empty */
+  placeholder?: string;
+  /** Error message */
+  error?: string;
+  disabled?: boolean;
+  /** Focus ring glow effect (default: false) */
+  focusGlow?: boolean;
+  /** Focus ring glow color (default: theme primary) */
+  focusGlowColor?: string;
+  /** Shake animation on error (default: true) */
+  shakeOnError?: boolean;
+  className?: string;
+}
+
+export interface MotionAccordionItem {
+  /** Unique key */
+  key: string;
+  /** Header label */
+  title: ReactNode;
+  /** Expandable content */
+  content: ReactNode;
+  /** Disable this item */
+  disabled?: boolean;
+}
+
+export interface MotionAccordionProps {
+  /** Accordion items */
+  items: MotionAccordionItem[];
+  /** Allow multiple items open (default: false) */
+  multiple?: boolean;
+  /** Default open item keys */
+  defaultOpenKeys?: string[];
+  /** Chevron position (default: "right") */
+  chevronPosition?: "left" | "right";
+  /** Entrance animation style (default: "height") */
+  expandStyle?: "height" | "fade" | "slide";
+  /** Active header highlight intensity 0–1 (default: 0.05) */
+  activeHighlight?: number;
+  className?: string;
+}
+
+export interface ProgressRingProps {
+  /** Progress value 0–100 */
+  value: number;
+  /** Ring size in px (default: 80) */
+  size?: number;
+  /** Stroke width in px (default: 6) */
+  strokeWidth?: number;
+  /** Ring color (default: theme primary) */
+  color?: string;
+  /** Track color (default: theme border) */
+  trackColor?: string;
+  /** Show percentage label (default: true) */
+  showLabel?: boolean;
+  /** Custom label */
+  label?: ReactNode;
+  /** Enable glow effect (default: false) */
+  glow?: boolean;
+  className?: string;
+}
+
+export interface ConfirmDialogProps {
+  /** Whether the dialog is open */
+  opened: boolean;
+  /** Close callback */
+  onClose: () => void;
+  /** Confirm callback */
+  onConfirm: () => void;
+  /** Dialog title */
+  title?: ReactNode;
+  /** Dialog message */
+  message: ReactNode;
+  /** Confirm button label (default: "Confirm") */
+  confirmLabel?: string;
+  /** Cancel button label (default: "Cancel") */
+  cancelLabel?: string;
+  /** Confirm button variant (default: "danger") */
+  confirmVariant?: "primary" | "danger";
+  /** Enable backdrop blur (default: true) */
+  blur?: boolean;
+  /** Entrance animation style (default: "scale") */
+  entranceStyle?: "scale" | "slide-up" | "fade" | "drop";
+  /** Overlay opacity 0–1 (default: 0.5) */
+  overlayOpacity?: number;
+  className?: string;
+}
+
+export interface MotionTooltipProps {
+  children: ReactNode;
+  /** Tooltip content */
+  label: ReactNode;
+  /** Tooltip position (default: "top") */
+  position?: "top" | "bottom" | "left" | "right";
+  /** Show delay in ms (default: 200) */
+  delay?: number;
+  /** Disable the tooltip */
+  disabled?: boolean;
+  /** Entrance animation style (default: "fade") */
+  entranceStyle?: "fade" | "scale" | "slide";
+  className?: string;
+}
+
+export interface NumberTickerProps {
+  /** Target number to animate to */
+  value: number;
+  /** Duration of the animation in seconds (default: 1.5) */
+  duration?: number;
+  /** Number of decimal places (default: 0) */
+  decimals?: number;
+  /** Prefix string (e.g. "$") */
+  prefix?: string;
+  /** Suffix string (e.g. "%") */
+  suffix?: string;
+  /** Direction of digit roll (default: "up") */
+  direction?: "up" | "down";
+  /** Trigger animation on scroll into view (default: true) */
+  triggerOnView?: boolean;
+  className?: string;
+  style?: import("react").CSSProperties;
+}
+
+export interface ShinyTextProps {
+  children: string;
+  /** Shine color (default: white with opacity) */
+  shineColor?: string;
+  /** Shine width as percentage of text (default: 30) */
+  shineWidth?: number;
+  /** Animation duration in seconds (default: 3) */
+  duration?: number;
+  /** Shine angle in degrees (default: -45) */
+  angle?: number;
+  /** Enable animation (default: true) */
+  animated?: boolean;
+  className?: string;
+  style?: import("react").CSSProperties;
+}
+
+export type ParticlePreset = "confetti" | "sparkle" | "rain" | "snow" | "firework";
+
+export interface ParticleEffectProps {
+  /** Particle preset (default: "confetti") */
+  preset?: ParticlePreset;
+  /** Number of particles per burst (default: 30) */
+  count?: number;
+  /** Particle colors — cycled (default: theme-aware) */
+  colors?: string[];
+  /** Particle spread radius in px (default: 200) */
+  spread?: number;
+  /** Duration of effect in seconds (default: 2) */
+  duration?: number;
+  /** Trigger the effect (flip to true to fire) */
+  trigger?: boolean;
+  /** Loop the effect (default: false) */
+  loop?: boolean;
+  /** Gravity multiplier (default: 1) */
+  gravity?: number;
+  /** Origin position as fraction 0–1 (default: { x: 0.5, y: 0.5 }) */
+  origin?: { x: number; y: number };
+  className?: string;
+}
+
+// ── batch 6: tier 3 components ──
+
+export interface MotionStepperItem {
+  /** Unique key */
+  key: string;
+  /** Step label */
+  label: ReactNode;
+  /** Step description */
+  description?: ReactNode;
+  /** Step content */
+  content?: ReactNode;
+}
+
+export interface MotionStepperProps {
+  /** Stepper items */
+  items: MotionStepperItem[];
+  /** Current active step index (0-based) */
+  activeStep: number;
+  /** Callback when step changes */
+  onStepChange?: (step: number) => void;
+  /** Allow clicking previous steps (default: true) */
+  allowStepClick?: boolean;
+  /** Orientation (default: "horizontal") */
+  orientation?: "horizontal" | "vertical";
+  /** Step indicator color (default: theme primary) */
+  color?: string;
+  /** Completed step indicator style (default: "check") */
+  completedIcon?: "check" | "filled" | "number";
+  /** Connector animation (default: true) */
+  animatedConnector?: boolean;
+  /** Active step pulse glow effect (default: false) */
+  activeGlow?: boolean;
+  className?: string;
+}
+
+export interface MotionBreadcrumbItem {
+  /** Display label */
+  label: ReactNode;
+  /** Navigation href */
+  href?: string;
+  /** Click handler (alternative to href) */
+  onClick?: () => void;
+}
+
+export interface MotionBreadcrumbProps {
+  /** Breadcrumb items (last is current page) */
+  items: MotionBreadcrumbItem[];
+  /** Separator element (default: "/") */
+  separator?: ReactNode;
+  className?: string;
+}
+
+export interface MotionPaginationProps {
+  /** Total number of pages */
+  total: number;
+  /** Current page (1-based) */
+  page: number;
+  /** Page change callback */
+  onChange: (page: number) => void;
+  /** Number of sibling pages to show (default: 1) */
+  siblings?: number;
+  /** Active page color (default: theme primary) */
+  color?: string;
+  /** Button shape (default: "rounded") */
+  shape?: "rounded" | "pill" | "square";
+  /** Active button scale on hover (default: 1.05) */
+  hoverScale?: number;
+  /** Active button glow effect (default: false) */
+  activeGlow?: boolean;
+  className?: string;
+}
+
+export interface HoverCardProps {
+  children: ReactNode;
+  /** Content revealed on hover */
+  content: ReactNode;
+  /** Card position (default: "bottom") */
+  position?: "top" | "bottom" | "left" | "right";
+  /** Show delay in ms (default: 300) */
+  delay?: number;
+  /** Card width in px (default: 280) */
+  width?: number;
+  disabled?: boolean;
+  className?: string;
+}
+
+export interface GradientBorderProps {
+  children: ReactNode;
+  /** Gradient color stops (default: theme-aware) */
+  colors?: string[];
+  /** Border width in px (default: 2) */
+  borderWidth?: number;
+  /** Animation duration in seconds (default: 3) */
+  duration?: number;
+  /** Enable animation (default: true) */
+  animated?: boolean;
+  /** Border radius override (default: theme radius) */
+  radius?: number;
+  className?: string;
+}
+
+export interface SidebarCollapseProps {
+  children: ReactNode;
+  /** Whether sidebar is collapsed */
+  collapsed: boolean;
+  /** Toggle collapse callback */
+  onToggle: () => void;
+  /** Expanded width in px (default: 260) */
+  expandedWidth?: number;
+  /** Collapsed width in px (default: 60) */
+  collapsedWidth?: number;
+  /** Collapse button position (default: "top") */
+  togglePosition?: "top" | "bottom";
+  /** Collapse animation style (default: "width") */
+  collapseStyle?: "width" | "slide" | "fade";
+  /** Show subtle border glow (default: false) */
+  borderGlow?: boolean;
   className?: string;
 }

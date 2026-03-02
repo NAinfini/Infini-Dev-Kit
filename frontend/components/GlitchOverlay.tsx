@@ -87,6 +87,8 @@ export function GlitchOverlay({
   pulse = false,
   pulseScale = 1.4,
   glitchTimeSpan,
+  cssFilters,
+  hideOverflow = false,
   apiRef,
   className,
 }: GlitchOverlayProps) {
@@ -202,6 +204,7 @@ export function GlitchOverlay({
         position: "relative",
         display: "inline-block",
         isolation: "isolate",
+        overflow: hideOverflow ? "hidden" : undefined,
       } as CSSProperties}
       {...eventHandlers}
       animate={
@@ -227,6 +230,7 @@ export function GlitchOverlay({
           hueOffset={layerIdx * hueStep}
           layerIndex={layerIdx}
           isAlways={trigger === "always"}
+          cssFilters={cssFilters}
         >
           {children}
         </GlitchLayer>
@@ -266,6 +270,7 @@ function GlitchLayer({
   hueOffset,
   layerIndex,
   isAlways,
+  cssFilters,
 }: {
   children: React.ReactNode;
   frames: ReturnType<typeof generateLayerKeyframes>;
@@ -274,6 +279,7 @@ function GlitchLayer({
   hueOffset: number;
   layerIndex: number;
   isAlways: boolean;
+  cssFilters?: string;
 }) {
   const layerRef = useRef<HTMLDivElement>(null);
 
@@ -285,7 +291,7 @@ function GlitchLayer({
     const keyframes = frames.map((f) => ({
       clipPath: f.clipPath,
       transform: f.transform,
-      filter: `hue-rotate(${f.hueRotate + hueOffset}deg) saturate(1.4)`,
+      filter: cssFilters ?? `hue-rotate(${f.hueRotate + hueOffset}deg) saturate(1.4)`,
       opacity: f.opacity * baseOpacity,
     }));
 

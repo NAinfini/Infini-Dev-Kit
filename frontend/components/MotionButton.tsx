@@ -155,7 +155,7 @@ function ThemeLoadingIndicator({ themeId, color, animated }: ThemeLoadingIndicat
           width: 14,
           height: 14,
           borderRadius: 999,
-          border: "2px solid rgba(212,175,55,0.25)",
+          border: `2px solid color-mix(in srgb, ${color} 25%, transparent)`,
           borderTopColor: color,
           display: "inline-block",
         }}

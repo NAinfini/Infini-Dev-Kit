@@ -8,7 +8,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 - **Architecture restructure** — flattened `frontend/` from 4 levels to 1-2 levels
   - `frontend/theme/` — unified theme system (specs, controller, Mantine adapter, ECharts adapter, motion contracts)
-  - `frontend/components/` — all 44 components in one flat directory
+  - `frontend/components/` — 60 base components in one flat directory
+  - `frontend/components/infini/` — 19 Infini* auto-dispatch wrappers with per-theme defaults
   - `frontend/hooks/` — all motion hooks and variants
   - `frontend/provider/` — InfiniProvider, KitApp, ThemeToolbar
 - **`getThemeOverrides()` helper** — centralised scattered `if (themeId === "xxx")` checks into a single lookup (`frontend/theme/theme-overrides.ts`)
@@ -17,14 +18,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `bot-core/` — platform-agnostic bot framework (extracted from `bots/core/`)
   - `bot-discord/` — Discord.js adapter (extracted from `bots/discord/`)
   - `bot-wechat/` — Wechaty adapter (extracted from `bots/wechat/`)
-- **44 motion components** (42 from previous sessions + Result, Statistic merged in):
+- **60 motion components** (42 from initial sessions + 16 Tier 2/3 additions + Result, Statistic):
   - Buttons: MotionButton, DepthButton, ShimmerButton, LiquidButton, GlitchButton, ProgressButton, SocialButton
   - Cards: TiltCard, GlowCard, RevealCard, LayeredCard, CyberpunkCard
-  - Text: AnimatedText, GradientText, GlitchText, AnimatedCounter
-  - Backgrounds: BubbleBackground, GrainyBackground, RippleBackground, MorphingBlob, MatrixCodeRain
+  - Text: AnimatedText, GradientText, GlitchText, AnimatedCounter, NumberTicker, ShinyText
+  - Inputs/Forms: MotionInputFrame, FloatingLabelInput, AnimatedTabs
+  - Navigation: MotionBreadcrumb, MotionPagination, MotionStepper, SidebarCollapse
+  - Feedback: MotionToast, MotionTooltip, ConfirmDialog, MotionAccordion, ProgressRing, HoverCard
+  - Backgrounds: BubbleBackground, GrainyBackground, RippleBackground, MorphingBlob, MatrixCodeRain, ParticleEffect
   - Layout: Marquee, Terminal, ScrollProgress, Parallax, PageTransition, ImageComparison, ImageScanner, AnimatedCodeBlock, StaggerList, RevealOnScroll, ScrollAnimationTrigger
-  - Effects: GlitchOverlay, GlassEffect, GlowBorder, LampHeading, LoadingSkeleton, ShimmerSkeleton, LayoutIndicator, MagneticElement, CustomCursor
-  - Data: Statistic, Result, MotionInputFrame
+  - Effects: GlitchOverlay, GlassEffect, GlowBorder, GradientBorder, LampHeading, LoadingSkeleton, ShimmerSkeleton, LayoutIndicator, MagneticElement, CustomCursor
+  - Data: Statistic, Result
+- **Infini\* unified dispatch layer** — `InfiniButton`, `InfiniCard`, `InfiniInput` auto-select delegate component based on active theme signals
+- **16 Infini\* theme-adaptive wrappers** — each wraps a base component with `useThemeDefaults()` hook providing per-theme animation, motion, and effect configuration across all 6 themes
+- **Keyboard focus-visible accessibility** — global `:focus-visible` ring via CSS for all interactive elements
+- **Theme-adaptive animation props** — extended 8 component interfaces with animation control props (entranceStyle, expandStyle, collapseStyle, etc.) with per-theme defaults
 
 ### Changed
 - `frontend/package.json` exports updated to reflect new directory structure

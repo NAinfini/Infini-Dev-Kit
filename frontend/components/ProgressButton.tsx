@@ -38,6 +38,7 @@ export function ProgressButton({
   const holdTimer = useRef<number | null>(null);
   const [phase, setPhase] = useState<ProgressButtonPhase>("idle");
   const [progress, setProgress] = useState(0);
+  const [dynamicErrorLabel, setDynamicErrorLabel] = useState<string | null>(null);
   const fakePressHandled = useRef(false);
 
   const isDisabled = Boolean(disabled) || phase === "loading";
@@ -81,11 +82,16 @@ export function ProgressButton({
     }
 
     setPhase("loading");
+    setDynamicErrorLabel(null);
     try {
       await onPress();
       setProgress(100);
       setPhase("success");
-    } catch {
+    } catch (error: unknown) {
+      // Use thrown Error.message as dynamic error label when available
+      if (error instanceof Error && error.message) {
+        setDynamicErrorLabel(error.message);
+      }
       setPhase("error");
     }
 
@@ -110,7 +116,8 @@ export function ProgressButton({
     }
   }, [fakePress, phase]);
 
-  const label = phase === "loading" ? loadingLabel : phase === "success" ? successLabel : phase === "error" ? errorLabel : children;
+  const resolvedErrorLabel = dynamicErrorLabel ?? errorLabel;
+  const label = phase === "loading" ? loadingLabel : phase === "success" ? successLabel : phase === "error" ? resolvedErrorLabel : children;
 
   return (
     <motion.button

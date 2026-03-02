@@ -12,6 +12,8 @@ const SIZE_MAP = {
   lg: { paddingBlock: "0.7rem", paddingInline: "1.5rem", fontSize: 17 },
 } as const;
 
+type TiltZone = "left" | "middle" | "right";
+
 function resolveTypeColors(
   type: DepthButtonType,
   theme: ReturnType<typeof useThemeSnapshot>["theme"],
@@ -45,8 +47,8 @@ interface RippleState {
 /**
  * 3D raised button with depth shadow that compresses on press.
  * Inspired by react-awesome-button's signature 3D depth effect.
- * Enhanced with ripple effect, href/anchor mode, before/after icon slots,
- * and semantic type variants (primary/secondary/danger).
+ * Enhanced with ripple effect, pointer-position-aware tilt on hover,
+ * href/anchor mode, before/after icon slots, and semantic type variants.
  */
 export function DepthButton({
   children,
@@ -60,6 +62,8 @@ export function DepthButton({
   before,
   after,
   ripple = true,
+  hoverTilt = true,
+  hoverPressure = 1,
   disabled,
   size = "md",
   className,
@@ -69,6 +73,7 @@ export function DepthButton({
   const transition = useThemeTransition("press");
   const [ripples, setRipples] = useState<RippleState[]>([]);
   const rippleIdRef = useRef(0);
+  const [tiltZone, setTiltZone] = useState<TiltZone | null>(null);
 
   const typeColors = resolveTypeColors(buttonType, theme);
   const depth = raiseLevel ?? Math.max(0, theme.button.raiseLevel);
@@ -77,6 +82,7 @@ export function DepthButton({
   const textColor = buttonType === "secondary" ? theme.palette.text : theme.foundation.background;
   const sizing = SIZE_MAP[size];
   const isDisabled = Boolean(disabled);
+  const pressure = Math.max(0, hoverPressure);
 
   const handleRipple = useCallback(
     (event: React.MouseEvent) => {
@@ -93,6 +99,41 @@ export function DepthButton({
     },
     [ripple, motionAllowed],
   );
+
+  const handleMouseMove = useCallback(
+    (event: React.MouseEvent) => {
+      if (!hoverTilt || !motionAllowed || isDisabled) return;
+      const rect = event.currentTarget.getBoundingClientRect();
+      const relX = event.clientX - rect.left;
+      const third = rect.width / 3;
+      if (relX < third) {
+        setTiltZone("left");
+      } else if (relX > third * 2) {
+        setTiltZone("right");
+      } else {
+        setTiltZone("middle");
+      }
+    },
+    [hoverTilt, motionAllowed, isDisabled],
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    setTiltZone(null);
+  }, []);
+
+  // Compute tilt skew based on pointer zone (react-awesome-button style)
+  const tiltSkew = (() => {
+    if (!tiltZone || !hoverTilt || !motionAllowed) return { skew: 0, liftY: -Math.round(depth * 0.25) };
+    const skewDeg = pressure * 1.2;
+    switch (tiltZone) {
+      case "left":
+        return { skew: skewDeg, liftY: -Math.round(depth * 0.25) };
+      case "right":
+        return { skew: -skewDeg, liftY: -Math.round(depth * 0.25) };
+      case "middle":
+        return { skew: 0, liftY: -Math.round(depth * 0.35) };
+    }
+  })();
 
   const baseStyle: CSSProperties = {
     position: "relative",
@@ -177,10 +218,12 @@ export function DepthButton({
         rel="noopener noreferrer"
         className={className}
         onClick={handleRipple}
-        whileHover={{ y: -Math.round(depth * 0.25), boxShadow: `0 ${depth + 2}px 0 color-mix(in srgb, ${shadow} 88%, transparent)` }}
-        whileTap={{ y: depth, boxShadow: `0 0px 0 color-mix(in srgb, ${shadow} 88%, transparent)` }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        whileHover={{ y: tiltSkew.liftY, skewY: tiltSkew.skew, boxShadow: `0 ${depth + 2}px 0 color-mix(in srgb, ${shadow} 88%, transparent)` }}
+        whileTap={{ y: depth, skewY: 0, boxShadow: `0 0px 0 color-mix(in srgb, ${shadow} 88%, transparent)` }}
         transition={transition}
-        style={{ ...baseStyle, boxShadow: `0 ${depth}px 0 color-mix(in srgb, ${shadow} 88%, transparent)`, transform: "translateY(0)" }}
+        style={{ ...baseStyle, boxShadow: `0 ${depth}px 0 color-mix(in srgb, ${shadow} 88%, transparent)`, transform: "translateY(0)", transformStyle: "preserve-3d" }}
       >
         {contentEl}
       </motion.a>
@@ -210,11 +253,13 @@ export function DepthButton({
         handleRipple(e);
         if (!isDisabled) onClick?.();
       }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       disabled={isDisabled}
-      whileHover={!isDisabled ? { y: -Math.round(depth * 0.25), boxShadow: `0 ${depth + 2}px 0 color-mix(in srgb, ${shadow} 88%, transparent)` } : undefined}
-      whileTap={!isDisabled ? { y: depth, boxShadow: `0 0px 0 color-mix(in srgb, ${shadow} 88%, transparent)` } : undefined}
+      whileHover={!isDisabled ? { y: tiltSkew.liftY, skewY: tiltSkew.skew, boxShadow: `0 ${depth + 2}px 0 color-mix(in srgb, ${shadow} 88%, transparent)` } : undefined}
+      whileTap={!isDisabled ? { y: depth, skewY: 0, boxShadow: `0 0px 0 color-mix(in srgb, ${shadow} 88%, transparent)` } : undefined}
       transition={transition}
-      style={{ ...baseStyle, boxShadow: `0 ${depth}px 0 color-mix(in srgb, ${shadow} 88%, transparent)`, transform: "translateY(0)" }}
+      style={{ ...baseStyle, boxShadow: `0 ${depth}px 0 color-mix(in srgb, ${shadow} 88%, transparent)`, transform: "translateY(0)", transformStyle: "preserve-3d" }}
     >
       {contentEl}
     </motion.button>

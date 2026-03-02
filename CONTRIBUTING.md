@@ -72,7 +72,8 @@ refactor(hooks): extract motion spring logic into useThemeSpring
 infini-dev-kit/
 ├── frontend/
 │   ├── theme/            # Theme specs, controller, Mantine/ECharts adapters
-│   ├── components/       # ALL components (flat — no subdirectories)
+│   ├── components/       # 60 base components (flat) + infini/ dispatch layer
+│   │   └── infini/       # 19 Infini* auto-dispatch wrappers + theme-defaults
 │   ├── hooks/            # ALL hooks + variants/
 │   ├── provider/         # InfiniProvider, KitApp, ThemeToolbar
 │   ├── overlays/         # Toast/confirm service
@@ -143,7 +144,7 @@ Before requesting review, confirm:
 - Introducing dependencies without prior discussion
 - Ignoring TypeScript strict mode
 - Hardcoded styles instead of design tokens / CSS variables
-- Nested subdirectories inside `frontend/components/`
+- Nested subdirectories inside `frontend/components/` (except `infini/`)
 - Missing non-animated fallback in motion components
 - Incomplete changelog entry
 

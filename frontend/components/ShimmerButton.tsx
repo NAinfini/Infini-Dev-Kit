@@ -162,8 +162,8 @@ export function ShimmerButton({
                 width: 10,
                 height: 10,
                 borderRadius: "50%",
-                border: "2px solid color-mix(in srgb, #ffffff 45%, transparent)",
-                borderTopColor: "#ffffff",
+                border: `2px solid color-mix(in srgb, ${theme.foundation.background} 45%, transparent)`,
+                borderTopColor: theme.foundation.background,
                 display: "inline-block",
               }}
               animate={fullMotion ? { rotate: 360 } : undefined}

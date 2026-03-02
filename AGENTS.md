@@ -54,8 +54,10 @@ pnpm install      # install dependencies
 | `frontend/theme/mantine/theme-configs/` | Per-theme MantineThemeOverride objects |
 | `frontend/theme/mantine/theme-effects/` | Per-theme CSS Modules (decorative effects) |
 | `frontend/theme/echarts/` | ECharts adapter: `buildEChartsTheme()` |
-| **frontend/components/** | **44 components (all flat in one directory)** |
+| **frontend/components/** | **60 base components (flat) + `infini/` dispatch layer** |
 | `frontend/components/index.ts` | Barrel export — alphabetically sorted |
+| `frontend/components/infini/` | 19 Infini* auto-dispatch wrappers, dispatch hooks, theme-defaults configs |
+| `frontend/components/infini/index.ts` | Barrel export for all Infini* wrappers and hooks |
 | **frontend/hooks/** | **All motion hooks** |
 | `frontend/hooks/use-motion-allowed.ts` | `useMotionAllowed()`, `useFullMotion()`, `useEffectiveMotionMode()` |
 | `frontend/hooks/use-theme-transition.ts` | `useThemeTransition(intent)` — returns motion transition config |
@@ -102,7 +104,9 @@ Each implements `BotAdapter` from `bot-core/adapter-types.ts`.
 | `utils/a11y.ts` | Focus tracking, reduced motion detection |
 | `utils/color.ts` | `contrastRatio()`, `pickReadableTextColor()`, `hoverColor()`, `activeColor()` |
 | `utils/env.ts` | `isBrowser()`, `isServer()` |
+| `utils/error.ts` | `toError()` — coerce unknown to Error |
 | `utils/id.ts` | `createRequestId()`, `createTraceId()`, `createSpanId()` — ID generation |
+| `utils/lru-map.ts` | `LRUMap<K,V>` — bounded LRU cache |
 | `utils/motion.ts` | `MotionMode`, `EffectiveMotionMode` type definitions |
 | `utils/scroll.ts` | Scroll lock utilities |
 | `utils/storage.ts` | `createBrowserLocalStorageAdapter()`, `createMemoryStorageAdapter()` |
@@ -197,6 +201,17 @@ Component rules:
 - Gate animations with `useMotionAllowed()` / `useFullMotion()`
 - Always render a non-animated fallback when motion is off
 
+### Add an Infini* wrapper (theme-adaptive auto-dispatch)
+
+1. **Create theme-defaults** at `frontend/components/infini/theme-defaults/<component-name>.ts`
+   - Must cover `_base` + all 6 themes (chibi, cyberpunk, neu-brutalism, black-gold, red-gold)
+   - Use `ThemeDefaultsMap<YourComponentProps>` type
+2. **Create wrapper** at `frontend/components/infini/InfiniYourComponent.tsx`
+   - Use `useThemeDefaults(props, DEFAULTS_MAP)` to merge theme-aware defaults
+   - Delegate to the base component
+3. **Export** from `frontend/components/infini/index.ts`
+4. **Run** `pnpm typecheck` — must pass
+
 ### Add a theme
 
 1. Add ID to `ThemeId` union in `frontend/theme/theme-types.ts`
@@ -270,7 +285,7 @@ import type { ThemeId } from "../theme/theme-specs";
 - **No unused code** — `noUnusedLocals` and `noUnusedParameters` enforced
 - **No bundler config** — source-first, consumers bundle
 - **No `.js` output** — only `.ts`/`.tsx` source files
-- **No subdirectories inside `frontend/components/`** — keep flat
+- **No subdirectories inside `frontend/components/`** except `infini/` (auto-dispatch wrappers)
 - **No mock/fallback paths** — let errors surface explicitly
 - **No `@ts-ignore`** — fix the type, don't suppress it
 - **Components must have a non-animated fallback** — check `useMotionAllowed()`
@@ -300,7 +315,9 @@ These files must stay consistent with each other:
 | When you change... | Also update... |
 |---------------------|---------------|
 | A component file | `frontend/components/index.ts` barrel |
+| An Infini* wrapper | `frontend/components/infini/index.ts` barrel |
 | Component props | `frontend/theme/motion-types.ts` |
+| Infini* theme-defaults | `frontend/components/infini/theme-defaults/` (all 6 themes) |
 | A theme spec | `frontend/theme/theme-specs.ts` registry, `theme-types.ts` ThemeId union |
 | Theme overrides | `frontend/theme/theme-overrides.ts` |
 | A hook file | `frontend/hooks/index.ts` barrel |

@@ -168,6 +168,20 @@
   color: var(--infini-color-bg, #ffffff);
 }
 
+/* ── Focus-visible ring for keyboard accessibility ────────────────────
+   All Infini interactive components use `outline: "none"` inline.
+   This restores visible focus for keyboard navigation via :focus-visible. */
+[data-theme-id] button:focus-visible,
+[data-theme-id] [role="tab"]:focus-visible,
+[data-theme-id] [role="slider"]:focus-visible,
+[data-theme-id] input:focus-visible,
+[data-theme-id] select:focus-visible,
+[data-theme-id] textarea:focus-visible,
+[data-theme-id] a:focus-visible {
+  outline: 2px solid var(--infini-color-primary, #2563EB);
+  outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   [data-theme-id] .mantine-Button-root,
   [data-theme-id] .mantine-Card-root,

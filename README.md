@@ -8,7 +8,7 @@ Private monorepo TypeScript toolkit for building Infini ecosystem applications.
 
 | Package | Path | Purpose |
 |---------|------|---------|
-| `@infini-dev-kit/frontend` | `frontend/` | Theme system, 44 motion components, Mantine/ECharts adapters |
+| `@infini-dev-kit/frontend` | `frontend/` | Theme system, 60 base components + 19 Infini* auto-dispatch wrappers, Mantine/ECharts adapters |
 | `@infini-dev-kit/utils` | `utils/` | Color, storage, a11y, types (`Result<T,E>`, `Option<T>`), env |
 | `@infini-dev-kit/api-client` | `api-client/` | HTTP API client with retry, auth, RFC 7807 errors |
 | `@infini-dev-kit/bot-core` | `bot-core/` | Platform-agnostic bot framework |
@@ -45,7 +45,8 @@ infini-dev-kit/
 │   │   ├── mantine/          # Mantine theme adapter
 │   │   ├── echarts/          # ECharts theme adapter
 │   │   └── themes/           # 6 theme definitions
-│   ├── components/           # 44 components (flat)
+│   ├── components/           # 60 base components (flat) + infini/ dispatch layer
+│   │   └── infini/           # 19 Infini* auto-dispatch wrappers + theme-defaults
 │   ├── hooks/                # Motion hooks + variants/
 │   ├── provider/             # InfiniProvider, KitApp, ThemeToolbar
 │   ├── overlays/             # Toast/confirm service
@@ -82,26 +83,34 @@ Theme-driven UI layer with Mantine integration.
 | Path | Purpose |
 |------|---------|
 | `frontend/theme` | Theme specs, controller, Mantine/ECharts adapters, motion contracts |
-| `frontend/components` | 44 motion components |
+| `frontend/components` | 60 base components + 19 Infini* wrappers |
 | `frontend/hooks` | Motion hooks (useMotionAllowed, useThemeSpring, useThemeTransition) |
 | `frontend/provider` | InfiniProvider, KitApp, ThemeToolbar |
 | `frontend/overlays` | Toast/confirm overlay service |
 
-### Components (44)
+### Components (60 base + 19 wrappers)
 
 **Buttons:** MotionButton, DepthButton, ShimmerButton, LiquidButton, GlitchButton, ProgressButton, SocialButton
 
 **Cards:** TiltCard, GlowCard, RevealCard, LayeredCard, CyberpunkCard
 
-**Text:** AnimatedText, GradientText, GlitchText, AnimatedCounter
+**Text:** AnimatedText, GradientText, GlitchText, AnimatedCounter, NumberTicker, ShinyText
 
-**Backgrounds:** BubbleBackground, GrainyBackground, RippleBackground, MorphingBlob, MatrixCodeRain
+**Inputs/Forms:** MotionInputFrame, FloatingLabelInput, AnimatedTabs
+
+**Navigation:** MotionBreadcrumb, MotionPagination, MotionStepper, SidebarCollapse
+
+**Feedback:** MotionToast, MotionTooltip, ConfirmDialog, MotionAccordion, ProgressRing, HoverCard
+
+**Backgrounds:** BubbleBackground, GrainyBackground, RippleBackground, MorphingBlob, MatrixCodeRain, ParticleEffect
 
 **Layout/UX:** Marquee, Terminal, ScrollProgress, Parallax, PageTransition, ImageComparison, ImageScanner, AnimatedCodeBlock, StaggerList, RevealOnScroll, ScrollAnimationTrigger
 
-**Effects:** GlitchOverlay, GlassEffect, GlowBorder, LampHeading, LoadingSkeleton, ShimmerSkeleton, LayoutIndicator, MagneticElement, CustomCursor
+**Effects:** GlitchOverlay, GlassEffect, GlowBorder, GradientBorder, LampHeading, LoadingSkeleton, ShimmerSkeleton, LayoutIndicator, MagneticElement, CustomCursor
 
-**Data:** Statistic, Result, MotionInputFrame
+**Data:** Statistic, Result
+
+**Infini\* Auto-Dispatch Wrappers** (`components/infini/`): InfiniButton, InfiniCard, InfiniInput (dispatch layer — auto-selects delegate based on theme), plus 16 theme-adaptive wrappers (InfiniAnimatedTabs, InfiniMotionAccordion, InfiniConfirmDialog, InfiniFloatingLabelInput, InfiniMotionToast, InfiniMotionTooltip, InfiniMotionStepper, InfiniMotionBreadcrumb, InfiniMotionPagination, InfiniProgressRing, InfiniNumberTicker, InfiniShinyText, InfiniParticleEffect, InfiniHoverCard, InfiniGradientBorder, InfiniSidebarCollapse)
 
 ### Available Themes
 
@@ -185,7 +194,9 @@ Shared pure utilities. No framework dependencies.
 | Module | Key Exports |
 |--------|-------------|
 | `color.ts` | `contrastRatio()`, `readableTextColor()`, hex↔RGB |
+| `error.ts` | `toError()` — coerce unknown to Error |
 | `id.ts` | `createRequestId()`, `createTraceId()`, `createSpanId()` |
+| `lru-map.ts` | `LRUMap<K,V>` — bounded LRU cache |
 | `storage.ts` | `memoryStorage()`, `browserStorage()`, `cookieStorage()` |
 | `types.ts` | `Result<T,E>`, `Option<T>`, `Brand<T,B>`, `DeepPartial<T>` |
 | `a11y.ts` | Focus-visible tracking, motion reduction |
@@ -202,7 +213,7 @@ Shared pure utilities. No framework dependencies.
 2. **No bundler config.** Source-first — consumers handle bundling.
 3. **All exports through barrel files.** No internal path imports.
 4. **No `any`.** Use `unknown` + type narrowing.
-5. **Components go flat in `frontend/components/`.** No subdirectories.
+5. **Base components go flat in `frontend/components/`.** The only subdirectory is `infini/` (auto-dispatch wrappers).
 6. **Theme specs are data.** No runtime logic in theme files.
 7. **No mock/simulation paths.** Let failures surface explicitly.
 8. **No circular imports.** `utils` ← everything else.

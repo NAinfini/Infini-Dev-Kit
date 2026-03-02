@@ -152,7 +152,7 @@ export function ImageComparison({
           borderRadius: "50%",
           background: theme.palette.primary,
           border: `2px solid ${theme.foundation.background}`,
-          boxShadow: `0 2px 8px rgba(0,0,0,0.3)`,
+          boxShadow: theme.depth.dropdownShadow,
           zIndex: 3,
           display: "flex",
           alignItems: "center",
