@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import { contrastRatio } from "../../utils/color";
 
-import { composeAntdTheme } from "../antd-adapter";
-import { getThemeSpec, listThemeIds } from "../theme-specs";
+import { composeMantineTheme } from "../theme/mantine/mantine-adapter";
+import { getThemeSpec, listThemeIds } from "../theme/theme-specs";
 
 describe("theme contrast", () => {
   it("keeps foundational text readable", () => {
@@ -21,10 +21,10 @@ describe("theme contrast", () => {
     }
   });
 
-  it("ensures semantic antd colors remain visible on themed surfaces", () => {
+  it("ensures semantic colors remain visible on themed surfaces", () => {
     for (const themeId of listThemeIds()) {
       const theme = getThemeSpec(themeId);
-      const config = composeAntdTheme({ themeId });
+      const config = composeMantineTheme({ themeId });
       const surface = theme.foundation.surface;
 
       expect(contrastRatio(surface, config.token.colorInfo as string)).toBeGreaterThanOrEqual(3);

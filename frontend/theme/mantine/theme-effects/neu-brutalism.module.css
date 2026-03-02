@@ -1,0 +1,152 @@
+/**
+ * Neo-Brutalism Theme Effects
+ * Hard shadows, mechanical press, sticker layering, halftone
+ */
+
+/* Mechanical press */
+.brutal-press {
+  transition: all 100ms ease-linear;
+}
+
+.brutal-press:active {
+  transform: translate(2px, 2px);
+  box-shadow: 4px 4px 0px 0px #000 !important;
+}
+
+/* Lift on hover */
+.brutal-lift {
+  transition: all 200ms ease-linear;
+}
+
+.brutal-lift:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 12px 12px 0px 0px #000 !important;
+}
+
+/* Sticker rotation */
+.sticker-rotate-1 {
+  transform: rotate(1deg);
+}
+
+.sticker-rotate-2 {
+  transform: rotate(-2deg);
+}
+
+.sticker-rotate-3 {
+  transform: rotate(3deg);
+}
+
+/* Halftone pattern */
+.halftone {
+  background-image: radial-gradient(
+    circle,
+    #000 1.5px,
+    transparent 1.5px
+  );
+  background-size: 20px 20px;
+  opacity: 0.08;
+}
+
+/* Grid pattern */
+.grid-pattern {
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Hard border */
+.hard-border {
+  border: 4px solid #000;
+}
+
+/* Offset shadow variants */
+.shadow-sm-brutal {
+  box-shadow: 4px 4px 0px 0px #000;
+}
+
+.shadow-md-brutal {
+  box-shadow: 6px 6px 0px 0px #000;
+}
+
+.shadow-lg-brutal {
+  box-shadow: 8px 8px 0px 0px #000;
+}
+
+.shadow-xl-brutal {
+  box-shadow: 12px 12px 0px 0px #000;
+}
+
+.shadow-2xl-brutal {
+  box-shadow: 16px 16px 0px 0px #000;
+}
+
+/* Sticker stack */
+.sticker-stack {
+  position: relative;
+}
+
+.sticker-stack::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  background: inherit;
+  border: 4px solid #000;
+  transform: rotate(-2deg);
+  z-index: -1;
+}
+
+/* Text stroke */
+.text-stroke {
+  -webkit-text-stroke: 2px #000;
+  -webkit-text-fill-color: transparent;
+  paint-order: stroke fill;
+}
+
+/* Snap animation */
+@keyframes snap {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.98);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.snap-click:active {
+  animation: snap 100ms ease-linear;
+}
+
+/* Bounce badge */
+@keyframes bounce-brutal {
+  0%, 100% {
+    transform: translateY(0) rotate(3deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+}
+
+.bounce-badge {
+  animation: bounce-brutal 2s ease-in-out infinite;
+}
+
+/* Color block backgrounds */
+.block-red {
+  background-color: #FF6B6B;
+}
+
+.block-yellow {
+  background-color: #FFD93D;
+}
+
+.block-violet {
+  background-color: #C4B5FD;
+}
+
+.block-cream {
+  background-color: #FFFDF5;
+}

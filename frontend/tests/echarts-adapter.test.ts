@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { buildEChartsTheme } from "../echarts-adapter";
+import { buildEChartsTheme } from "../theme/echarts/echarts-adapter";
+import { getThemeSpec } from "../theme/theme-specs";
 
 describe("echarts adapter", () => {
   it("builds a full echarts theme for every demo theme", () => {
@@ -9,11 +10,12 @@ describe("echarts adapter", () => {
     const neuBrutalism = buildEChartsTheme("neu-brutalism");
     const blackGold = buildEChartsTheme("black-gold");
     const redGold = buildEChartsTheme("red-gold");
+    const blackGoldSpec = getThemeSpec("black-gold");
 
     expect(chibi.color).toHaveLength(6);
     expect(cyberpunk.color[0]).toBe("#00F0FF");
     expect(neuBrutalism.tooltip.borderColor).toBe("#000000");
-    expect(blackGold.legend.textStyle.color).toBe("#F2F0E4");
+    expect(blackGold.legend.textStyle.color).toBe(blackGoldSpec.palette.text);
     expect(redGold.valueAxis.splitLine.lineStyle.color).toContain("212,175,55");
   });
 });

@@ -46,7 +46,14 @@ export function reduceMotionTiming(timing: Timing, mode: EffectiveMotionMode): R
 
   if (mode === "reduced") {
     return {
-      durationMs: Math.max(60, Math.round(timing.durationMs * 0.5)),
+      durationMs: Math.min(120, Math.max(60, Math.round(timing.durationMs * 0.5))),
+      delayMs: 0,
+    };
+  }
+
+  if (mode === "minimum") {
+    return {
+      durationMs: 60,
       delayMs: 0,
     };
   }

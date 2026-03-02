@@ -1,0 +1,197 @@
+/**
+ * Default (Minimalist Modern) Theme Effects
+ * Gradient focus, floating animations, smooth transitions
+ */
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #0052ff, #4d7cff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gradient underline */
+.gradient-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.gradient-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -0.25rem;
+  left: 0;
+  width: 100%;
+  height: 0.75rem;
+  border-radius: 0.125rem;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 82, 255, 0.15),
+    rgba(77, 124, 255, 0.1)
+  );
+}
+
+/* Floating animation */
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float-gentle {
+  animation: float-gentle 5s ease-in-out infinite;
+}
+
+/* Smooth lift */
+.smooth-lift {
+  transition: all 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.smooth-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+}
+
+/* Accent glow */
+.accent-glow {
+  box-shadow: 0 4px 14px rgba(0, 82, 255, 0.25);
+}
+
+.accent-glow-hover {
+  transition: box-shadow 200ms ease;
+}
+
+.accent-glow-hover:hover {
+  box-shadow: 0 8px 24px rgba(0, 82, 255, 0.35);
+}
+
+/* Inverted section */
+.inverted-section {
+  background-color: #0f172a;
+  color: #fafafa;
+}
+
+/* Radial glow background */
+.radial-glow {
+  position: relative;
+}
+
+.radial-glow::before {
+  content: "";
+  position: absolute;
+  top: -150px;
+  right: -150px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    circle,
+    rgba(0, 82, 255, 0.08) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Pulsing indicator */
+@keyframes pulse-gentle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+.pulse-gentle {
+  animation: pulse-gentle 2s ease-in-out infinite;
+}
+
+/* Rotating ring */
+@keyframes rotate-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotate-slow {
+  animation: rotate-slow 60s linear infinite;
+}
+
+/* Fade in up */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fade-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Stagger children */
+.stagger-children > * {
+  animation: fade-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.stagger-children > *:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.stagger-children > *:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.stagger-children > *:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.stagger-children > *:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.stagger-children > *:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+/* Elevated card */
+.elevated-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  transition: all 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.elevated-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+}
+
+/* Gradient button */
+.gradient-button {
+  background: linear-gradient(135deg, #0052ff, #4d7cff);
+  transition: all 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.gradient-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 82, 255, 0.25);
+  filter: brightness(1.1);
+}
+
+.gradient-button:active {
+  transform: scale(0.98);
+}

@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   createThemeController,
   type ThemeControllerState,
-} from "../theme-controller";
+} from "../theme/theme-controller";
 
 function createMemoryStorage() {
   const map = new Map<string, string>();
@@ -26,13 +26,13 @@ describe("createThemeController", () => {
     const controller = createThemeController({
       defaultState: {
         themeId: "default",
-        motionMode: "system",
+        motionMode: "full",
       },
     });
 
     expect(controller.getState()).toEqual({
       themeId: "default",
-      motionMode: "system",
+      motionMode: "full",
     });
 
     controller.setTheme("cyberpunk");
@@ -58,7 +58,7 @@ describe("createThemeController", () => {
       storageKey: "infini.theme",
       defaultState: {
         themeId: "default",
-        motionMode: "system",
+        motionMode: "full",
       },
     });
 
@@ -86,7 +86,7 @@ describe("createThemeController", () => {
     const controller = createThemeController({
       controlledState: {
         themeId: "default",
-        motionMode: "system",
+        motionMode: "full",
       },
       onChange,
     });
@@ -96,7 +96,7 @@ describe("createThemeController", () => {
     expect(controller.getState().themeId).toBe("default");
     expect(onChange).toHaveBeenCalledWith({
       themeId: "chibi",
-      motionMode: "system",
+      motionMode: "full",
     });
   });
 
@@ -115,5 +115,34 @@ describe("createThemeController", () => {
       themeId: "cyberpunk",
       motionMode: "off",
     });
+  });
+
+  it("migrates persisted system mode to full", () => {
+    const storage = createMemoryStorage();
+    storage.setItem(
+      "infini.theme",
+      JSON.stringify({
+        version: 1,
+        state: {
+          themeId: "default",
+          motionMode: "system",
+        },
+      }),
+    );
+
+    const controller = createThemeController({
+      storage,
+      storageKey: "infini.theme",
+    });
+
+    expect(controller.getState().motionMode).toBe("full");
+  });
+
+  it("defaults to reduced when OS prefers reduced and no saved preference exists", () => {
+    const controller = createThemeController({
+      prefersReducedMotion: () => true,
+    });
+
+    expect(controller.getState().motionMode).toBe("reduced");
   });
 });

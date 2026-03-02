@@ -1,0 +1,107 @@
+.infini-glitch-text {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+}
+
+.infini-glitch-text::before,
+.infini-glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.infini-glitch-text::before {
+  color: rgba(0, 240, 255, 0.75);
+  text-shadow: calc(var(--infini-glitch-offset, 1.2px) * -1) 0 rgba(0, 240, 255, 0.8);
+}
+
+.infini-glitch-text::after {
+  color: rgba(255, 42, 109, 0.72);
+  text-shadow: var(--infini-glitch-offset, 1.2px) 0 rgba(255, 42, 109, 0.75);
+}
+
+.infini-glitch-text--subtle.infini-glitch-text--active::before,
+.infini-glitch-text--subtle.infini-glitch-text--always::before {
+  opacity: 0.42;
+  animation: infini-glitch-slice-a 220ms steps(2, end) both;
+}
+
+.infini-glitch-text--subtle.infini-glitch-text--active::after,
+.infini-glitch-text--subtle.infini-glitch-text--always::after {
+  opacity: 0.38;
+  animation: infini-glitch-slice-b 220ms steps(2, end) both;
+}
+
+.infini-glitch-text--medium.infini-glitch-text--active::before,
+.infini-glitch-text--medium.infini-glitch-text--always::before {
+  opacity: 0.55;
+  animation: infini-glitch-slice-a 300ms steps(3, end) both;
+}
+
+.infini-glitch-text--medium.infini-glitch-text--active::after,
+.infini-glitch-text--medium.infini-glitch-text--always::after {
+  opacity: 0.52;
+  animation: infini-glitch-slice-b 300ms steps(3, end) both;
+}
+
+.infini-glitch-text--heavy.infini-glitch-text--active::before,
+.infini-glitch-text--heavy.infini-glitch-text--always::before {
+  opacity: 0.75;
+  animation: infini-glitch-slice-a 380ms steps(4, end) both;
+}
+
+.infini-glitch-text--heavy.infini-glitch-text--active::after,
+.infini-glitch-text--heavy.infini-glitch-text--always::after {
+  opacity: 0.72;
+  animation: infini-glitch-slice-b 380ms steps(4, end) both;
+}
+
+.infini-glitch-text--always::before,
+.infini-glitch-text--always::after {
+  animation-iteration-count: infinite;
+  animation-duration: 2.8s;
+  animation-timing-function: steps(1, end);
+}
+
+@keyframes infini-glitch-slice-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+  25% {
+    transform: translate3d(calc(var(--infini-glitch-jitter, 1.2px) * -1), calc(var(--infini-glitch-jitter, 1.2px) * -1), 0);
+    clip-path: inset(12% 0 58% 0);
+  }
+  50% {
+    transform: translate3d(var(--infini-glitch-jitter, 1.2px), 0, 0);
+    clip-path: inset(50% 0 22% 0);
+  }
+  75% {
+    transform: translate3d(calc(var(--infini-glitch-jitter, 1.2px) * -1), var(--infini-glitch-jitter, 1.2px), 0);
+    clip-path: inset(74% 0 8% 0);
+  }
+}
+
+@keyframes infini-glitch-slice-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+  30% {
+    transform: translate3d(var(--infini-glitch-jitter, 1.2px), 0, 0);
+    clip-path: inset(20% 0 50% 0);
+  }
+  60% {
+    transform: translate3d(calc(var(--infini-glitch-jitter, 1.2px) * -1), calc(var(--infini-glitch-jitter, 1.2px) * -1), 0);
+    clip-path: inset(56% 0 20% 0);
+  }
+  85% {
+    transform: translate3d(var(--infini-glitch-jitter, 1.2px), var(--infini-glitch-jitter, 1.2px), 0);
+    clip-path: inset(78% 0 6% 0);
+  }
+}

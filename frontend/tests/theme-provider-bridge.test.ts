@@ -1,17 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createThemeProviderBridge } from "../theme-provider-bridge";
+import { createThemeProviderBridge } from "../theme/theme-provider-bridge";
 
 describe("createThemeProviderBridge", () => {
   it("exposes a single provider snapshot for host wrappers", () => {
     const bridge = createThemeProviderBridge({
       scope: "portal",
-      algorithms: ["dark", "compact"],
       defaultState: {
         themeId: "cyberpunk",
-        motionMode: "system",
+        motionMode: "full",
       },
-      prefersReducedMotion: () => false,
     });
 
     const snapshot = bridge.getSnapshot();
@@ -19,9 +17,9 @@ describe("createThemeProviderBridge", () => {
     expect(snapshot.theme.id).toBe("cyberpunk");
     expect(snapshot.scope.className).toBe("infini-theme-scope-portal");
     expect(snapshot.scope.variables.selector).toBe(".infini-theme-scope-portal");
-    expect(snapshot.antd.algorithm).toEqual(["dark", "compact"]);
+    expect(snapshot.mantine.colorScheme).toBe("dark");
     expect(snapshot.motion.effectiveMode).toBe("full");
-    expect(snapshot.primitives.panelFrame.borderColor).toBe("#00F0FF");
+    expect(snapshot.mantine.components.Card.colorBorderSecondary).toBeTruthy();
   });
 
   it("notifies subscribers when theme state changes", () => {
@@ -61,18 +59,18 @@ describe("createThemeProviderBridge", () => {
     unregister();
   });
 
-  it("respects reduced motion in system mode", () => {
+  it("supports minimum mode contracts", () => {
     const bridge = createThemeProviderBridge({
       defaultState: {
         themeId: "default",
-        motionMode: "system",
+        motionMode: "minimum",
       },
-      prefersReducedMotion: () => true,
     });
 
     const snapshot = bridge.getSnapshot();
 
-    expect(snapshot.motion.effectiveMode).toBe("reduced");
-    expect(snapshot.motion.contracts.enter.durationMs).toBeLessThanOrEqual(120);
+    expect(snapshot.motion.effectiveMode).toBe("minimum");
+    expect(snapshot.motion.contracts.enter.durationMs).toBe(60);
+    expect(snapshot.motion.contracts.enter.distancePx).toBe(0);
   });
 });

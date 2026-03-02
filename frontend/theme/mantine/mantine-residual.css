@@ -1,0 +1,179 @@
+/* Residual styles for decorative theme effects that are not represented by Mantine tokens */
+
+.infini-glass {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  background: color-mix(in srgb, var(--infini-color-surface, #ffffff) 86%, transparent);
+  border: 1px solid color-mix(in srgb, var(--infini-color-text, #111827) 12%, transparent);
+}
+
+.infini-card-hover {
+  transition:
+    transform var(--infini-motion-hover, 140ms) var(--infini-motion-easing, ease),
+    box-shadow var(--infini-motion-hover, 140ms) var(--infini-motion-easing, ease);
+}
+
+.infini-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--infini-depth-card-hover, var(--infini-depth-card, none));
+}
+
+.demo-control-motion {
+  transition:
+    transform var(--infini-motion-hover, 140ms) var(--infini-motion-easing, ease),
+    box-shadow var(--infini-motion-hover, 140ms) var(--infini-motion-easing, ease),
+    background-color var(--infini-motion-hover, 140ms) var(--infini-motion-easing, ease),
+    border-color var(--infini-motion-hover, 140ms) var(--infini-motion-easing, ease);
+}
+
+.demo-control-motion:hover {
+  transform: translateY(-1px);
+}
+
+.demo-control-motion:active {
+  transform: translateY(0);
+  transition-duration: var(--infini-motion-press, 80ms);
+}
+
+.theme-lab[data-theme-id] {
+  background-image: var(--infini-bg-pattern, none);
+}
+
+.app-page-shell[data-theme-id="cyberpunk"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 900;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  opacity: 0.15;
+}
+
+.theme-lab[data-theme-id="cyberpunk"] .theme-zone::before,
+.theme-lab[data-theme-id="cyberpunk"] .theme-zone::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: rgba(0, 240, 255, 0.4);
+  border-style: solid;
+  pointer-events: none;
+}
+
+.theme-lab[data-theme-id="cyberpunk"] .theme-zone::before {
+  top: -5px;
+  left: -10px;
+  border-width: 2px 0 0 2px;
+}
+
+.theme-lab[data-theme-id="cyberpunk"] .theme-zone::after {
+  right: -14px;
+  bottom: -20px;
+  border-width: 0 2px 2px 0;
+}
+
+.theme-lab[data-theme-id="chibi"] .theme-zone::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--infini-color-primary);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+[data-theme-id] .mantine-Card-root,
+[data-theme-id] .mantine-Modal-content,
+[data-theme-id] .mantine-Tabs-tab,
+[data-theme-id] .mantine-Table-th {
+  font-family: var(--infini-font-display);
+  font-weight: var(--infini-font-display-weight);
+}
+
+[data-theme-id="cyberpunk"] .mantine-Modal-content {
+  backdrop-filter: blur(12px);
+}
+
+[data-theme-id="cyberpunk"] .mantine-Button-root {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+[data-theme-id="cyberpunk"] .mantine-Button-root:hover {
+  box-shadow:
+    0 0 0 1px rgba(0, 240, 255, 0.5),
+    0 0 10px rgba(0, 240, 255, 0.2),
+    0 0 16px rgba(188, 19, 254, 0.16);
+}
+
+[data-theme-id="neu-brutalism"] .mantine-Card-root {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 #000;
+}
+
+[data-theme-id="black-gold"] .mantine-Card-root,
+[data-theme-id="red-gold"] .mantine-Card-root {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme-id="black-gold"] .mantine-Card-root::before,
+[data-theme-id="red-gold"] .mantine-Card-root::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  mix-blend-mode: screen;
+}
+
+[data-theme-id="default"] .mantine-Alert-root,
+[data-theme-id="chibi"] .mantine-Alert-root,
+[data-theme-id="neu-brutalism"] .mantine-Alert-root {
+  border-width: var(--infini-border-width, 1px);
+  border-style: solid;
+}
+
+[data-theme-id] .mantine-DatePickerInput-dropdown,
+[data-theme-id] .mantine-DatePicker-dropdown {
+  background: var(--infini-color-surface, #ffffff);
+  border-color: var(--infini-border-color);
+  color: var(--infini-color-text, #111111);
+}
+
+[data-theme-id] .mantine-DatePickerInput-calendarHeaderLevel,
+[data-theme-id] .mantine-DatePickerInput-calendarHeaderControl,
+[data-theme-id] .mantine-DatePickerInput-weekday,
+[data-theme-id] .mantine-DatePickerInput-day,
+[data-theme-id] .mantine-DatePicker-calendarHeaderLevel,
+[data-theme-id] .mantine-DatePicker-calendarHeaderControl,
+[data-theme-id] .mantine-DatePicker-weekday,
+[data-theme-id] .mantine-DatePicker-day {
+  color: var(--infini-color-text, #111111);
+}
+
+[data-theme-id] .mantine-DatePickerInput-day[data-in-range],
+[data-theme-id] .mantine-DatePickerInput-day[data-selected],
+[data-theme-id] .mantine-DatePicker-day[data-in-range],
+[data-theme-id] .mantine-DatePicker-day[data-selected] {
+  color: var(--infini-color-bg, #ffffff);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme-id] .mantine-Button-root,
+  [data-theme-id] .mantine-Card-root,
+  [data-theme-id] .mantine-Input-input,
+  [data-theme-id] .mantine-Select-input,
+  [data-theme-id] .mantine-SegmentedControl-root {
+    transition: none;
+  }
+}

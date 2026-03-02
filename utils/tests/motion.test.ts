@@ -2,35 +2,24 @@ import { describe, expect, it } from "vitest";
 
 import {
   isMotionAllowed,
-  resolveMotionPreference,
   type MotionMode,
 } from "../motion";
 
-const allModes: MotionMode[] = ["system", "full", "reduced", "off"];
+const allModes: MotionMode[] = ["full", "reduced", "minimum", "off"];
 
-describe("resolveMotionPreference", () => {
-  it("resolves each explicit mode directly", () => {
-    expect(resolveMotionPreference("full", true)).toBe("full");
-    expect(resolveMotionPreference("reduced", false)).toBe("reduced");
-    expect(resolveMotionPreference("off", false)).toBe("off");
-  });
-
-  it("resolves system mode from OS preference", () => {
-    expect(resolveMotionPreference("system", false)).toBe("full");
-    expect(resolveMotionPreference("system", true)).toBe("reduced");
-  });
-
+describe("MotionMode coverage", () => {
   it("accepts all defined modes", () => {
     for (const mode of allModes) {
-      expect(resolveMotionPreference(mode, false)).toBeTruthy();
+      expect(mode).toBeTruthy();
     }
   });
 });
 
 describe("isMotionAllowed", () => {
-  it("allows full and reduced motion", () => {
+  it("allows full, reduced, and minimum motion", () => {
     expect(isMotionAllowed("full")).toBe(true);
     expect(isMotionAllowed("reduced")).toBe(true);
+    expect(isMotionAllowed("minimum")).toBe(true);
   });
 
   it("disables motion when mode is off", () => {

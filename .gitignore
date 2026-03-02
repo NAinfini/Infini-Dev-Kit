@@ -1,4 +1,30 @@
 node_modules
 dist
 coverage
+package-lock.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
 *.tsbuildinfo
+
+# Build artifacts
+*.js
+*.js.map
+!*.config.js
+!vite.config.js
+!vitest.config.js
+
+# Temporary files
+*.log
+*.tmp
+*.temp
+.cache/
+.vite/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

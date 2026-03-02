@@ -1,20 +1,21 @@
 import { describe, expect, it } from "vitest";
 
+import { contrastRatio } from "../../utils/color";
 import {
   buildScopedCssVariables,
   buildScopedThemeClass,
-  composeAntdTheme,
-} from "../antd-adapter";
+  composeMantineTheme,
+} from "../theme/mantine/mantine-adapter";
+import { getThemeSpec } from "../theme/theme-specs";
 
-describe("antd adapter", () => {
-  it("composes algorithms and theme tokens", () => {
-    const config = composeAntdTheme({
+describe("mantine adapter", () => {
+  it("composes color scheme and theme tokens", () => {
+    const config = composeMantineTheme({
       themeId: "cyberpunk",
-      algorithms: ["dark", "compact"],
     });
 
-    expect(config.algorithm).toEqual(["dark", "compact"]);
-    expect(config.token.colorPrimary).toBe("#00F0FF");
+    expect(config.colorScheme).toBe("dark");
+    expect(config.token.colorPrimary).toBe("#00D4E0");
     expect(config.token.colorError).toBeTruthy();
   });
 
@@ -33,7 +34,7 @@ describe("antd adapter", () => {
   });
 
   it("maps black-gold body typography from stitch references", () => {
-    const config = composeAntdTheme({
+    const config = composeMantineTheme({
       themeId: "black-gold",
     });
 
@@ -41,14 +42,19 @@ describe("antd adapter", () => {
   });
 
   it("sets readable segmented colors for cyberpunk", () => {
-    const config = composeAntdTheme({ themeId: "cyberpunk" });
+    const config = composeMantineTheme({ themeId: "cyberpunk" });
     expect(config.components.Segmented).toBeTruthy();
-    expect(config.components.Segmented.itemSelectedBg).toBe("#00F0FF");
-    expect(config.components.Segmented.itemSelectedColor).toBe("#0A0A10");
+    expect(config.components.Segmented.itemSelectedBg).toBe("#00D4E0");
+    expect(
+      contrastRatio(
+        config.components.Segmented.itemSelectedBg as string,
+        config.components.Segmented.itemSelectedColor as string,
+      ),
+    ).toBeGreaterThanOrEqual(4.5);
   });
 
   it("expands component token coverage for controls and navigation", () => {
-    const config = composeAntdTheme({ themeId: "cyberpunk" });
+    const config = composeMantineTheme({ themeId: "cyberpunk" });
     expect(config.components.Select).toBeTruthy();
     expect(config.components.Cascader).toBeTruthy();
     expect(config.components.TreeSelect).toBeTruthy();
@@ -84,5 +90,47 @@ describe("antd adapter", () => {
     expect(config.components.DatePicker).toBeTruthy();
     expect(config.components.Steps).toBeTruthy();
     expect(config.components.Breadcrumb).toBeTruthy();
+  });
+
+  it("brightens chibi status tags with candy palette token overrides", () => {
+    const config = composeMantineTheme({ themeId: "chibi" });
+
+    expect(config.components.Tag).toBeTruthy();
+    expect(config.components.Tag.colorSuccessBg).toContain("color-mix");
+    expect(config.components.Tag.colorWarningBg).toContain("color-mix");
+    expect(config.components.Tag.colorErrorBg).toContain("color-mix");
+  });
+
+  it("adds status-aware glow tokens to input-like components", () => {
+    const config = composeMantineTheme({ themeId: "default" });
+    const input = config.components.Input;
+    const select = config.components.Select;
+    const cascader = config.components.Cascader;
+    const treeSelect = config.components.TreeSelect;
+
+    expect(input.activeShadow).not.toBe("none");
+    expect(input.warningActiveShadow).toBeTruthy();
+    expect(input.errorActiveShadow).toBeTruthy();
+    expect(input.warningActiveShadow).not.toBe(input.activeShadow);
+    expect(input.errorActiveShadow).not.toBe(input.activeShadow);
+
+    expect(select.activeShadow).toBeTruthy();
+    expect(select.warningActiveShadow).toBeTruthy();
+    expect(select.errorActiveShadow).toBeTruthy();
+    expect(cascader.activeShadow).toBeTruthy();
+    expect(cascader.warningActiveShadow).toBeTruthy();
+    expect(cascader.errorActiveShadow).toBeTruthy();
+    expect(treeSelect.activeShadow).toBeTruthy();
+    expect(treeSelect.warningActiveShadow).toBeTruthy();
+    expect(treeSelect.errorActiveShadow).toBeTruthy();
+  });
+
+  it("uses display font family for heading and action tokens", () => {
+    const theme = getThemeSpec("black-gold");
+    const config = composeMantineTheme({ themeId: "black-gold" });
+
+    expect(config.components.Button.fontFamily).toBe(theme.typography.display);
+    expect(config.components.Typography.fontFamily).toBe(theme.typography.display);
+    expect(config.components.Statistic.fontFamily).toBe(theme.typography.display);
   });
 });

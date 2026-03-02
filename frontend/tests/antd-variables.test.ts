@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import { buildScopedCssVariables, buildScopedThemeClass, sanitizeScope } from "../antd-variables";
+import { buildScopedCssVariables, buildScopedThemeClass, sanitizeScope } from "../theme/mantine/mantine-variables";
 
-describe("antd variables", () => {
+describe("mantine variables", () => {
   it("builds scoped css variables for a theme", () => {
     const result = buildScopedCssVariables("chibi", ".theme-scope");
 
@@ -11,6 +11,13 @@ describe("antd variables", () => {
     expect(result.variables["--infini-shadow-hover"]).toBeTruthy();
     expect(result.variables["--infini-motion-enter"]).toMatch(/ms$/);
     expect(result.variables["--infini-bg-pattern"]).toContain("gradient");
+    expect(result.variables["--infini-glow-primary"]).toContain("rgba(");
+    expect(result.variables["--infini-glow-success"]).toContain("rgba(");
+    expect(result.variables["--infini-glow-warning"]).toContain("rgba(");
+    expect(result.variables["--infini-glow-error"]).toContain("rgba(");
+    expect(result.variables["--infini-glow-info"]).toContain("rgba(");
+    expect(result.variables["--infini-glow-warning"]).not.toBe(result.variables["--infini-glow-primary"]);
+    expect(result.variables["--infini-glow-error"]).not.toBe(result.variables["--infini-glow-primary"]);
   });
 
   it("builds predictable scope classes", () => {

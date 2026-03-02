@@ -18,10 +18,14 @@
     "types": ["node", "vitest/globals"]
   },
   "include": [
-    "backend/**/*.ts",
     "frontend/**/*.ts",
     "frontend/**/*.tsx",
-    "utils/**/*.ts"
+    "frontend/**/*.d.ts",
+    "utils/**/*.ts",
+    "api-client/**/*.ts",
+    "bot-core/**/*.ts",
+    "bot-discord/**/*.ts",
+    "bot-wechat/**/*.ts"
   ],
   "exclude": ["node_modules", "**/dist/**", "**/node_modules/**"]
 }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { composeAntdTheme } from "../antd-adapter";
-import { listThemeIds } from "../theme-specs";
+import { composeMantineTheme } from "../theme/mantine/mantine-adapter";
+import { listThemeIds } from "../theme/theme-specs";
 
 const REQUIRED_COMPONENT_KEYS = [
   "Button",
@@ -52,9 +52,9 @@ const REQUIRED_COMPONENT_KEYS = [
 ] as const;
 
 describe("component token audit", () => {
-  it("provides themed token maps for key Ant Design components across all themes", () => {
+  it("provides themed token maps for key UI components across all themes", () => {
     for (const themeId of listThemeIds()) {
-      const config = composeAntdTheme({ themeId });
+      const config = composeMantineTheme({ themeId });
       for (const key of REQUIRED_COMPONENT_KEYS) {
         expect(config.components[key]).toBeTruthy();
       }

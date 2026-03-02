@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createOverlayService } from "../overlay-service";
+import { createOverlayService } from "../overlays/overlay-service";
 
 describe("createOverlayService", () => {
   it("routes toast and confirm through registered handlers", async () => {
