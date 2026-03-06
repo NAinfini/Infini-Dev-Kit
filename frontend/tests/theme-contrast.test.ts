@@ -30,7 +30,7 @@ describe("theme contrast", () => {
       expect(contrastRatio(surface, config.token.colorInfo as string)).toBeGreaterThanOrEqual(3);
       expect(contrastRatio(surface, config.token.colorSuccess as string)).toBeGreaterThanOrEqual(3);
       expect(contrastRatio(surface, config.token.colorWarning as string)).toBeGreaterThanOrEqual(3);
-      expect(contrastRatio(surface, config.token.colorError as string)).toBeGreaterThanOrEqual(3);
+      expect(contrastRatio(surface, config.token.colorDanger as string)).toBeGreaterThanOrEqual(3);
     }
   });
 });

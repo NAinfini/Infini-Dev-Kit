@@ -10,7 +10,7 @@ export interface MantineThemeToken {
   colorInfo: string;
   colorSuccess: string;
   colorWarning: string;
-  colorError: string;
+  colorDanger: string;
   colorTextBase: string;
   colorBgBase: string;
   colorBgContainer: string;

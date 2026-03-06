@@ -12,11 +12,9 @@ type LocaleFontConfig = {
 };
 
 interface ThemeTypographyInput {
-  display: string;
+  heading: string;
   body: string;
   mono: string;
-  displayWeight: number;
-  bodyWeight: number;
   en?: Partial<LocaleFontConfig>;
   zh?: Partial<LocaleFontConfig>;
   ja?: Partial<LocaleFontConfig>;
@@ -109,7 +107,7 @@ const DEFAULT_LINE_HEIGHTS: ThemeTypography["lineHeights"] = {
 export function createThemeTypography(input: ThemeTypographyInput): ThemeTypography {
   const en: LocaleFontConfig = {
     body: input.en?.body ?? input.body,
-    heading: input.en?.heading ?? input.display,
+    heading: input.en?.heading ?? input.heading,
     mono: input.en?.mono ?? input.mono,
   };
 
@@ -128,8 +126,6 @@ export function createThemeTypography(input: ThemeTypographyInput): ThemeTypogra
   const weights = {
     ...DEFAULT_WEIGHTS,
     ...input.weights,
-    normal: input.bodyWeight,
-    bold: input.displayWeight,
   };
 
   return {
@@ -145,11 +141,6 @@ export function createThemeTypography(input: ThemeTypographyInput): ThemeTypogra
       ...DEFAULT_LINE_HEIGHTS,
       ...input.lineHeights,
     },
-    display: input.display,
-    body: input.body,
-    mono: input.mono,
-    displayWeight: input.displayWeight,
-    bodyWeight: input.bodyWeight,
   };
 }
 
@@ -168,9 +159,7 @@ export function createThemeMotion(input: ThemeMotionInput): ThemeMotionConfig {
     tiltEnabled: input.tiltEnabled,
     tiltDegree: input.tiltDegree,
     springRelease: input.springRelease,
-    hoverMs: input.hoverDuration,
     pressMs,
-    overshoot: input.bounce,
     distancePx,
   };
 }

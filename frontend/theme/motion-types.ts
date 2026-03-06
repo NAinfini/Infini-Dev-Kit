@@ -1,5 +1,5 @@
 import type { TargetAndTransition, Transition, Variants } from "motion/react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 export interface SpringProfile {
   stiffness: number;
@@ -26,6 +26,8 @@ export interface TiltCardProps {
   tiltDegree?: number;
   glowColor?: string;
   glowIntensity?: number;
+  /** When false, disables tilt/hover motion effects (container-only card). Default: true */
+  interactive?: boolean;
   className?: string;
 }
 
@@ -35,6 +37,8 @@ export interface ShimmerButtonProps {
   shimmerDuration?: number;
   onClick?: () => void;
   onPress?: () => void | Promise<void>;
+  /** HTML button type attribute (default: "button") */
+  htmlType?: "button" | "submit" | "reset";
   loadingLabel?: string;
   resultLabel?: string;
   releaseDelay?: number;
@@ -46,15 +50,8 @@ export interface ShimmerButtonProps {
 
 export interface PageTransitionProps {
   children: ReactNode;
-  type?: "fade" | "slide" | "scale";
+  type?: "fade" | "slide" | "slide-x" | "scale";
   duration?: number;
-  className?: string;
-}
-
-export interface LoadingSkeletonProps {
-  type?: "text" | "card" | "avatar" | "custom";
-  count?: number;
-  shimmer?: boolean;
   className?: string;
 }
 
@@ -68,12 +65,14 @@ export interface GlowBorderProps {
 
 // ── awesome-buttons inspired ──
 
-export type DepthButtonType = "primary" | "secondary" | "danger";
+export type DepthButtonType = "primary" | "secondary" | "danger" | "success";
 
 export interface DepthButtonProps {
   children: ReactNode;
   /** Semantic type variant (default: "primary") */
   type?: DepthButtonType;
+  /** HTML button type attribute (default: "button") */
+  htmlType?: "button" | "submit" | "reset";
   /** Pixel depth of the 3D raise effect (default: theme-aware) */
   raiseLevel?: number;
   /** Background color override */
@@ -155,6 +154,10 @@ export interface CyberpunkCardProps {
   scanlines?: boolean;
   /** Enable corner decorations (default: true) */
   cornerClips?: boolean;
+  /** When false, disables hover scale motion effects (container-only card). Default: true */
+  interactive?: boolean;
+  onClick?: () => void;
+  style?: CSSProperties;
   className?: string;
 }
 
@@ -201,6 +204,8 @@ export interface GlitchOverlayProps {
   hideOverflow?: boolean;
   /** Imperative API ref for manual trigger mode */
   apiRef?: import("react").MutableRefObject<GlitchOverlayAPI | null>;
+  /** CSS display mode for the wrapper (default: "inline-block") */
+  display?: CSSProperties["display"];
   className?: string;
 }
 
@@ -360,6 +365,40 @@ export interface GlowCardProps {
   glowRadius?: number;
   /** Enable mouse-tracking glow (default: true) */
   trackMouse?: boolean;
+  /** Laser spin speed in degrees per frame (default: 1.5). Lower = slower. */
+  spinSpeed?: number;
+  /** When false, disables hover/glow motion effects (container-only card). Default: true */
+  interactive?: boolean;
+  onClick?: () => void;
+  style?: CSSProperties;
+  className?: string;
+}
+
+export interface NeuBrutalCardProps {
+  children: ReactNode;
+  /** Shadow color (default: theme text/black) */
+  shadowColor?: string;
+  /** Border width in px (default: theme borderWidth or 4) */
+  borderWidth?: number;
+  /** Accent stripe color (default: theme primary) */
+  accentColor?: string;
+  /** When false, disables hover/tap motion effects (container-only card). Default: true */
+  interactive?: boolean;
+  onClick?: () => void;
+  style?: CSSProperties;
+  className?: string;
+}
+
+export interface ChibiCardProps {
+  children: ReactNode;
+  /** Accent / glow color (default: theme primary — strawberry pink) */
+  glowColor?: string;
+  /** Custom shadow layers array (default: chibi cloud shadow) */
+  shadowLayers?: string[];
+  /** When false, disables hover/tap motion effects (container-only card). Default: true */
+  interactive?: boolean;
+  onClick?: () => void;
+  style?: CSSProperties;
   className?: string;
 }
 
@@ -514,6 +553,8 @@ export interface GlitchButtonProps {
   chromatic?: boolean;
   /** Enable text distortion (default: true) */
   textDistort?: boolean;
+  /** HTML button type attribute (default: "button") */
+  htmlType?: "button" | "submit" | "reset";
   onClick?: () => void;
   href?: string;
   disabled?: boolean;
@@ -582,151 +623,6 @@ export interface AnimatedTabsProps {
   className?: string;
 }
 
-export interface MotionToastData {
-  /** Unique id (auto-generated if omitted) */
-  id?: string;
-  /** Toast title */
-  title?: string;
-  /** Toast message */
-  message: ReactNode;
-  /** Toast variant */
-  variant?: "info" | "success" | "warning" | "error";
-  /** Auto-dismiss duration in ms (default: 4000, 0 = manual) */
-  duration?: number;
-  /** Action button */
-  action?: { label: string; onClick: () => void };
-}
-
-export interface MotionToastProps {
-  /** Toast data */
-  toast: MotionToastData;
-  /** Dismiss callback */
-  onDismiss: (id: string) => void;
-}
-
-export interface MotionToastContainerProps {
-  /** Position on screen (default: "top-right") */
-  position?: "top-right" | "top-left" | "bottom-right" | "bottom-left" | "top-center" | "bottom-center";
-  /** Max visible toasts (default: 5) */
-  maxVisible?: number;
-  /** Toast entrance direction (default: "right") */
-  entranceFrom?: "left" | "right" | "top" | "bottom";
-  className?: string;
-}
-
-export interface FloatingLabelInputProps {
-  /** Input label */
-  label: string;
-  /** Current value (controlled) */
-  value?: string;
-  /** Default value (uncontrolled) */
-  defaultValue?: string;
-  /** Change callback */
-  onChange?: (value: string) => void;
-  /** Input type (default: "text") */
-  type?: string;
-  /** Placeholder shown when focused and empty */
-  placeholder?: string;
-  /** Error message */
-  error?: string;
-  disabled?: boolean;
-  /** Focus ring glow effect (default: false) */
-  focusGlow?: boolean;
-  /** Focus ring glow color (default: theme primary) */
-  focusGlowColor?: string;
-  /** Shake animation on error (default: true) */
-  shakeOnError?: boolean;
-  className?: string;
-}
-
-export interface MotionAccordionItem {
-  /** Unique key */
-  key: string;
-  /** Header label */
-  title: ReactNode;
-  /** Expandable content */
-  content: ReactNode;
-  /** Disable this item */
-  disabled?: boolean;
-}
-
-export interface MotionAccordionProps {
-  /** Accordion items */
-  items: MotionAccordionItem[];
-  /** Allow multiple items open (default: false) */
-  multiple?: boolean;
-  /** Default open item keys */
-  defaultOpenKeys?: string[];
-  /** Chevron position (default: "right") */
-  chevronPosition?: "left" | "right";
-  /** Entrance animation style (default: "height") */
-  expandStyle?: "height" | "fade" | "slide";
-  /** Active header highlight intensity 0–1 (default: 0.05) */
-  activeHighlight?: number;
-  className?: string;
-}
-
-export interface ProgressRingProps {
-  /** Progress value 0–100 */
-  value: number;
-  /** Ring size in px (default: 80) */
-  size?: number;
-  /** Stroke width in px (default: 6) */
-  strokeWidth?: number;
-  /** Ring color (default: theme primary) */
-  color?: string;
-  /** Track color (default: theme border) */
-  trackColor?: string;
-  /** Show percentage label (default: true) */
-  showLabel?: boolean;
-  /** Custom label */
-  label?: ReactNode;
-  /** Enable glow effect (default: false) */
-  glow?: boolean;
-  className?: string;
-}
-
-export interface ConfirmDialogProps {
-  /** Whether the dialog is open */
-  opened: boolean;
-  /** Close callback */
-  onClose: () => void;
-  /** Confirm callback */
-  onConfirm: () => void;
-  /** Dialog title */
-  title?: ReactNode;
-  /** Dialog message */
-  message: ReactNode;
-  /** Confirm button label (default: "Confirm") */
-  confirmLabel?: string;
-  /** Cancel button label (default: "Cancel") */
-  cancelLabel?: string;
-  /** Confirm button variant (default: "danger") */
-  confirmVariant?: "primary" | "danger";
-  /** Enable backdrop blur (default: true) */
-  blur?: boolean;
-  /** Entrance animation style (default: "scale") */
-  entranceStyle?: "scale" | "slide-up" | "fade" | "drop";
-  /** Overlay opacity 0–1 (default: 0.5) */
-  overlayOpacity?: number;
-  className?: string;
-}
-
-export interface MotionTooltipProps {
-  children: ReactNode;
-  /** Tooltip content */
-  label: ReactNode;
-  /** Tooltip position (default: "top") */
-  position?: "top" | "bottom" | "left" | "right";
-  /** Show delay in ms (default: 200) */
-  delay?: number;
-  /** Disable the tooltip */
-  disabled?: boolean;
-  /** Entrance animation style (default: "fade") */
-  entranceStyle?: "fade" | "scale" | "slide";
-  className?: string;
-}
-
 export interface NumberTickerProps {
   /** Target number to animate to */
   value: number;
@@ -786,92 +682,6 @@ export interface ParticleEffectProps {
   className?: string;
 }
 
-// ── batch 6: tier 3 components ──
-
-export interface MotionStepperItem {
-  /** Unique key */
-  key: string;
-  /** Step label */
-  label: ReactNode;
-  /** Step description */
-  description?: ReactNode;
-  /** Step content */
-  content?: ReactNode;
-}
-
-export interface MotionStepperProps {
-  /** Stepper items */
-  items: MotionStepperItem[];
-  /** Current active step index (0-based) */
-  activeStep: number;
-  /** Callback when step changes */
-  onStepChange?: (step: number) => void;
-  /** Allow clicking previous steps (default: true) */
-  allowStepClick?: boolean;
-  /** Orientation (default: "horizontal") */
-  orientation?: "horizontal" | "vertical";
-  /** Step indicator color (default: theme primary) */
-  color?: string;
-  /** Completed step indicator style (default: "check") */
-  completedIcon?: "check" | "filled" | "number";
-  /** Connector animation (default: true) */
-  animatedConnector?: boolean;
-  /** Active step pulse glow effect (default: false) */
-  activeGlow?: boolean;
-  className?: string;
-}
-
-export interface MotionBreadcrumbItem {
-  /** Display label */
-  label: ReactNode;
-  /** Navigation href */
-  href?: string;
-  /** Click handler (alternative to href) */
-  onClick?: () => void;
-}
-
-export interface MotionBreadcrumbProps {
-  /** Breadcrumb items (last is current page) */
-  items: MotionBreadcrumbItem[];
-  /** Separator element (default: "/") */
-  separator?: ReactNode;
-  className?: string;
-}
-
-export interface MotionPaginationProps {
-  /** Total number of pages */
-  total: number;
-  /** Current page (1-based) */
-  page: number;
-  /** Page change callback */
-  onChange: (page: number) => void;
-  /** Number of sibling pages to show (default: 1) */
-  siblings?: number;
-  /** Active page color (default: theme primary) */
-  color?: string;
-  /** Button shape (default: "rounded") */
-  shape?: "rounded" | "pill" | "square";
-  /** Active button scale on hover (default: 1.05) */
-  hoverScale?: number;
-  /** Active button glow effect (default: false) */
-  activeGlow?: boolean;
-  className?: string;
-}
-
-export interface HoverCardProps {
-  children: ReactNode;
-  /** Content revealed on hover */
-  content: ReactNode;
-  /** Card position (default: "bottom") */
-  position?: "top" | "bottom" | "left" | "right";
-  /** Show delay in ms (default: 300) */
-  delay?: number;
-  /** Card width in px (default: 280) */
-  width?: number;
-  disabled?: boolean;
-  className?: string;
-}
-
 export interface GradientBorderProps {
   children: ReactNode;
   /** Gradient color stops (default: theme-aware) */
@@ -887,21 +697,84 @@ export interface GradientBorderProps {
   className?: string;
 }
 
-export interface SidebarCollapseProps {
-  children: ReactNode;
-  /** Whether sidebar is collapsed */
-  collapsed: boolean;
-  /** Toggle collapse callback */
-  onToggle: () => void;
-  /** Expanded width in px (default: 260) */
-  expandedWidth?: number;
-  /** Collapsed width in px (default: 60) */
-  collapsedWidth?: number;
-  /** Collapse button position (default: "top") */
-  togglePosition?: "top" | "bottom";
-  /** Collapse animation style (default: "width") */
-  collapseStyle?: "width" | "slide" | "fade";
-  /** Show subtle border glow (default: false) */
-  borderGlow?: boolean;
+export type FlipDirection = "horizontal" | "vertical";
+
+export interface FlipCardProps {
+  /** Front face content */
+  front: ReactNode;
+  /** Back face content */
+  back: ReactNode;
+  /** Controlled flipped state */
+  flipped?: boolean;
+  /** Callback when flip state changes */
+  onFlipChange?: (flipped: boolean) => void;
+  /** Flip direction (default: "horizontal") */
+  direction?: FlipDirection;
+  /** CSS perspective value (default: 1000) */
+  perspective?: number;
+  /** Flip animation duration in seconds (default: 0.6) */
+  duration?: number;
+  /** Whether clicking toggles the flip (default: true) */
+  clickToFlip?: boolean;
+  className?: string;
+}
+
+export interface SelectStepperItem {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
+
+export interface SelectStepperProps {
+  /** List of options to step through */
+  items: SelectStepperItem[];
+  /** Current value (controlled) */
+  value?: string | null;
+  /** Default value (uncontrolled) */
+  defaultValue?: string | null;
+  /** Callback when value changes */
+  onChange?: (value: string, item: SelectStepperItem) => void;
+  /** Loop around when reaching end (default: false) */
+  loop?: boolean;
+  /** Disable the component */
+  disabled?: boolean;
+  /** Width of the visible value area in px (default: 120) */
+  viewWidth?: number;
+  /** Enable slide animation (default: true) */
+  animated?: boolean;
+  /** Custom left icon */
+  leftIcon?: ReactNode;
+  /** Custom right icon */
+  rightIcon?: ReactNode;
+  /** Render custom option content */
+  renderOption?: (item: SelectStepperItem, active: boolean) => ReactNode;
+  className?: string;
+}
+
+export interface RingsProgressSection {
+  value: number;
+  color: string;
+  tooltip?: string;
+}
+
+export interface RingsProgressProps {
+  /** Ring sections, rendered as concentric rings */
+  rings: RingsProgressSection[];
+  /** Overall size in px (default: 120) */
+  size?: number;
+  /** Ring stroke thickness in px (default: 8) */
+  thickness?: number;
+  /** Gap between rings in px (default: 4) */
+  gap?: number;
+  /** Round stroke caps (default: true) */
+  roundCaps?: boolean;
+  /** Label in center */
+  label?: ReactNode;
+  /** Animate on mount (default: true) */
+  animated?: boolean;
+  /** Animation duration in seconds (default: 0.8) */
+  animationDuration?: number;
+  /** Root track color alpha 0–1 (default: 0.15) */
+  trackAlpha?: number;
   className?: string;
 }

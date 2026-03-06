@@ -54,8 +54,8 @@ export function buildMantineComponents(
       },
       styles: {
         root: {
-          fontFamily: theme.typography.display,
-          fontWeight: Math.min(700, theme.typography.displayWeight),
+          fontFamily: theme.typography.en.heading,
+          fontWeight: Math.min(700, theme.typography.weights.bold),
           borderWidth: theme.foundation.borderWidth,
           borderColor: theme.foundation.borderColor,
           boxShadow: theme.depth.buttonShadow,
@@ -343,7 +343,7 @@ export function buildMantineComponents(
       },
       styles: {
         root: {
-          borderWidth: theme.foundation.borderWidth,
+          borderWidth: Math.min(theme.foundation.borderWidth, 2),
           borderStyle: theme.foundation.borderStyle,
           borderColor: theme.foundation.borderColor,
         },
@@ -352,8 +352,8 @@ export function buildMantineComponents(
     Tabs: {
       styles: {
         tab: {
-          fontFamily: theme.typography.display,
-          fontWeight: Math.min(700, theme.typography.displayWeight),
+          fontFamily: theme.typography.en.heading,
+          fontWeight: Math.min(700, theme.typography.weights.bold),
           color: theme.palette.textMuted,
         },
         panel: {
@@ -378,8 +378,8 @@ export function buildMantineComponents(
       styles: {
         root: {
           color: baseText,
-          fontFamily: theme.typography.display,
-          fontWeight: Math.min(700, theme.typography.displayWeight),
+          fontFamily: theme.typography.en.heading,
+          fontWeight: Math.min(700, theme.typography.weights.bold),
         },
       },
     },
@@ -438,12 +438,16 @@ export function buildMantineComponents(
     Switch: {
       styles: {
         track: {
-          background: theme.foundation.surfaceAccent,
-          borderColor: theme.foundation.borderColor,
+          "--switch-bg": theme.palette.danger,
+          "--switch-bd": "transparent",
+          "--switch-color": theme.palette.success,
+          outline: "none",
+          cursor: "pointer",
         },
         thumb: {
           background: theme.foundation.surface,
           boxShadow: theme.depth.switchShadow,
+          borderColor: "transparent",
         },
       },
     },
@@ -685,3 +689,4 @@ function pickBestTextColor(background: string, candidates: string[], minContrast
 
   return bestColor;
 }
+

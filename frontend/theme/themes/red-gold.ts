@@ -10,6 +10,7 @@ export const redGoldTheme: ThemeSpec = {
   id: "red-gold",
   name: "Red Gold",
   description: "Regal vault interface with imperial red power seals and disciplined gold rails.",
+  colorScheme: "dark",
   palette: {
     primary: "#ED2939",
     secondary: "#D4AF37",
@@ -21,11 +22,10 @@ export const redGoldTheme: ThemeSpec = {
     textMuted: "#B8B8B8",
   },
   typography: createThemeTypography({
-    display: "Space Grotesk, Crimson Text, EB Garamond, serif",
+    heading: "Space Grotesk, Crimson Text, EB Garamond, serif",
     body: "Libre Baskerville, Georgia, serif",
     mono: "JetBrains Mono, monospace",
-    displayWeight: 700,
-    bodyWeight: 400,
+    weights: { bold: 700, normal: 400 },
     en: {
       body: "'Libre Baskerville', Georgia, serif",
       heading: "'Space Grotesk', 'Crimson Text', serif",
@@ -129,3 +129,5 @@ export const redGoldTheme: ThemeSpec = {
   }),
   signatures: ["gold-rail", "imperial-seal", "vault-panel"],
 };
+
+

@@ -54,12 +54,6 @@ export interface ThemeTypography {
     normal: number;
     relaxed: number;
   };
-  // Legacy aliases kept for backward compatibility in adapters/tests.
-  display: string;
-  body: string;
-  mono: string;
-  displayWeight: number;
-  bodyWeight: number;
 }
 
 export interface ThemeFoundation {
@@ -122,10 +116,7 @@ export interface ThemeMotionConfig {
   tiltEnabled: boolean;
   tiltDegree: number;
   springRelease: boolean;
-  // Legacy fields kept to avoid breaking existing contracts.
-  hoverMs: number;
   pressMs: number;
-  overshoot: number;
   distancePx: number;
 }
 
@@ -197,6 +188,7 @@ export interface ThemeSpec {
   id: ThemeId;
   name: string;
   description: string;
+  colorScheme: "light" | "dark";
   palette: ThemePalette;
   typography: ThemeTypography;
   effects: ThemeEffects;

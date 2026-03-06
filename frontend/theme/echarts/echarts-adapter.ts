@@ -91,8 +91,8 @@ export function buildEChartsTheme(themeId: ThemeId): EChartsThemeConfig {
     darkMode,
     color: palette,
     backgroundColor: "transparent",
-    textStyle: { color: textColor, fontFamily: theme.typography.body },
-    title: { textStyle: { color: textColor, fontFamily: theme.typography.display } },
+    textStyle: { color: textColor, fontFamily: theme.typography.en.body },
+    title: { textStyle: { color: textColor, fontFamily: theme.typography.en.heading } },
     legend: { textStyle: { color: textColor } },
     tooltip: {
       backgroundColor: tooltipBg,
@@ -117,3 +117,4 @@ export function buildEChartsTheme(themeId: ThemeId): EChartsThemeConfig {
     },
   };
 }
+

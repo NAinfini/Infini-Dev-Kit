@@ -72,7 +72,7 @@ refactor(hooks): extract motion spring logic into useThemeSpring
 infini-dev-kit/
 ├── frontend/
 │   ├── theme/            # Theme specs, controller, Mantine/ECharts adapters
-│   ├── components/       # 60 base components (flat) + infini/ dispatch layer
+│   ├── components/       # 50 base components (flat) + infini/ dispatch layer
 │   │   └── infini/       # 19 Infini* auto-dispatch wrappers + theme-defaults
 │   ├── hooks/            # ALL hooks + variants/
 │   ├── provider/         # InfiniProvider, KitApp, ThemeToolbar
@@ -101,9 +101,8 @@ infini-dev-kit/
 2. Create `frontend/theme/themes/<ThemeName>Prompt.md` (LLM generation prompt).
 3. Register in `frontend/theme/themes/index.ts`.
 4. Add the theme ID to the `ThemeId` union in `frontend/theme/theme-types.ts`.
-5. Add a Mantine theme-config in `frontend/theme/mantine/theme-configs/<theme-name>.ts`.
-6. Add a theme-effects CSS Module in `frontend/theme/mantine/theme-effects/<theme-name>.module.css`.
-7. If the theme needs component-level overrides (e.g. different switch dimensions), add an entry in `frontend/theme/theme-overrides.ts`.
+5. Add a theme-effects CSS Module in `frontend/theme/mantine/theme-effects/<theme-name>.module.css`.
+6. If the theme needs component-level overrides (e.g. different switch dimensions), add an entry in `frontend/theme/theme-overrides.ts`.
 
 ## Adding a new bot adapter
 

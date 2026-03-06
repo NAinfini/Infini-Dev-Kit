@@ -10,6 +10,7 @@ export const cyberpunkTheme: ThemeSpec = {
   id: "cyberpunk",
   name: "Cyberpunk",
   description: "Neon noir command deck with cyan primaries, yellow accents, and glitch-HUD framing.",
+  colorScheme: "dark",
   palette: {
     primary: "#00D4E0",
     secondary: "#E0D400",
@@ -21,11 +22,10 @@ export const cyberpunkTheme: ThemeSpec = {
     textMuted: "#C5C7D0",
   },
   typography: createThemeTypography({
-    display: "Orbitron, Rajdhani, Electrolize, sans-serif",
+    heading: "Orbitron, Rajdhani, Electrolize, sans-serif",
     body: "Share Tech Mono, Consolas, monospace",
     mono: "JetBrains Mono, Share Tech Mono, Consolas, monospace",
-    displayWeight: 700,
-    bodyWeight: 400,
+    weights: { bold: 700, normal: 400 },
     en: {
       body: "'Rajdhani', 'Roboto', sans-serif",
       heading: "'Orbitron', 'Rajdhani', sans-serif",
@@ -145,3 +145,5 @@ export const cyberpunkTheme: ThemeSpec = {
   }),
   signatures: ["cp2077-yellow", "teal-rails", "scanline-noir", "glitch-hud"],
 };
+
+

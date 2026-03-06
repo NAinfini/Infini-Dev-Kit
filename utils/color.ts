@@ -23,6 +23,25 @@ export function pickReadableTextColor(
   return darkContrast >= lightContrast ? darkText : lightText;
 }
 
+export function pickBestTextColor(background: string, candidates: string[], minContrast = 4.5): string {
+  const uniqueCandidates = [...new Set(candidates)];
+  let bestColor = uniqueCandidates[0] ?? pickReadableTextColor(background);
+  let bestContrast = contrastRatio(background, bestColor);
+
+  for (const candidate of uniqueCandidates) {
+    const candidateContrast = contrastRatio(background, candidate);
+    if (candidateContrast >= minContrast) {
+      return candidate;
+    }
+    if (candidateContrast > bestContrast) {
+      bestColor = candidate;
+      bestContrast = candidateContrast;
+    }
+  }
+
+  return bestColor;
+}
+
 export function deriveHoverColor(color: string): string {
   const amount = isDarkColor(color) ? 0.1 : -0.08;
   return shiftLightness(color, amount);

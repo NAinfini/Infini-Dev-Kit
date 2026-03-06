@@ -10,6 +10,7 @@
   "devDependencies": {
     "@mantine/core": "^7.17.8",
     "@mantine/hooks": "^7.17.8",
+    "@mantine/modals": "^7.17.8",
     "@mantine/notifications": "^7.17.8",
     "@types/node": "^22.12.0",
     "@types/react": "^19.2.7",

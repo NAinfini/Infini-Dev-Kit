@@ -10,6 +10,7 @@ export const chibiTheme: ThemeSpec = {
   id: "chibi",
   name: "Chibi",
   description: "Kawaii candy surfaces with soft ink, plush radii, and squishy interactions.",
+  colorScheme: "light",
   palette: {
     primary: "#FF7EB6",
     secondary: "#7AA7FF",
@@ -21,11 +22,10 @@ export const chibiTheme: ThemeSpec = {
     textMuted: "#5A4560",
   },
   typography: createThemeTypography({
-    display: "M PLUS Rounded 1c, Comfortaa, Varela Round, sans-serif",
+    heading: "M PLUS Rounded 1c, Comfortaa, Varela Round, sans-serif",
     body: "Baloo 2, Varela Round, sans-serif",
     mono: "Courier Prime, monospace",
-    displayWeight: 700,
-    bodyWeight: 500,
+    weights: { bold: 700, normal: 500 },
     en: {
       body: "'Baloo 2', 'Varela Round', sans-serif",
       heading: "'M PLUS Rounded 1c', 'Comfortaa', sans-serif",
@@ -125,13 +125,15 @@ export const chibiTheme: ThemeSpec = {
     exitMs: 200,
     easing: "cubic-bezier(0.34, 1.56, 0.64, 1)",
     bounce: 0.45,
-    hoverScale: 1.04,
+    hoverScale: 1.02,
     hoverDuration: 150,
     tiltEnabled: true,
-    tiltDegree: 10,
+    tiltDegree: 3,
     springRelease: true,
     pressMs: 120,
     distancePx: 6,
   }),
   signatures: ["kawaii", "pastel-candy", "pudding-3d", "sticker-charm"],
 };
+
+

@@ -8,7 +8,7 @@ Private monorepo TypeScript toolkit for building Infini ecosystem applications.
 
 | Package | Path | Purpose |
 |---------|------|---------|
-| `@infini-dev-kit/frontend` | `frontend/` | Theme system, 60 base components + 19 Infini* auto-dispatch wrappers, Mantine/ECharts adapters |
+| `@infini-dev-kit/frontend` | `frontend/` | Theme system, 50 base components + 2 Infini dispatch wrappers, Mantine/ECharts adapters |
 | `@infini-dev-kit/utils` | `utils/` | Color, storage, a11y, types (`Result<T,E>`, `Option<T>`), env |
 | `@infini-dev-kit/api-client` | `api-client/` | HTTP API client with retry, auth, RFC 7807 errors |
 | `@infini-dev-kit/bot-core` | `bot-core/` | Platform-agnostic bot framework |
@@ -45,8 +45,8 @@ infini-dev-kit/
 │   │   ├── mantine/          # Mantine theme adapter
 │   │   ├── echarts/          # ECharts theme adapter
 │   │   └── themes/           # 6 theme definitions
-│   ├── components/           # 60 base components (flat) + infini/ dispatch layer
-│   │   └── infini/           # 19 Infini* auto-dispatch wrappers + theme-defaults
+│   ├── components/           # 50 base components (flat) + infini/ dispatch layer
+│   │   └── infini/           # dispatch wrappers + dispatch hooks
 │   ├── hooks/                # Motion hooks + variants/
 │   ├── provider/             # InfiniProvider, KitApp, ThemeToolbar
 │   ├── overlays/             # Toast/confirm service
@@ -83,34 +83,32 @@ Theme-driven UI layer with Mantine integration.
 | Path | Purpose |
 |------|---------|
 | `frontend/theme` | Theme specs, controller, Mantine/ECharts adapters, motion contracts |
-| `frontend/components` | 60 base components + 19 Infini* wrappers |
+| `frontend/components` | 60 base components + 2 Infini dispatch wrappers |
 | `frontend/hooks` | Motion hooks (useMotionAllowed, useThemeSpring, useThemeTransition) |
 | `frontend/provider` | InfiniProvider, KitApp, ThemeToolbar |
 | `frontend/overlays` | Toast/confirm overlay service |
 
-### Components (60 base + 19 wrappers)
+### Components (50 base + 2 wrappers)
 
 **Buttons:** MotionButton, DepthButton, ShimmerButton, LiquidButton, GlitchButton, ProgressButton, SocialButton
 
-**Cards:** TiltCard, GlowCard, RevealCard, LayeredCard, CyberpunkCard
+**Cards:** TiltCard, GlowCard, RevealCard, LayeredCard, CyberpunkCard, ChibiCard, NeuBrutalCard
 
 **Text:** AnimatedText, GradientText, GlitchText, AnimatedCounter, NumberTicker, ShinyText
 
-**Inputs/Forms:** MotionInputFrame, FloatingLabelInput, AnimatedTabs
+**Inputs/Forms:** AnimatedTabs
 
-**Navigation:** MotionBreadcrumb, MotionPagination, MotionStepper, SidebarCollapse
+**Navigation:** MotionBreadcrumb, MotionStepper
 
-**Feedback:** MotionToast, MotionTooltip, ConfirmDialog, MotionAccordion, ProgressRing, HoverCard
+**Feedback:** MotionToast, Result
 
 **Backgrounds:** BubbleBackground, GrainyBackground, RippleBackground, MorphingBlob, MatrixCodeRain, ParticleEffect
 
 **Layout/UX:** Marquee, Terminal, ScrollProgress, Parallax, PageTransition, ImageComparison, ImageScanner, AnimatedCodeBlock, StaggerList, RevealOnScroll, ScrollAnimationTrigger
 
-**Effects:** GlitchOverlay, GlassEffect, GlowBorder, GradientBorder, LampHeading, LoadingSkeleton, ShimmerSkeleton, LayoutIndicator, MagneticElement, CustomCursor
+**Effects:** GlitchOverlay, GlassEffect, GlowBorder, GradientBorder, LampHeading, LayoutIndicator, MagneticElement, CustomCursor
 
-**Data:** Statistic, Result
-
-**Infini\* Auto-Dispatch Wrappers** (`components/infini/`): InfiniButton, InfiniCard, InfiniInput (dispatch layer — auto-selects delegate based on theme), plus 16 theme-adaptive wrappers (InfiniAnimatedTabs, InfiniMotionAccordion, InfiniConfirmDialog, InfiniFloatingLabelInput, InfiniMotionToast, InfiniMotionTooltip, InfiniMotionStepper, InfiniMotionBreadcrumb, InfiniMotionPagination, InfiniProgressRing, InfiniNumberTicker, InfiniShinyText, InfiniParticleEffect, InfiniHoverCard, InfiniGradientBorder, InfiniSidebarCollapse)
+**Infini dispatch wrappers** (`components/infini/`): `InfiniButton`, `InfiniCard` (theme-based delegate selection).
 
 ### Available Themes
 

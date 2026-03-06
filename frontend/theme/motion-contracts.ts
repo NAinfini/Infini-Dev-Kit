@@ -112,14 +112,11 @@ function pickBaseDuration(
   motion: {
     enterMs: number;
     exitMs: number;
-    hoverDuration?: number;
-    hoverMs: number;
+    hoverDuration: number;
     pressMs: number;
   },
   intent: MotionIntent,
 ): number {
-  const hoverDuration = motion.hoverDuration ?? motion.hoverMs;
-
   switch (intent) {
     case "enter":
     case "overlay-open":
@@ -129,11 +126,11 @@ function pickBaseDuration(
       return motion.exitMs;
     case "hover":
     case "focus":
-      return hoverDuration;
+      return motion.hoverDuration;
     case "press":
       return motion.pressMs;
     case "list-update":
-      return hoverDuration;
+      return motion.hoverDuration;
     default:
       return motion.enterMs;
   }

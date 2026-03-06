@@ -10,6 +10,7 @@ export const blackGoldTheme: ThemeSpec = {
   id: "black-gold",
   name: "Black Gold",
   description: "Aurum Noir control surface with matte depth, gold rails, and engineered restraint.",
+  colorScheme: "dark",
   palette: {
     primary: "#E5C04A",
     secondary: "#F0D580",
@@ -21,11 +22,10 @@ export const blackGoldTheme: ThemeSpec = {
     textMuted: "#B8B8B8",
   },
   typography: createThemeTypography({
-    display: "Space Grotesk, Cinzel, Lora, serif",
+    heading: "Space Grotesk, Cinzel, Lora, serif",
     body: "Inter, Montserrat, sans-serif",
     mono: "JetBrains Mono, monospace",
-    displayWeight: 700,
-    bodyWeight: 400,
+    weights: { bold: 700, normal: 400 },
     en: {
       body: "'Inter', 'Montserrat', sans-serif",
       heading: "'Space Grotesk', 'Cinzel', serif",
@@ -135,3 +135,5 @@ export const blackGoldTheme: ThemeSpec = {
   }),
   signatures: ["gold-rail-system", "frame-within-frame", "metric-emphasis"],
 };
+
+

@@ -20,8 +20,8 @@ describe("theme specs", () => {
     expect(cyberpunk.palette.success).toBe("#00E08C");
     expect(cyberpunk.foundation.background).toBe("#07070C");
     expect(cyberpunk.foundation.backgroundPattern).toBe("circuit-scanline");
-    expect(cyberpunk.typography.display).toContain("Orbitron");
-    expect(cyberpunk.typography.mono).toContain("JetBrains Mono");
+    expect(cyberpunk.typography.en.heading).toContain("Orbitron");
+    expect(cyberpunk.typography.en.mono).toContain("Share Tech Mono");
   });
 
   it("matches chibi reference details", () => {
@@ -37,8 +37,8 @@ describe("theme specs", () => {
     expect(chibi.depth.buttonShadowPressed).toBe("0 1px 0 rgba(194,168,205,0.4), inset 0 1px 0 rgba(255,255,255,0.6)");
     expect(chibi.foundation.background).toBe("#FFF7FB");
     expect(chibi.foundation.backgroundPattern).toBe("chibi-sparkle-grid");
-    expect(chibi.typography.display).toContain("M PLUS Rounded 1c");
-    expect(chibi.motion.overshoot).toBeGreaterThan(0);
+    expect(chibi.typography.en.heading).toContain("M PLUS Rounded 1c");
+    expect(chibi.motion.bounce).toBeGreaterThan(0);
   });
 
   it("matches red-gold reference details", () => {
@@ -51,7 +51,7 @@ describe("theme specs", () => {
     expect(redGold.palette.danger).toBe("#E53935");
     expect(redGold.foundation.background).toBe("#08070A");
     expect(redGold.foundation.backgroundPattern).toBe("imperial-grain");
-    expect(redGold.typography.display).toContain("Space Grotesk");
+    expect(redGold.typography.en.heading).toContain("Space Grotesk");
   });
 
   it("applies brutalism border language", () => {
@@ -73,10 +73,10 @@ describe("theme specs", () => {
     const brutal = getThemeSpec("neu-brutalism");
     const blackGold = getThemeSpec("black-gold");
 
-    expect(cyberpunk.typography.display).toContain("Orbitron");
-    expect(brutal.typography.display).toContain("Space Grotesk");
-    expect(blackGold.typography.display).toContain("Space Grotesk");
-    expect(blackGold.typography.body).toContain("Inter");
+    expect(cyberpunk.typography.en.heading).toContain("Orbitron");
+    expect(brutal.typography.en.heading).toContain("Space Grotesk");
+    expect(blackGold.typography.en.heading).toContain("Space Grotesk");
+    expect(blackGold.typography.en.body).toContain("Inter");
     expect(blackGold.palette.accent).toBe("#CCA84A");
     expect(blackGold.foundation.backgroundPattern).toBe("aurum-grain");
   });

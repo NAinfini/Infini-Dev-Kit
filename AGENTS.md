@@ -51,13 +51,12 @@ pnpm install      # install dependencies
 | `frontend/theme/themes/` | 6 theme specs: default, chibi, cyberpunk, neu-brutalism, black-gold, red-gold |
 | `frontend/theme/themes/rich-config.ts` | Builder helpers for theme specs |
 | `frontend/theme/mantine/` | Mantine adapter: `composeMantineTheme()`, CSS variables, component tokens |
-| `frontend/theme/mantine/theme-configs/` | Per-theme MantineThemeOverride objects |
 | `frontend/theme/mantine/theme-effects/` | Per-theme CSS Modules (decorative effects) |
 | `frontend/theme/echarts/` | ECharts adapter: `buildEChartsTheme()` |
-| **frontend/components/** | **60 base components (flat) + `infini/` dispatch layer** |
+| **frontend/components/** | **50 base components (flat) + `infini/` dispatch layer** |
 | `frontend/components/index.ts` | Barrel export — alphabetically sorted |
-| `frontend/components/infini/` | 19 Infini* auto-dispatch wrappers, dispatch hooks, theme-defaults configs |
-| `frontend/components/infini/index.ts` | Barrel export for all Infini* wrappers and hooks |
+| `frontend/components/infini/` | Dispatch wrappers (`InfiniButton`, `InfiniCard`) + dispatch hooks |
+| `frontend/components/infini/index.ts` | Barrel export for Infini dispatch wrappers and hooks |
 | **frontend/hooks/** | **All motion hooks** |
 | `frontend/hooks/use-motion-allowed.ts` | `useMotionAllowed()`, `useFullMotion()`, `useEffectiveMotionMode()` |
 | `frontend/hooks/use-theme-transition.ts` | `useThemeTransition(intent)` — returns motion transition config |
@@ -201,16 +200,13 @@ Component rules:
 - Gate animations with `useMotionAllowed()` / `useFullMotion()`
 - Always render a non-animated fallback when motion is off
 
-### Add an Infini* wrapper (theme-adaptive auto-dispatch)
+### Maintain Infini dispatch wrappers
 
-1. **Create theme-defaults** at `frontend/components/infini/theme-defaults/<component-name>.ts`
-   - Must cover `_base` + all 6 themes (chibi, cyberpunk, neu-brutalism, black-gold, red-gold)
-   - Use `ThemeDefaultsMap<YourComponentProps>` type
-2. **Create wrapper** at `frontend/components/infini/InfiniYourComponent.tsx`
-   - Use `useThemeDefaults(props, DEFAULTS_MAP)` to merge theme-aware defaults
-   - Delegate to the base component
-3. **Export** from `frontend/components/infini/index.ts`
-4. **Run** `pnpm typecheck` — must pass
+`frontend/components/infini/` is reserved for dispatch wrappers with real runtime behavior (`InfiniButton`, `InfiniCard`) and their hooks.
+
+- Do not add passthrough wrappers that only forward props to base components.
+- If there is no dispatch logic, export and use the base component directly from `frontend/components/`.
+- When changing dispatch behavior, keep `frontend/components/infini/index.ts` in sync and run `pnpm typecheck`.
 
 ### Add a theme
 
@@ -218,9 +214,8 @@ Component rules:
 2. Create spec in `frontend/theme/themes/<name>.ts` (use `rich-config.ts` builders)
 3. Register in `frontend/theme/themes/index.ts`
 4. Register in `frontend/theme/theme-specs.ts`
-5. Add Mantine config in `frontend/theme/mantine/theme-configs/<name>.ts`
-6. Add effects CSS in `frontend/theme/mantine/theme-effects/<name>.module.css`
-7. Add overrides in `frontend/theme/theme-overrides.ts` if needed
+5. Add effects CSS in `frontend/theme/mantine/theme-effects/<name>.module.css`
+6. Add overrides in `frontend/theme/theme-overrides.ts` if needed
 
 ### Add a utility
 
@@ -315,9 +310,8 @@ These files must stay consistent with each other:
 | When you change... | Also update... |
 |---------------------|---------------|
 | A component file | `frontend/components/index.ts` barrel |
-| An Infini* wrapper | `frontend/components/infini/index.ts` barrel |
+| An Infini dispatch wrapper | `frontend/components/infini/index.ts` barrel |
 | Component props | `frontend/theme/motion-types.ts` |
-| Infini* theme-defaults | `frontend/components/infini/theme-defaults/` (all 6 themes) |
 | A theme spec | `frontend/theme/theme-specs.ts` registry, `theme-types.ts` ThemeId union |
 | Theme overrides | `frontend/theme/theme-overrides.ts` |
 | A hook file | `frontend/hooks/index.ts` barrel |

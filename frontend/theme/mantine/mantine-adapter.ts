@@ -16,8 +16,6 @@ export type {
 } from "./mantine-types";
 export { buildScopedThemeClass, buildScopedCssVariables } from "./mantine-variables";
 
-const DARK_THEMES = new Set(["cyberpunk", "black-gold", "red-gold"]);
-
 export function composeMantineTheme(options: ComposeMantineThemeOptions): MantineThemeConfig {
   const theme = getThemeSpec(options.themeId);
   const surface = theme.foundation.surface;
@@ -29,20 +27,20 @@ export function composeMantineTheme(options: ComposeMantineThemeOptions): Mantin
   const safeBorder = ensureContrastColor(theme.foundation.borderColor, surface, 1.8);
   const safeTextBase = ensureContrastColor(theme.palette.text, baseBackground, 4.5);
   const componentTokens = buildComponentTokens(theme);
-  const colorScheme = options.forcedColorScheme ?? (DARK_THEMES.has(theme.id) ? "dark" : "light");
+  const colorScheme = options.forcedColorScheme ?? theme.colorScheme;
   const token = {
     colorPrimary: theme.palette.primary,
     colorInfo: safeInfo,
     colorSuccess: safeSuccess,
     colorWarning: safeWarning,
-    colorError: safeDanger,
+    colorDanger: safeDanger,
     colorTextBase: safeTextBase,
     colorBgBase: theme.foundation.background,
     colorBgContainer: theme.foundation.surface,
     colorBorder: safeBorder,
     borderRadius: theme.foundation.radius,
     lineWidth: theme.foundation.borderWidth,
-    fontFamily: theme.typography.body,
+    fontFamily: theme.typography.en.body,
   };
 
   return {
@@ -87,7 +85,7 @@ function buildDarkTuple(theme: ThemeSpec): MantineColorsTuple {
 }
 
 function buildGrayTuple(theme: ThemeSpec): MantineColorsTuple {
-  if (DARK_THEMES.has(theme.id)) {
+  if (theme.colorScheme === "dark") {
     return [
       "#F1F3F5",
       "#D9DCE5",
@@ -124,21 +122,21 @@ function buildMantineTheme(
   return createTheme({
     autoContrast: true,
     luminanceThreshold: 0.32,
-    primaryColor: "blue",
-    primaryShade: DARK_THEMES.has(theme.id) ? 4 : 6,
+    primaryColor: "infini-primary",
+    primaryShade: theme.colorScheme === "dark" ? 4 : 6,
     colors: {
-      blue: toTuple(token.colorPrimary),
-      cyan: toTuple(token.colorInfo),
-      green: toTuple(token.colorSuccess),
-      yellow: toTuple(token.colorWarning),
-      red: toTuple(token.colorError),
+      "infini-primary": toTuple(token.colorPrimary),
+      "infini-accent": toTuple(token.colorInfo),
+      "infini-success": toTuple(token.colorSuccess),
+      "infini-warning": toTuple(token.colorWarning),
+      "infini-danger": toTuple(token.colorDanger),
       gray: buildGrayTuple(theme),
       dark: buildDarkTuple(theme),
     },
     black: "#000000",
     white: "#ffffff",
     fontFamily: token.fontFamily,
-    fontFamilyMonospace: theme.typography.mono,
+    fontFamilyMonospace: theme.typography.en.mono,
     defaultRadius: token.borderRadius,
     radius: {
       xs: `${Math.max(2, Math.round(token.borderRadius * 0.5))}px`,
@@ -148,8 +146,8 @@ function buildMantineTheme(
       xl: `${Math.max(8, Math.round(token.borderRadius * 1.35))}px`,
     },
     headings: {
-      fontFamily: theme.typography.display,
-      fontWeight: String(theme.typography.displayWeight),
+      fontFamily: theme.typography.en.heading,
+      fontWeight: String(theme.typography.weights.bold),
     },
     defaultGradient: {
       from: theme.palette.primary,
@@ -215,9 +213,9 @@ function buildComponentTokens(theme: ThemeSpec): Record<string, Record<string, s
     Button: {
       colorPrimary: theme.palette.primary,
       colorTextLightSolid: buttonText,
-      fontFamily: theme.typography.display,
+      fontFamily: theme.typography.en.heading,
       borderRadius: buttonRadius,
-      fontWeight: Math.min(700, theme.typography.displayWeight),
+      fontWeight: Math.min(700, theme.typography.weights.bold),
       lineWidth: theme.foundation.borderWidth,
       defaultBorderColor: safeBorder,
       boxShadow: theme.depth.buttonShadow,
@@ -284,7 +282,7 @@ function buildComponentTokens(theme: ThemeSpec): Record<string, Record<string, s
     Cascader: {
       borderRadius: selectRadius,
       optionSelectedBg: theme.foundation.surfaceAccent,
-      optionSelectedFontWeight: Math.min(700, theme.typography.displayWeight),
+      optionSelectedFontWeight: Math.min(700, theme.typography.weights.bold),
       dropdownHeight: 240,
       dropdownMenuBg: theme.foundation.surface,
       dropdownEdgeChildVerticalPadding: 2,
@@ -415,7 +413,7 @@ function buildComponentTokens(theme: ThemeSpec): Record<string, Record<string, s
       handleActiveColor: theme.palette.secondary,
     },
     Switch: {
-      colorPrimary: theme.palette.primary,
+      colorPrimary: theme.palette.success,
       handleBg: theme.foundation.surface,
       handleShadow: theme.depth.switchShadow,
       trackMinWidth: getThemeOverrides(theme).switch.trackMinWidth,
@@ -452,12 +450,12 @@ function buildComponentTokens(theme: ThemeSpec): Record<string, Record<string, s
       borderRadius: Math.max(4, Math.round(theme.foundation.radius * 0.7)),
     },
     Typography: {
-      fontFamily: theme.typography.display,
+      fontFamily: theme.typography.en.heading,
       colorText: safeBodyText,
       colorTextSecondary: safeMutedText,
       colorLink: safePrimaryText,
       colorLinkHover: safeAccentText,
-      fontWeightStrong: theme.typography.displayWeight,
+      fontWeightStrong: theme.typography.weights.bold,
     },
     Spin: {
       colorPrimary: theme.palette.primary,
@@ -523,7 +521,7 @@ function buildComponentTokens(theme: ThemeSpec): Record<string, Record<string, s
       colorWarning: safeWarning,
     },
     Statistic: {
-      fontFamily: theme.typography.display,
+      fontFamily: theme.typography.en.heading,
       colorTextHeading: safeBodyText,
       colorTextDescription: safeMutedText,
     },
@@ -659,3 +657,4 @@ function resolveTagColorMix(theme: ThemeSpec): Record<string, string> {
       return {};
   }
 }
+

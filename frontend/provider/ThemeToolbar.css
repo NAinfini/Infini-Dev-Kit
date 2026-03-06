@@ -7,7 +7,7 @@
   align-items: center;
   gap: 16px;
   padding: 12px 24px;
-  border-bottom: 1px solid var(--infini-border-color);
+  border-bottom: 1px solid var(--infini-color-border);
   background: var(--infini-color-surface, #ffffff);
 }
 
@@ -117,7 +117,7 @@
     var(--infini-color-bg, #f6f7fb) 92%
   );
   color: var(--infini-color-text, #111111);
-  border-color: var(--infini-border-color);
+  border-color: var(--infini-color-border);
   box-shadow: none;
 }
 
@@ -132,7 +132,7 @@
     var(--infini-color-surface, #ffffff) 78%,
     var(--infini-color-bg, #f6f7fb) 22%
   );
-  border-color: var(--infini-border-color);
+  border-color: var(--infini-color-border);
 }
 
 .toolbar .toolbar-select .mantine-Combobox-option {
@@ -151,7 +151,7 @@
 .toolbar .toolbar-select input,
 .toolbar .toolbar-segmented,
 .toolbar .toolbar-segmented * {
-  border-color: var(--infini-border-color);
+  border-color: var(--infini-color-border);
 }
 
 .toolbar .toolbar-segmented-motion {

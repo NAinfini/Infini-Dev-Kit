@@ -1,19 +1,27 @@
+import type { ThemeId } from "../../theme/theme-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
 import type { CardDispatchKey } from "./dispatch-types";
 
 /**
- * Reads the active theme and returns the dispatch key
- * that determines which delegate card component to render.
+ * Maps each theme to its dedicated card variant.
  *
- * Priority:
- *  1. cyberpunk themeId → "cyberpunk"  (CyberpunkCard)
- *  2. 3d-pudding button type → "tilt"  (chibi)
- *  3. everything else → "glow"  (default, neu-brutalism, black-gold, red-gold)
+ *  cyberpunk    → CyberpunkCard  (neon HUD + glitch-on-hover)
+ *  chibi        → ChibiCard      (kawaii sticker — soft shadow, gentle float)
+ *  neu-brutalism→ NeuBrutalCard  (hard shadow, sticker-stack)
+ *  default      → GlowCard       (spotlight — radial gradient)
+ *  black-gold   → GlowCard       (laser — rotating conic + crosshair)
+ *  red-gold     → GlowCard       (cosmic — particle nebula)
  */
-export function useCardDispatch(): CardDispatchKey {
-  const { state, theme } = useThemeSnapshot();
+const THEME_CARD_MAP: Record<ThemeId, CardDispatchKey> = {
+  cyberpunk: "cyberpunk",
+  chibi: "chibi",
+  "neu-brutalism": "neu-brutal",
+  default: "glow",
+  "black-gold": "glow-laser",
+  "red-gold": "glow-cosmic",
+};
 
-  if (state.themeId === "cyberpunk") return "cyberpunk";
-  if (theme.button.type === "3d-pudding") return "tilt";
-  return "glow";
+export function useCardDispatch(): CardDispatchKey {
+  const { state } = useThemeSnapshot();
+  return THEME_CARD_MAP[state.themeId] ?? "glow";
 }

@@ -1,4 +1,5 @@
 import { MantineProvider, type CSSVariablesResolver } from "@mantine/core";
+import { ModalsProvider } from "@mantine/modals";
 import { Notifications, notifications } from "@mantine/notifications";
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
@@ -11,6 +12,7 @@ import {
   type ThemeProviderBridge,
   type ThemeProviderSnapshot,
 } from "../theme/theme-provider-bridge";
+import { loadThemeFonts } from "../theme/mantine/font-loader";
 
 const BridgeContext = createContext<ThemeProviderBridge | null>(null);
 const SnapshotContext = createContext<ThemeProviderSnapshot | null>(null);
@@ -39,15 +41,15 @@ export function useThemeSnapshot(): ThemeProviderSnapshot {
 
 function mapToastColor(status: "info" | "success" | "warning" | "error"): string {
   if (status === "success") {
-    return "green";
+    return "infini-success";
   }
   if (status === "warning") {
-    return "yellow";
+    return "infini-warning";
   }
   if (status === "error") {
-    return "red";
+    return "infini-danger";
   }
-  return "blue";
+  return "infini-primary";
 }
 
 export function InfiniProvider({ children }: { children: ReactNode }) {
@@ -55,6 +57,10 @@ export function InfiniProvider({ children }: { children: ReactNode }) {
   const previousScopeClass = useRef<string | null>(null);
 
   useEffect(() => bridge.subscribe(setSnapshot), []);
+
+  useEffect(() => {
+    void loadThemeFonts(snapshot.state.themeId);
+  }, [snapshot.state.themeId]);
 
   useEffect(() => {
     return bridge.overlays.register({
@@ -66,9 +72,6 @@ export function InfiniProvider({ children }: { children: ReactNode }) {
           withBorder: true,
           autoClose: payload.status === "error" ? false : 3000,
         });
-      },
-      async confirm() {
-        return false;
       },
     });
   }, []);
@@ -117,8 +120,10 @@ export function InfiniProvider({ children }: { children: ReactNode }) {
           withCssVariables
           withGlobalClasses
         >
-          <Notifications position="bottom-right" zIndex={1200} />
-          {children}
+          <ModalsProvider>
+            <Notifications position="bottom-right" zIndex={1200} />
+            {children}
+          </ModalsProvider>
         </MantineProvider>
       </SnapshotContext.Provider>
     </BridgeContext.Provider>

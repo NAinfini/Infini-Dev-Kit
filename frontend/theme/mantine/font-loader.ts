@@ -47,6 +47,16 @@ const COMMON_FONTS: FontConfig[] = [
   { family: "JetBrains Mono", weights: [400, 500, 600, 700], display: "swap" },
 ];
 
+// CJK fonts loaded on demand when locale switches
+const LOCALE_FONTS: Record<string, FontConfig[]> = {
+  zh: [
+    { family: "Noto Sans SC", weights: [400, 500, 600, 700], display: "swap" },
+  ],
+  ja: [
+    { family: "Noto Sans JP", weights: [400, 500, 600, 700], display: "swap" },
+  ],
+};
+
 const loadedFonts = new Set<string>();
 
 function buildGoogleFontsUrl(fonts: FontConfig[]): string {
@@ -115,6 +125,32 @@ export function preloadCommonFonts(): void {
   // Also add the actual stylesheet
   const styleLink = createFontLink(url);
   document.head.appendChild(styleLink);
+}
+
+export async function loadLocaleFonts(locale: string): Promise<void> {
+  const key = `locale:${locale}`;
+  if (loadedFonts.has(key)) {
+    return;
+  }
+
+  const fonts = LOCALE_FONTS[locale];
+  if (!fonts || fonts.length === 0) {
+    return;
+  }
+
+  const url = buildGoogleFontsUrl(fonts);
+  const link = createFontLink(url);
+  document.head.appendChild(link);
+
+  await new Promise<void>((resolve) => {
+    link.onload = () => resolve();
+    link.onerror = () => {
+      console.warn(`Failed to load locale fonts for: ${locale}`);
+      resolve();
+    };
+  });
+
+  loadedFonts.add(key);
 }
 
 export function clearFontCache(): void {

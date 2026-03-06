@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { clampProgressScale } from "../components/ScrollProgress";
+import { clampProgressScale } from "../components/data-display/ScrollProgress";
 
 describe("scroll progress clamp", () => {
   it("clamps values below 0 to 0", () => {

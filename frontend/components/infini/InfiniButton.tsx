@@ -1,9 +1,9 @@
 import type { InfiniButtonProps } from "./dispatch-types";
 import { useButtonDispatch } from "./use-button-dispatch";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
-import { DepthButton } from "../DepthButton";
-import { GlitchButton } from "../GlitchButton";
-import { ShimmerButton } from "../ShimmerButton";
+import { DepthButton } from "../buttons/DepthButton";
+import { GlitchButton } from "../buttons/GlitchButton";
+import { ShimmerButton } from "../buttons/ShimmerButton";
 
 /**
  * Unified button that auto-dispatches to DepthButton, GlitchButton, or
@@ -19,6 +19,8 @@ export function InfiniButton({
   target,
   before,
   after,
+  htmlType = "button",
+  loading,
   disabled,
   className,
   overrides,
@@ -26,18 +28,41 @@ export function InfiniButton({
   const dispatch = useButtonDispatch();
   const { theme } = useThemeSnapshot();
 
+  const isDisabled = disabled || loading;
+  const content = loading ? (
+    <>
+      <span
+        aria-hidden
+        style={{
+          display: "inline-block",
+          width: 12,
+          height: 12,
+          borderRadius: "50%",
+          border: "2px solid currentColor",
+          borderTopColor: "transparent",
+          animation: "infini-btn-spin 0.6s linear infinite",
+        }}
+      />
+      {children}
+      <style>{`@keyframes infini-btn-spin { to { transform: rotate(360deg) } }`}</style>
+    </>
+  ) : (
+    children
+  );
+
   switch (dispatch) {
     case "glitch":
       return (
         <GlitchButton
           onClick={onClick}
           href={href}
-          disabled={disabled}
+          htmlType={htmlType}
+          disabled={isDisabled}
           className={className}
           intensity={theme.motion.glitchIntensity != null && theme.motion.glitchIntensity >= 0.7 ? "heavy" : "medium"}
           {...overrides?.glitch}
         >
-          {children}
+          {content}
         </GlitchButton>
       );
 
@@ -49,12 +74,14 @@ export function InfiniButton({
           target={target}
           before={before}
           after={after}
-          disabled={disabled}
+          htmlType={htmlType}
+          disabled={isDisabled}
           className={className}
           raiseLevel={theme.button.raiseLevel}
+          hoverTilt={false}
           {...overrides?.depth}
         >
-          {children}
+          {content}
         </DepthButton>
       );
 
@@ -64,11 +91,12 @@ export function InfiniButton({
           onClick={onClick}
           before={before}
           after={after}
-          disabled={disabled}
+          htmlType={htmlType}
+          disabled={isDisabled}
           className={className}
           {...overrides?.shimmer}
         >
-          {children}
+          {content}
         </ShimmerButton>
       );
   }

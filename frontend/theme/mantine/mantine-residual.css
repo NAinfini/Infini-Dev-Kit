@@ -146,7 +146,7 @@
 [data-theme-id] .mantine-DatePickerInput-dropdown,
 [data-theme-id] .mantine-DatePicker-dropdown {
   background: var(--infini-color-surface, #ffffff);
-  border-color: var(--infini-border-color);
+  border-color: var(--infini-color-border);
   color: var(--infini-color-text, #111111);
 }
 
@@ -168,13 +168,25 @@
   color: var(--infini-color-bg, #ffffff);
 }
 
+/* ── Switch: suppress focus ring ──────────────────────────────────────── */
+[data-theme-id] .mantine-Switch-track:focus,
+[data-theme-id] .mantine-Switch-track:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+[data-theme-id] .mantine-Switch-input:focus-visible + .mantine-Switch-track {
+  outline: none;
+  box-shadow: none;
+}
+
 /* ── Focus-visible ring for keyboard accessibility ────────────────────
    All Infini interactive components use `outline: "none"` inline.
    This restores visible focus for keyboard navigation via :focus-visible. */
 [data-theme-id] button:focus-visible,
 [data-theme-id] [role="tab"]:focus-visible,
 [data-theme-id] [role="slider"]:focus-visible,
-[data-theme-id] input:focus-visible,
+[data-theme-id] input:focus-visible:not(.mantine-Switch-input),
 [data-theme-id] select:focus-visible,
 [data-theme-id] textarea:focus-visible,
 [data-theme-id] a:focus-visible {

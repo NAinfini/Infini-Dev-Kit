@@ -10,6 +10,7 @@ export const defaultTheme: ThemeSpec = {
   id: "default",
   name: "Default",
   description: "Production-neutral baseline theme.",
+  colorScheme: "light",
   palette: {
     primary: "#3B82F6",
     secondary: "#6366F1",
@@ -21,11 +22,10 @@ export const defaultTheme: ThemeSpec = {
     textMuted: "#5F6F86",
   },
   typography: createThemeTypography({
-    display: "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
+    heading: "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
     body: "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
     mono: "JetBrains Mono, Menlo, Monaco, monospace",
-    displayWeight: 600,
-    bodyWeight: 400,
+    weights: { bold: 600, normal: 400 },
   }),
   effects: createThemeEffects({
     glowColor: "#3B82F6",
@@ -115,3 +115,5 @@ export const defaultTheme: ThemeSpec = {
   }),
   signatures: ["neutral", "clean", "balanced"],
 };
+
+

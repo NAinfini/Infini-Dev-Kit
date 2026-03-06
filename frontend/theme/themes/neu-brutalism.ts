@@ -10,6 +10,7 @@ export const neuBrutalismTheme: ThemeSpec = {
   id: "neu-brutalism",
   name: "Neu-Brutalism",
   description: "Sticker-stack surfaces, hard shadows, and anti-polish color blocking.",
+  colorScheme: "light",
   palette: {
     primary: "#FF6B6B",
     secondary: "#E5B800",
@@ -21,11 +22,10 @@ export const neuBrutalismTheme: ThemeSpec = {
     textMuted: "#555555",
   },
   typography: createThemeTypography({
-    display: "Space Grotesk, Bebas Neue, Impact, sans-serif",
+    heading: "Space Grotesk, Bebas Neue, Impact, sans-serif",
     body: "Rubik, DM Sans, sans-serif",
     mono: "Space Mono, monospace",
-    displayWeight: 400,
-    bodyWeight: 600,
+    weights: { bold: 400, normal: 600 },
     en: {
       body: "'Rubik', 'DM Sans', sans-serif",
       heading: "'Space Grotesk', 'Bebas Neue', sans-serif",
@@ -140,3 +140,5 @@ export const neuBrutalismTheme: ThemeSpec = {
   }),
   signatures: ["hard-shadow", "sticker-slam", "halftone", "anti-corporate"],
 };
+
+
