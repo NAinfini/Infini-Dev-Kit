@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import type { CSSProperties } from "react";
+import { forwardRef, type CSSProperties } from "react";
 
 import type { CyberpunkCardProps } from "../../theme/motion-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -11,16 +11,18 @@ const CORNER_SIZE = 10;
  * Card with neon-glowing borders, animated scanlines, and clipped corners.
  * On hover the border glow intensifies and the card lifts slightly.
  */
-export function CyberpunkCard({
-  children,
-  neonColor,
-  scanlines = true,
-  cornerClips = true,
-  interactive = true,
-  onClick,
-  style,
-  className,
-}: CyberpunkCardProps) {
+export const CyberpunkCard = forwardRef<HTMLDivElement, CyberpunkCardProps>(
+  function CyberpunkCard({
+    children,
+    neonColor,
+    scanlines = true,
+    cornerClips = true,
+    interactive = true,
+    onClick,
+    style,
+    className,
+    ...rest
+  }, ref) {
   const { theme } = useThemeSnapshot();
   const motionAllowed = useMotionAllowed();
   const fullMotion = useFullMotion();
@@ -49,7 +51,7 @@ export function CyberpunkCard({
   };
 
   const cardInner = (
-    <div className={className} style={containerStyle} onClick={onClick}>
+    <div ref={ref} className={className} style={containerStyle} onClick={onClick} {...rest}>
       {/* Neon glow — pulsing border shadow */}
       <motion.span
         aria-hidden
@@ -183,4 +185,5 @@ export function CyberpunkCard({
       {cardInner}
     </motion.div>
   );
-}
+  },
+);

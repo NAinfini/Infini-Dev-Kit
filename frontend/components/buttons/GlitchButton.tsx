@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import clsx from "clsx";
+import { useMergedRef } from "@mantine/hooks";
 
 import { pickReadableTextColor } from "../../../utils/color";
 import type { GlitchButtonProps } from "../../theme/motion-types";
@@ -115,7 +117,7 @@ function buildShakeKeyframes(config: IntensityConfig, steps: number): Keyframe[]
 
 // ── Component ──
 
-export function GlitchButton({
+export const GlitchButton = forwardRef<HTMLButtonElement, GlitchButtonProps>(function GlitchButton({
   children,
   intensity = "medium",
   trigger = "hover",
@@ -126,8 +128,11 @@ export function GlitchButton({
   onClick,
   href,
   disabled,
+  loading,
   className,
-}: GlitchButtonProps) {
+  style,
+  ...rest
+}, ref) {
   const { theme } = useThemeSnapshot();
   const motionAllowed = useMotionAllowed();
   const fullMotion = useFullMotion();
@@ -136,6 +141,7 @@ export function GlitchButton({
 
   // Refs for Web Animations API targets
   const containerRef = useRef<HTMLElement | null>(null);
+  const mergedRef = useMergedRef(ref, containerRef as React.RefObject<HTMLButtonElement>);
   const cloneRefs = useRef<HTMLElement[]>([]);
   const activeAnimations = useRef<Animation[]>([]);
   const scanLineRef = useRef<HTMLSpanElement | null>(null);
@@ -143,7 +149,8 @@ export function GlitchButton({
   const config = INTENSITY[intensity];
   const bg = color ?? theme.button.backgroundActive;
   const textColor = pickReadableTextColor(bg);
-  const isDisabled = Boolean(disabled);
+  const isLoading = Boolean(loading);
+  const isDisabled = Boolean(disabled) || isLoading;
 
   // Frame count for stepped animation — more frames = smoother glitch
   const frameCount = config.sliceCount * 2;
@@ -238,10 +245,10 @@ export function GlitchButton({
     }
   }, [fullMotion, isDisabled, trigger, activateGlitch, stopAllAnimations]);
 
-  const handleClick = () => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (isDisabled) return;
     if (trigger === "click") activateGlitch();
-    onClick?.();
+    onClick?.(event);
   };
 
   // ── Clone layer colors (hue-rotated variants for chromatic aberration) ──
@@ -274,21 +281,47 @@ export function GlitchButton({
     outline: "none",
     overflow: "hidden",
     textDecoration: "none",
+    ...style,
   };
+
+  // ── Loading spinner ──
+
+  const loadingSpinner = isLoading ? (
+    <span
+      aria-hidden
+      style={{
+        width: 12,
+        height: 12,
+        borderRadius: "50%",
+        border: `2px solid color-mix(in srgb, ${textColor} 35%, transparent)`,
+        borderTopColor: textColor,
+        display: "inline-block",
+        animation: "spin 0.7s linear infinite",
+      }}
+    />
+  ) : null;
 
   // ── Non-motion fallback ──
 
   if (!motionAllowed) {
     if (href && !isDisabled) {
       return (
-        <a href={href} target="_blank" rel="noopener noreferrer" className={className} style={baseStyle}>
-          {children}
+        <a href={href} target="_blank" rel="noopener noreferrer" className={clsx(className)} style={baseStyle}>
+          {isLoading ? loadingSpinner : children}
         </a>
       );
     }
     return (
-      <button type={htmlType} className={className} onClick={handleClick} disabled={isDisabled} style={baseStyle}>
-        {children}
+      <button
+        ref={mergedRef as React.Ref<HTMLButtonElement>}
+        type={htmlType}
+        className={clsx(className)}
+        {...rest}
+        onClick={handleClick}
+        disabled={isDisabled}
+        style={baseStyle}
+      >
+        {isLoading ? loadingSpinner : children}
       </button>
     );
   }
@@ -314,11 +347,11 @@ export function GlitchButton({
           zIndex: config.cloneLayers + 1,
         }}
       >
-        {children}
+        {isLoading ? loadingSpinner : children}
       </span>
 
       {/* Clone layers for chromatic aberration + clip-path glitch */}
-      {chromatic &&
+      {chromatic && !isLoading &&
         cloneColors.map((cloneColor, i) => (
           <span
             key={i}
@@ -367,7 +400,7 @@ export function GlitchButton({
   );
 
   const commonMotionProps = {
-    className,
+    className: clsx(className),
     style: baseStyle,
     ...eventHandlers,
     onClick: handleClick,
@@ -380,7 +413,9 @@ export function GlitchButton({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
+        {...rest as any}
         {...commonMotionProps}
+        onClick={handleClick as any}
       >
         {innerContent}
       </a>
@@ -389,13 +424,13 @@ export function GlitchButton({
 
   return (
     <button
-      ref={containerRef as React.Ref<HTMLButtonElement>}
+      ref={mergedRef as React.Ref<HTMLButtonElement>}
       type={htmlType}
+      {...rest}
       {...commonMotionProps}
       disabled={isDisabled}
     >
       {innerContent}
     </button>
   );
-}
-
+});

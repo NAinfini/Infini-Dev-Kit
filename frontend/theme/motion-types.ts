@@ -1,5 +1,21 @@
 import type { TargetAndTransition, Transition, Variants } from "motion/react";
-import type { CSSProperties, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, ElementType, MouseEventHandler, ReactNode } from "react";
+
+/**
+ * Properties that conflict between React HTML attributes and Motion's event handlers.
+ * Must be omitted when component props extend HTML attributes and are spread onto motion.* elements.
+ */
+type MotionConflictingProps =
+  | "onDrag"
+  | "onDragStart"
+  | "onDragEnd"
+  | "onDragOver"
+  | "onAnimationStart"
+  | "onAnimationEnd"
+  | "onAnimationIteration";
+
+/** Motion-safe version of ComponentPropsWithoutRef that omits conflicting handlers */
+type MotionSafeProps<T extends ElementType> = Omit<ComponentPropsWithoutRef<T>, MotionConflictingProps>;
 
 export interface SpringProfile {
   stiffness: number;
@@ -21,21 +37,128 @@ export interface ThemeButtonVariants extends Variants {
   focus: TargetAndTransition;
 }
 
-export interface TiltCardProps {
+// ── Cards ──
+
+export interface TiltCardProps extends Omit<MotionSafeProps<"div">, "children"> {
   children: ReactNode;
   tiltDegree?: number;
   glowColor?: string;
   glowIntensity?: number;
   /** When false, disables tilt/hover motion effects (container-only card). Default: true */
   interactive?: boolean;
-  className?: string;
 }
 
-export interface ShimmerButtonProps {
+export type GlowCardVariant = "spotlight" | "laser" | "cosmic" | "glitch";
+
+export interface GlowCardProps extends Omit<MotionSafeProps<"div">, "children" | "onClick"> {
+  children: ReactNode;
+  /** Glow variant (default: "spotlight") */
+  variant?: GlowCardVariant;
+  /** Glow color (default: theme primary) */
+  glowColor?: string;
+  /** Glow intensity 0–1 (default: 0.6) */
+  glowIntensity?: number;
+  /** Glow radius in px (default: 200) */
+  glowRadius?: number;
+  /** Enable mouse-tracking glow (default: true) */
+  trackMouse?: boolean;
+  /** Laser spin speed in degrees per frame (default: 1.5). Lower = slower. */
+  spinSpeed?: number;
+  /** When false, disables hover/glow motion effects (container-only card). Default: true */
+  interactive?: boolean;
+  onClick?: MouseEventHandler<HTMLDivElement>;
+}
+
+export interface CyberpunkCardProps extends Omit<MotionSafeProps<"div">, "children" | "onClick"> {
+  children: ReactNode;
+  /** Neon border color (default: theme accent or cyan) */
+  neonColor?: string;
+  /** Enable animated scanlines (default: true) */
+  scanlines?: boolean;
+  /** Enable corner decorations (default: true) */
+  cornerClips?: boolean;
+  /** When false, disables hover scale motion effects (container-only card). Default: true */
+  interactive?: boolean;
+  onClick?: MouseEventHandler<HTMLDivElement>;
+}
+
+export interface NeuBrutalCardProps extends Omit<MotionSafeProps<"div">, "children" | "onClick"> {
+  children: ReactNode;
+  /** Shadow color (default: theme text/black) */
+  shadowColor?: string;
+  /** Border width in px (default: theme borderWidth or 4) */
+  borderWidth?: number;
+  /** Accent stripe color (default: theme primary) */
+  accentColor?: string;
+  /** When false, disables hover/tap motion effects (container-only card). Default: true */
+  interactive?: boolean;
+  onClick?: MouseEventHandler<HTMLDivElement>;
+}
+
+export interface ChibiCardProps extends Omit<MotionSafeProps<"div">, "children" | "onClick"> {
+  children: ReactNode;
+  /** Accent / glow color (default: theme primary — strawberry pink) */
+  glowColor?: string;
+  /** Custom shadow layers array (default: chibi cloud shadow) */
+  shadowLayers?: string[];
+  /** When false, disables hover/tap motion effects (container-only card). Default: true */
+  interactive?: boolean;
+  onClick?: MouseEventHandler<HTMLDivElement>;
+}
+
+export interface RevealCardProps extends Omit<MotionSafeProps<"div">, "children"> {
+  children: ReactNode;
+  /** Content revealed on hover */
+  revealContent: ReactNode;
+  /** Reveal direction (default: "up") */
+  direction?: "up" | "down" | "left" | "right";
+  /** Reveal duration in seconds (default: 0.35) */
+  duration?: number;
+}
+
+export interface LayeredCardProps extends Omit<MotionSafeProps<"div">, "children"> {
+  /** Layers from back to front — each is a ReactNode */
+  layers: ReactNode[];
+  /** Max tilt angle in degrees (default: 15) */
+  tiltDegree?: number;
+  /** Depth separation between layers in px (default: 30) */
+  layerDepth?: number;
+  /** Enable parallax on mouse move (default: true) */
+  parallax?: boolean;
+  /** Card width */
+  width?: number | string;
+  /** Card height */
+  height?: number | string;
+}
+
+export type FlipDirection = "horizontal" | "vertical";
+
+export interface FlipCardProps extends Omit<MotionSafeProps<"div">, "children" | "onClick"> {
+  /** Front face content */
+  front: ReactNode;
+  /** Back face content */
+  back: ReactNode;
+  /** Controlled flipped state */
+  flipped?: boolean;
+  /** Callback when flip state changes */
+  onFlipChange?: (flipped: boolean) => void;
+  /** Flip direction (default: "horizontal") */
+  direction?: FlipDirection;
+  /** CSS perspective value (default: 1000) */
+  perspective?: number;
+  /** Flip animation duration in seconds (default: 0.6) */
+  duration?: number;
+  /** Whether clicking toggles the flip (default: true) */
+  clickToFlip?: boolean;
+}
+
+// ── Buttons ──
+
+export interface ShimmerButtonProps extends Omit<MotionSafeProps<"button">, "children" | "onClick" | "type" | "disabled" | "color"> {
   children: ReactNode;
   shimmerColor?: string;
   shimmerDuration?: number;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
   onPress?: () => void | Promise<void>;
   /** HTML button type attribute (default: "button") */
   htmlType?: "button" | "submit" | "reset";
@@ -45,29 +168,11 @@ export interface ShimmerButtonProps {
   disabled?: boolean;
   before?: ReactNode;
   after?: ReactNode;
-  className?: string;
 }
-
-export interface PageTransitionProps {
-  children: ReactNode;
-  type?: "fade" | "slide" | "slide-x" | "scale";
-  duration?: number;
-  className?: string;
-}
-
-export interface GlowBorderProps {
-  children: ReactNode;
-  glowColor?: string;
-  glowIntensity?: number;
-  animated?: boolean;
-  className?: string;
-}
-
-// ── awesome-buttons inspired ──
 
 export type DepthButtonType = "primary" | "secondary" | "danger" | "success";
 
-export interface DepthButtonProps {
+export interface DepthButtonProps extends Omit<MotionSafeProps<"button">, "children" | "onClick" | "type" | "disabled" | "color"> {
   children: ReactNode;
   /** Semantic type variant (default: "primary") */
   type?: DepthButtonType;
@@ -79,7 +184,7 @@ export interface DepthButtonProps {
   color?: string;
   /** Shadow color override */
   shadowColor?: string;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
   /** Render as anchor link */
   href?: string;
   /** Link target (default: "_blank" when href is set) */
@@ -96,12 +201,11 @@ export interface DepthButtonProps {
   hoverPressure?: number;
   disabled?: boolean;
   size?: "sm" | "md" | "lg";
-  className?: string;
 }
 
 export type ProgressButtonPhase = "idle" | "loading" | "success" | "error";
 
-export interface ProgressButtonProps {
+export interface ProgressButtonProps extends Omit<MotionSafeProps<"button">, "children" | "type" | "disabled" | "color"> {
   children: ReactNode;
   /** Async callback — button tracks its promise lifecycle. Throw to trigger error state. Throw an Error with a message to use it as the error label. */
   onPress: () => Promise<void>;
@@ -118,63 +222,181 @@ export interface ProgressButtonProps {
   /** Programmatically trigger the press cycle (default: false) */
   fakePress?: boolean;
   disabled?: boolean;
-  className?: string;
+  /** Content before the label (e.g. icon) */
+  before?: ReactNode;
+  /** Content after the label (e.g. icon) */
+  after?: ReactNode;
 }
 
-// ── nyxui inspired ──
-
-export interface LiquidButtonProps {
+export interface LiquidButtonProps extends Omit<MotionSafeProps<"button">, "children" | "onClick" | "type" | "disabled" | "color"> {
   children: ReactNode;
   /** Primary liquid color (default: theme primary) */
   color?: string;
   /** Liquid viscosity — higher = slower morph (default: 1) */
   viscosity?: number;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
-  className?: string;
+  /** Content before the label (e.g. icon) */
+  before?: ReactNode;
+  /** Content after the label (e.g. icon) */
+  after?: ReactNode;
 }
 
-export interface MorphingBlobProps {
-  /** Number of blobs (default: 3) */
-  count?: number;
-  /** Blob colors — cycled if fewer than count */
-  colors?: string[];
-  /** Overall opacity (default: 0.35) */
-  opacity?: number;
-  /** Container className */
-  className?: string;
-  children?: ReactNode;
-}
-
-export interface CyberpunkCardProps {
+export interface GlitchButtonProps extends Omit<MotionSafeProps<"button">, "children" | "onClick" | "type" | "disabled" | "color"> {
   children: ReactNode;
-  /** Neon border color (default: theme accent or cyan) */
-  neonColor?: string;
-  /** Enable animated scanlines (default: true) */
-  scanlines?: boolean;
-  /** Enable corner decorations (default: true) */
-  cornerClips?: boolean;
-  /** When false, disables hover scale motion effects (container-only card). Default: true */
-  interactive?: boolean;
-  onClick?: () => void;
-  style?: CSSProperties;
-  className?: string;
-}
-
-export interface RippleBackgroundProps {
-  children: ReactNode;
-  /** Ripple color (default: theme primary) */
+  /** Glitch intensity (default: "medium") */
+  intensity?: "subtle" | "medium" | "heavy";
+  /** Glitch trigger (default: "hover") */
+  trigger?: "hover" | "click" | "always";
+  /** Button background color (default: theme primary) */
   color?: string;
-  /** Number of concurrent ripple rings (default: 3) */
-  rings?: number;
-  /** Cycle duration in seconds (default: 4) */
-  duration?: number;
-  className?: string;
+  /** Enable chromatic aberration split (default: true) */
+  chromatic?: boolean;
+  /** Enable text distortion (default: true) */
+  textDistort?: boolean;
+  /** HTML button type attribute (default: "button") */
+  htmlType?: "button" | "submit" | "reset";
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  href?: string;
+  disabled?: boolean;
+  /** Show loading state — disables button and shows spinner */
+  loading?: boolean;
 }
 
-// ── powerglitch inspired ──
+export type SocialPlatform = "github" | "discord" | "twitter" | "google" | "facebook" | "linkedin" | "pinterest" | "reddit" | "whatsapp" | "messenger" | "mail" | "instagram";
 
-export interface GlitchOverlayProps {
+export interface SocialSharePayload {
+  /** URL to share */
+  url?: string;
+  /** Message / description */
+  message?: string;
+  /** Image URL (for Pinterest) */
+  image?: string;
+}
+
+export interface SocialButtonProps extends Omit<MotionSafeProps<"button">, "children" | "onClick" | "type" | "disabled" | "color"> {
+  /** Social platform — determines icon and default color */
+  platform: SocialPlatform;
+  /** Button label (default: platform name) */
+  label?: string;
+  /** Custom href — opens in new tab */
+  href?: string;
+  /** Share payload — enables native share popup */
+  sharer?: SocialSharePayload;
+  /** Popup window dimensions */
+  popupDimensions?: { width: number; height: number };
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  /** Hide the icon (default: false) */
+  hideIcon?: boolean;
+  disabled?: boolean;
+  /** Show loading state */
+  loading?: boolean;
+}
+
+// ── Text (span root) ──
+
+export type AnimatedTextPreset = "fade" | "slide" | "typewriter" | "scramble";
+
+export interface AnimatedTextProps extends Omit<MotionSafeProps<"span">, "children"> {
+  /** Text content to animate */
+  children: string;
+  /** Animation preset (default: "fade") */
+  preset?: AnimatedTextPreset;
+  /** Duration per character / per cycle in seconds (default: preset-dependent) */
+  duration?: number;
+  /** Stagger delay between characters in seconds (default: 0.03) */
+  stagger?: number;
+  /** Trigger animation on mount (default: true) */
+  autoStart?: boolean;
+  /** Loop the animation (default: false) */
+  loop?: boolean;
+  /** Characters used for scramble preset (default: "!@#$%^&*") */
+  scrambleChars?: string;
+}
+
+export interface GradientTextProps extends Omit<MotionSafeProps<"span">, "children"> {
+  children: string;
+  /** Gradient color stops (default: theme-aware) */
+  colors?: string[];
+  /** Gradient angle in degrees (default: 90) */
+  angle?: number;
+  /** Animate the gradient position (default: true) */
+  animated?: boolean;
+  /** Animation cycle duration in seconds (default: 3) */
+  duration?: number;
+}
+
+export interface ShinyTextProps extends Omit<MotionSafeProps<"span">, "children"> {
+  children: string;
+  /** Shine color (default: white with opacity) */
+  shineColor?: string;
+  /** Shine width as percentage of text (default: 30) */
+  shineWidth?: number;
+  /** Animation duration in seconds (default: 3) */
+  duration?: number;
+  /** Shine angle in degrees (default: -45) */
+  angle?: number;
+  /** Enable animation (default: true) */
+  animated?: boolean;
+}
+
+// ── Layout ──
+
+export interface PageTransitionProps extends Omit<MotionSafeProps<"div">, "children"> {
+  children: ReactNode;
+  type?: "fade" | "slide" | "slide-x" | "scale";
+  duration?: number;
+}
+
+export interface GlassEffectProps extends Omit<MotionSafeProps<"div">, "children"> {
+  children: ReactNode;
+  /** Blur amount in px (default: 12) */
+  blur?: number;
+  /** Background opacity 0–1 (default: 0.15) */
+  opacity?: number;
+  /** Border opacity 0–1 (default: 0.2) */
+  borderOpacity?: number;
+  /** Tint color (default: theme surface) */
+  tint?: string;
+}
+
+export interface MarqueeProps extends Omit<MotionSafeProps<"div">, "children"> {
+  children: ReactNode;
+  /** Scroll speed in px/s (default: 40) */
+  speed?: number;
+  /** Direction of scroll (default: "left") */
+  direction?: "left" | "right" | "up" | "down";
+  /** Pause on hover (default: true) */
+  pauseOnHover?: boolean;
+  /** Gap between repeated items in px (default: 24) */
+  gap?: number;
+}
+
+// ── Effects ──
+
+export interface MagneticElementProps extends Omit<MotionSafeProps<"div">, "children"> {
+  children: ReactNode;
+  /** Max pull distance in px (default: 12) */
+  strength?: number;
+  /** Spring damping — higher = less bouncy (default: 20) */
+  damping?: number;
+  /** Spring stiffness (default: 150) */
+  stiffness?: number;
+  /** Only activate within this radius in px from center (default: Infinity) */
+  radius?: number;
+}
+
+export interface ScrollAnimationTriggerProps extends Omit<MotionSafeProps<"div">, "children"> {
+  children: ReactNode;
+  /** Keyframes to interpolate across the scroll range */
+  keyframes: Record<string, [start: number | string, end: number | string]>;
+  /** Viewport threshold where animation begins (0–1, default: 0) */
+  startOffset?: number;
+  /** Viewport threshold where animation ends (0–1, default: 1) */
+  endOffset?: number;
+}
+
+export interface GlitchOverlayProps extends Omit<MotionSafeProps<"div">, "children" | "display"> {
   children: ReactNode;
   /** Intensity of the glitch effect */
   intensity?: "subtle" | "medium" | "heavy";
@@ -206,7 +428,6 @@ export interface GlitchOverlayProps {
   apiRef?: import("react").MutableRefObject<GlitchOverlayAPI | null>;
   /** CSS display mode for the wrapper (default: "inline-block") */
   display?: CSSProperties["display"];
-  className?: string;
 }
 
 export interface GlitchOverlayAPI {
@@ -214,9 +435,7 @@ export interface GlitchOverlayAPI {
   stopGlitch: () => void;
 }
 
-// ── batch 2 ──
-
-export interface ImageComparisonProps {
+export interface ImageComparisonProps extends Omit<MotionSafeProps<"div">, "children"> {
   /** URL or element for the "before" side */
   before: ReactNode;
   /** URL or element for the "after" side */
@@ -229,298 +448,9 @@ export interface ImageComparisonProps {
   afterLabel?: string;
   /** Height of the comparison container */
   height?: number | string;
-  className?: string;
 }
 
-export interface AnimatedCodeBlockProps {
-  /** Code string to type out */
-  code: string;
-  /** Language label shown in the header (default: "code") */
-  language?: string;
-  /** Typing speed in characters per second (default: 40) */
-  speed?: number;
-  /** Whether to show a blinking cursor (default: true) */
-  cursor?: boolean;
-  /** Auto-start typing on mount (default: true) */
-  autoStart?: boolean;
-  /** Callback when typing completes */
-  onComplete?: () => void;
-  className?: string;
-}
-
-export interface ScrollAnimationTriggerProps {
-  children: ReactNode;
-  /** Keyframes to interpolate across the scroll range */
-  keyframes: Record<string, [start: number | string, end: number | string]>;
-  /** Viewport threshold where animation begins (0–1, default: 0) */
-  startOffset?: number;
-  /** Viewport threshold where animation ends (0–1, default: 1) */
-  endOffset?: number;
-  className?: string;
-}
-
-export type SocialPlatform = "github" | "discord" | "twitter" | "google" | "facebook" | "linkedin" | "pinterest" | "reddit" | "whatsapp" | "messenger" | "mail" | "instagram";
-
-export interface SocialSharePayload {
-  /** URL to share */
-  url?: string;
-  /** Message / description */
-  message?: string;
-  /** Image URL (for Pinterest) */
-  image?: string;
-}
-
-export interface SocialButtonProps {
-  /** Social platform — determines icon and default color */
-  platform: SocialPlatform;
-  /** Button label (default: platform name) */
-  label?: string;
-  /** Custom href — opens in new tab */
-  href?: string;
-  /** Share payload — enables native share popup */
-  sharer?: SocialSharePayload;
-  /** Popup window dimensions */
-  popupDimensions?: { width: number; height: number };
-  onClick?: () => void;
-  /** Hide the icon (default: false) */
-  hideIcon?: boolean;
-  disabled?: boolean;
-  className?: string;
-}
-
-export interface MarqueeProps {
-  children: ReactNode;
-  /** Scroll speed in px/s (default: 40) */
-  speed?: number;
-  /** Direction of scroll (default: "left") */
-  direction?: "left" | "right" | "up" | "down";
-  /** Pause on hover (default: true) */
-  pauseOnHover?: boolean;
-  /** Gap between repeated items in px (default: 24) */
-  gap?: number;
-  className?: string;
-}
-
-export interface GradientTextProps {
-  children: string;
-  /** Gradient color stops (default: theme-aware) */
-  colors?: string[];
-  /** Gradient angle in degrees (default: 90) */
-  angle?: number;
-  /** Animate the gradient position (default: true) */
-  animated?: boolean;
-  /** Animation cycle duration in seconds (default: 3) */
-  duration?: number;
-  className?: string;
-  style?: import("react").CSSProperties;
-}
-
-export interface MagneticElementProps {
-  children: ReactNode;
-  /** Max pull distance in px (default: 12) */
-  strength?: number;
-  /** Spring damping — higher = less bouncy (default: 20) */
-  damping?: number;
-  /** Spring stiffness (default: 150) */
-  stiffness?: number;
-  /** Only activate within this radius in px from center (default: Infinity) */
-  radius?: number;
-  className?: string;
-}
-
-// ── batch 3: new components ──
-
-export type AnimatedTextPreset = "fade" | "slide" | "typewriter" | "scramble";
-
-export interface AnimatedTextProps {
-  /** Text content to animate */
-  children: string;
-  /** Animation preset (default: "fade") */
-  preset?: AnimatedTextPreset;
-  /** Duration per character / per cycle in seconds (default: preset-dependent) */
-  duration?: number;
-  /** Stagger delay between characters in seconds (default: 0.03) */
-  stagger?: number;
-  /** Trigger animation on mount (default: true) */
-  autoStart?: boolean;
-  /** Loop the animation (default: false) */
-  loop?: boolean;
-  /** Characters used for scramble preset (default: "!@#$%^&*") */
-  scrambleChars?: string;
-  className?: string;
-  style?: import("react").CSSProperties;
-}
-
-export type GlowCardVariant = "spotlight" | "laser" | "cosmic" | "glitch";
-
-export interface GlowCardProps {
-  children: ReactNode;
-  /** Glow variant (default: "spotlight") */
-  variant?: GlowCardVariant;
-  /** Glow color (default: theme primary) */
-  glowColor?: string;
-  /** Glow intensity 0–1 (default: 0.6) */
-  glowIntensity?: number;
-  /** Glow radius in px (default: 200) */
-  glowRadius?: number;
-  /** Enable mouse-tracking glow (default: true) */
-  trackMouse?: boolean;
-  /** Laser spin speed in degrees per frame (default: 1.5). Lower = slower. */
-  spinSpeed?: number;
-  /** When false, disables hover/glow motion effects (container-only card). Default: true */
-  interactive?: boolean;
-  onClick?: () => void;
-  style?: CSSProperties;
-  className?: string;
-}
-
-export interface NeuBrutalCardProps {
-  children: ReactNode;
-  /** Shadow color (default: theme text/black) */
-  shadowColor?: string;
-  /** Border width in px (default: theme borderWidth or 4) */
-  borderWidth?: number;
-  /** Accent stripe color (default: theme primary) */
-  accentColor?: string;
-  /** When false, disables hover/tap motion effects (container-only card). Default: true */
-  interactive?: boolean;
-  onClick?: () => void;
-  style?: CSSProperties;
-  className?: string;
-}
-
-export interface ChibiCardProps {
-  children: ReactNode;
-  /** Accent / glow color (default: theme primary — strawberry pink) */
-  glowColor?: string;
-  /** Custom shadow layers array (default: chibi cloud shadow) */
-  shadowLayers?: string[];
-  /** When false, disables hover/tap motion effects (container-only card). Default: true */
-  interactive?: boolean;
-  onClick?: () => void;
-  style?: CSSProperties;
-  className?: string;
-}
-
-export interface RevealCardProps {
-  children: ReactNode;
-  /** Content revealed on hover */
-  revealContent: ReactNode;
-  /** Reveal direction (default: "up") */
-  direction?: "up" | "down" | "left" | "right";
-  /** Reveal duration in seconds (default: 0.35) */
-  duration?: number;
-  className?: string;
-}
-
-export interface LampHeadingProps {
-  children: ReactNode;
-  /** Lamp cone color (default: theme primary) */
-  lampColor?: string;
-  /** Cone width at the bottom in px (default: 400) */
-  coneWidth?: number;
-  /** Cone height in px (default: 200) */
-  coneHeight?: number;
-  /** Animate the lamp (default: true) */
-  animated?: boolean;
-  className?: string;
-}
-
-export interface GlassEffectProps {
-  children: ReactNode;
-  /** Blur amount in px (default: 12) */
-  blur?: number;
-  /** Background opacity 0–1 (default: 0.15) */
-  opacity?: number;
-  /** Border opacity 0–1 (default: 0.2) */
-  borderOpacity?: number;
-  /** Tint color (default: theme surface) */
-  tint?: string;
-  className?: string;
-}
-
-export interface MatrixCodeRainProps {
-  /** Canvas width (default: "100%") */
-  width?: number | string;
-  /** Canvas height (default: 300) */
-  height?: number | string;
-  /** Character color (default: theme primary / "#00ff41") */
-  color?: string;
-  /** Font size in px (default: 14) */
-  fontSize?: number;
-  /** Characters to rain (default: katakana + latin + digits) */
-  charset?: string;
-  /** Speed multiplier (default: 1) */
-  speed?: number;
-  /** Density 0–1 (default: 0.6) */
-  density?: number;
-  className?: string;
-}
-
-export interface TerminalCommand {
-  /** Command text to display */
-  command: string;
-  /** Output lines after the command */
-  output?: string[];
-  /** Delay before typing this command in ms (default: 500) */
-  delay?: number;
-}
-
-export interface TerminalProps {
-  /** Commands to type and display */
-  commands: TerminalCommand[];
-  /** Typing speed in characters per second (default: 30) */
-  speed?: number;
-  /** Prompt prefix (default: "$ ") */
-  prompt?: string;
-  /** Terminal title (default: "Terminal") */
-  title?: string;
-  /** Auto-start typing on mount (default: true) */
-  autoStart?: boolean;
-  /** Loop the sequence (default: false) */
-  loop?: boolean;
-  /** Callback when all commands are done */
-  onComplete?: () => void;
-  className?: string;
-}
-
-export interface BubbleBackgroundProps {
-  children?: ReactNode;
-  /** Number of bubbles (default: 20) */
-  count?: number;
-  /** Bubble colors — cycled (default: theme-aware) */
-  colors?: string[];
-  /** Min bubble size in px (default: 8) */
-  minSize?: number;
-  /** Max bubble size in px (default: 60) */
-  maxSize?: number;
-  /** Speed multiplier (default: 1) */
-  speed?: number;
-  /** Enable interactive repulsion on hover (default: true) */
-  interactive?: boolean;
-  className?: string;
-}
-
-export interface CustomCursorProps {
-  children: ReactNode;
-  /** Cursor size in px (default: 24) */
-  size?: number;
-  /** Cursor color (default: theme primary) */
-  color?: string;
-  /** Cursor shape (default: "circle") */
-  shape?: "circle" | "ring" | "dot";
-  /** Enable trail effect (default: false) */
-  trail?: boolean;
-  /** Trail length (default: 5) */
-  trailLength?: number;
-  /** Spring stiffness (default: 300) */
-  stiffness?: number;
-  /** Spring damping (default: 25) */
-  damping?: number;
-  className?: string;
-}
-
-export interface ImageScannerProps {
+export interface ImageScannerProps extends Omit<MotionSafeProps<"div">, "children"> {
   children: ReactNode;
   /** Scan line color (default: theme primary) */
   scanColor?: string;
@@ -536,48 +466,100 @@ export interface ImageScannerProps {
   lineWidth?: number;
   /** Glow spread around scan line in px (default: 20) */
   glowSpread?: number;
-  className?: string;
 }
 
-// ── batch 4: final nyxui components ──
-
-export interface GlitchButtonProps {
+export interface CustomCursorProps extends Omit<MotionSafeProps<"div">, "children"> {
   children: ReactNode;
-  /** Glitch intensity (default: "medium") */
-  intensity?: "subtle" | "medium" | "heavy";
-  /** Glitch trigger (default: "hover") */
-  trigger?: "hover" | "click" | "always";
-  /** Button background color (default: theme primary) */
+  /** Cursor size in px (default: 24) */
+  size?: number;
+  /** Cursor color (default: theme primary) */
   color?: string;
-  /** Enable chromatic aberration split (default: true) */
-  chromatic?: boolean;
-  /** Enable text distortion (default: true) */
-  textDistort?: boolean;
-  /** HTML button type attribute (default: "button") */
-  htmlType?: "button" | "submit" | "reset";
-  onClick?: () => void;
-  href?: string;
-  disabled?: boolean;
-  className?: string;
+  /** Cursor shape (default: "circle") */
+  shape?: "circle" | "ring" | "dot";
+  /** Enable trail effect (default: false) */
+  trail?: boolean;
+  /** Trail length (default: 5) */
+  trailLength?: number;
+  /** Spring stiffness (default: 300) */
+  stiffness?: number;
+  /** Spring damping (default: 25) */
+  damping?: number;
 }
 
-export interface LayeredCardProps {
-  /** Layers from back to front — each is a ReactNode */
-  layers: ReactNode[];
-  /** Max tilt angle in degrees (default: 15) */
-  tiltDegree?: number;
-  /** Depth separation between layers in px (default: 30) */
-  layerDepth?: number;
-  /** Enable parallax on mouse move (default: true) */
-  parallax?: boolean;
-  /** Card width */
-  width?: number | string;
-  /** Card height */
-  height?: number | string;
-  className?: string;
+export interface LampHeadingProps extends Omit<MotionSafeProps<"div">, "children"> {
+  children: ReactNode;
+  /** Lamp cone color (default: theme primary) */
+  lampColor?: string;
+  /** Cone width at the bottom in px (default: 400) */
+  coneWidth?: number;
+  /** Cone height in px (default: 200) */
+  coneHeight?: number;
+  /** Animate the lamp (default: true) */
+  animated?: boolean;
 }
 
-export interface GrainyBackgroundProps {
+// ── Borders ──
+
+export interface GlowBorderProps extends Omit<MotionSafeProps<"div">, "children"> {
+  children: ReactNode;
+  glowColor?: string;
+  glowIntensity?: number;
+  animated?: boolean;
+}
+
+export interface GradientBorderProps extends Omit<MotionSafeProps<"div">, "children"> {
+  children: ReactNode;
+  /** Gradient color stops (default: theme-aware) */
+  colors?: string[];
+  /** Border width in px (default: 2) */
+  borderWidth?: number;
+  /** Animation duration in seconds (default: 3) */
+  duration?: number;
+  /** Enable animation (default: true) */
+  animated?: boolean;
+  /** Border radius override (default: theme radius) */
+  radius?: number;
+}
+
+// ── Backgrounds ──
+
+export interface MorphingBlobProps extends Omit<MotionSafeProps<"div">, "children" | "color"> {
+  /** Number of blobs (default: 3) */
+  count?: number;
+  /** Blob colors — cycled if fewer than count */
+  colors?: string[];
+  /** Overall opacity (default: 0.35) */
+  opacity?: number;
+  children?: ReactNode;
+}
+
+export interface RippleBackgroundProps extends Omit<MotionSafeProps<"div">, "children" | "color"> {
+  children: ReactNode;
+  /** Ripple color (default: theme primary) */
+  color?: string;
+  /** Number of concurrent ripple rings (default: 3) */
+  rings?: number;
+  /** Cycle duration in seconds (default: 4) */
+  duration?: number;
+}
+
+export interface BubbleBackgroundProps extends Omit<MotionSafeProps<"div">, "children" | "color"> {
+  children?: ReactNode;
+  /** Number of bubbles (default: 20) */
+  count?: number;
+  /** Bubble colors — cycled (default: theme-aware) */
+  colors?: string[];
+  /** Min bubble size in px (default: 8) */
+  minSize?: number;
+  /** Max bubble size in px (default: 60) */
+  maxSize?: number;
+  /** Speed multiplier (default: 1) */
+  speed?: number;
+  /** Enable interactive repulsion on hover (default: true) */
+  interactive?: boolean;
+}
+
+export interface GrainyBackgroundProps extends Omit<MotionSafeProps<"div">, "children" | "color"> {
   children?: ReactNode;
   /** Base color (default: theme primary) */
   color?: string;
@@ -591,76 +573,28 @@ export interface GrainyBackgroundProps {
   animated?: boolean;
   /** Animation cycle duration in seconds (default: 8) */
   duration?: number;
-  className?: string;
 }
 
-// ── batch 5: tier 1 + tier 2 components ──
-
-export interface AnimatedTabItem {
-  /** Unique key for this tab */
-  key: string;
-  /** Tab label */
-  label: ReactNode;
-  /** Tab content */
-  content: ReactNode;
-  /** Disable this tab */
-  disabled?: boolean;
-}
-
-export interface AnimatedTabsProps {
-  /** Tab items */
-  items: AnimatedTabItem[];
-  /** Currently active tab key (controlled) */
-  activeKey?: string;
-  /** Default active tab key (uncontrolled) */
-  defaultActiveKey?: string;
-  /** Callback when tab changes */
-  onChange?: (key: string) => void;
-  /** Underline indicator color (default: theme primary) */
-  indicatorColor?: string;
-  /** Content transition type (default: "fade") */
-  contentTransition?: "fade" | "slide" | "none";
-  className?: string;
-}
-
-export interface NumberTickerProps {
-  /** Target number to animate to */
-  value: number;
-  /** Duration of the animation in seconds (default: 1.5) */
-  duration?: number;
-  /** Number of decimal places (default: 0) */
-  decimals?: number;
-  /** Prefix string (e.g. "$") */
-  prefix?: string;
-  /** Suffix string (e.g. "%") */
-  suffix?: string;
-  /** Direction of digit roll (default: "up") */
-  direction?: "up" | "down";
-  /** Trigger animation on scroll into view (default: true) */
-  triggerOnView?: boolean;
-  className?: string;
-  style?: import("react").CSSProperties;
-}
-
-export interface ShinyTextProps {
-  children: string;
-  /** Shine color (default: white with opacity) */
-  shineColor?: string;
-  /** Shine width as percentage of text (default: 30) */
-  shineWidth?: number;
-  /** Animation duration in seconds (default: 3) */
-  duration?: number;
-  /** Shine angle in degrees (default: -45) */
-  angle?: number;
-  /** Enable animation (default: true) */
-  animated?: boolean;
-  className?: string;
-  style?: import("react").CSSProperties;
+export interface MatrixCodeRainProps extends Omit<MotionSafeProps<"div">, "color"> {
+  /** Canvas width (default: "100%") */
+  width?: number | string;
+  /** Canvas height (default: 300) */
+  height?: number | string;
+  /** Character color (default: theme primary / "#00ff41") */
+  color?: string;
+  /** Font size in px (default: 14) */
+  fontSize?: number;
+  /** Characters to rain (default: katakana + latin + digits) */
+  charset?: string;
+  /** Speed multiplier (default: 1) */
+  speed?: number;
+  /** Density 0–1 (default: 0.6) */
+  density?: number;
 }
 
 export type ParticlePreset = "confetti" | "sparkle" | "rain" | "snow" | "firework";
 
-export interface ParticleEffectProps {
+export interface ParticleEffectProps extends Omit<MotionSafeProps<"div">, "color"> {
   /** Particle preset (default: "confetti") */
   preset?: ParticlePreset;
   /** Number of particles per burst (default: 30) */
@@ -679,44 +613,77 @@ export interface ParticleEffectProps {
   gravity?: number;
   /** Origin position as fraction 0–1 (default: { x: 0.5, y: 0.5 }) */
   origin?: { x: number; y: number };
-  className?: string;
 }
 
-export interface GradientBorderProps {
-  children: ReactNode;
-  /** Gradient color stops (default: theme-aware) */
-  colors?: string[];
-  /** Border width in px (default: 2) */
-  borderWidth?: number;
-  /** Animation duration in seconds (default: 3) */
-  duration?: number;
-  /** Enable animation (default: true) */
-  animated?: boolean;
-  /** Border radius override (default: theme radius) */
-  radius?: number;
-  className?: string;
+// ── Code ──
+
+export interface AnimatedCodeBlockProps extends Omit<MotionSafeProps<"div">, "children"> {
+  /** Code string to type out */
+  code: string;
+  /** Language label shown in the header (default: "code") */
+  language?: string;
+  /** Typing speed in characters per second (default: 40) */
+  speed?: number;
+  /** Whether to show a blinking cursor (default: true) */
+  cursor?: boolean;
+  /** Auto-start typing on mount (default: true) */
+  autoStart?: boolean;
+  /** Callback when typing completes */
+  onComplete?: () => void;
 }
 
-export type FlipDirection = "horizontal" | "vertical";
+export interface TerminalCommand {
+  /** Command text to display */
+  command: string;
+  /** Output lines after the command */
+  output?: string[];
+  /** Delay before typing this command in ms (default: 500) */
+  delay?: number;
+}
 
-export interface FlipCardProps {
-  /** Front face content */
-  front: ReactNode;
-  /** Back face content */
-  back: ReactNode;
-  /** Controlled flipped state */
-  flipped?: boolean;
-  /** Callback when flip state changes */
-  onFlipChange?: (flipped: boolean) => void;
-  /** Flip direction (default: "horizontal") */
-  direction?: FlipDirection;
-  /** CSS perspective value (default: 1000) */
-  perspective?: number;
-  /** Flip animation duration in seconds (default: 0.6) */
-  duration?: number;
-  /** Whether clicking toggles the flip (default: true) */
-  clickToFlip?: boolean;
-  className?: string;
+export interface TerminalProps extends Omit<MotionSafeProps<"div">, "children"> {
+  /** Commands to type and display */
+  commands: TerminalCommand[];
+  /** Typing speed in characters per second (default: 30) */
+  speed?: number;
+  /** Prompt prefix (default: "$ ") */
+  prompt?: string;
+  /** Terminal title (default: "Terminal") */
+  title?: string;
+  /** Auto-start typing on mount (default: true) */
+  autoStart?: boolean;
+  /** Loop the sequence (default: false) */
+  loop?: boolean;
+  /** Callback when all commands are done */
+  onComplete?: () => void;
+}
+
+// ── Navigation ──
+
+export interface AnimatedTabItem {
+  /** Unique key for this tab */
+  key: string;
+  /** Tab label */
+  label: ReactNode;
+  /** Tab content */
+  content: ReactNode;
+  /** Disable this tab */
+  disabled?: boolean;
+}
+
+export interface AnimatedTabsProps extends Omit<MotionSafeProps<"div">, "children" | "onChange"> {
+  /** Tab items */
+  items: AnimatedTabItem[];
+  /** Currently active tab key (controlled) */
+  activeKey?: string;
+  /** Default active tab key (uncontrolled) */
+  defaultActiveKey?: string;
+  /** Callback when tab changes */
+  onChange?: (key: string) => void;
+  /** Underline indicator color (default: theme primary) */
+  indicatorColor?: string;
+  /** Content transition type (default: "fade") */
+  contentTransition?: "fade" | "slide" | "none";
 }
 
 export interface SelectStepperItem {
@@ -725,7 +692,7 @@ export interface SelectStepperItem {
   disabled?: boolean;
 }
 
-export interface SelectStepperProps {
+export interface SelectStepperProps extends Omit<MotionSafeProps<"div">, "children" | "onChange" | "defaultValue"> {
   /** List of options to step through */
   items: SelectStepperItem[];
   /** Current value (controlled) */
@@ -748,7 +715,25 @@ export interface SelectStepperProps {
   rightIcon?: ReactNode;
   /** Render custom option content */
   renderOption?: (item: SelectStepperItem, active: boolean) => ReactNode;
-  className?: string;
+}
+
+// ── Data Display ──
+
+export interface NumberTickerProps extends Omit<MotionSafeProps<"span">, "children"> {
+  /** Target number to animate to */
+  value: number;
+  /** Duration of the animation in seconds (default: 1.5) */
+  duration?: number;
+  /** Number of decimal places (default: 0) */
+  decimals?: number;
+  /** Prefix string (e.g. "$") */
+  prefix?: string;
+  /** Suffix string (e.g. "%") */
+  suffix?: string;
+  /** Direction of digit roll (default: "up") */
+  direction?: "up" | "down";
+  /** Trigger animation on scroll into view (default: true) */
+  triggerOnView?: boolean;
 }
 
 export interface RingsProgressSection {
@@ -757,7 +742,7 @@ export interface RingsProgressSection {
   tooltip?: string;
 }
 
-export interface RingsProgressProps {
+export interface RingsProgressProps extends Omit<MotionSafeProps<"div">, "children"> {
   /** Ring sections, rendered as concentric rings */
   rings: RingsProgressSection[];
   /** Overall size in px (default: 120) */
@@ -776,5 +761,4 @@ export interface RingsProgressProps {
   animationDuration?: number;
   /** Root track color alpha 0–1 (default: 0.15) */
   trackAlpha?: number;
-  className?: string;
 }

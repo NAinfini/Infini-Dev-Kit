@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { createContext, useCallback, useContext, useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { createContext, forwardRef, useCallback, useContext, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 
 import type { FlipCardProps } from "../../theme/motion-types";
 import { useMotionAllowed } from "../../hooks/use-motion-allowed";
@@ -42,7 +42,8 @@ export function FlipTarget({ children }: { children: ReactNode }) {
  * Theme-aware and motion-gated. Inspired by @gfazioli/mantine-flip
  * but built on the Infini Dev Kit pattern (motion/react, theme tokens).
  */
-export function FlipCard({
+export const FlipCard = forwardRef<HTMLDivElement, FlipCardProps>(
+  function FlipCard({
   front,
   back,
   flipped: controlledFlipped,
@@ -52,7 +53,9 @@ export function FlipCard({
   duration = 0.6,
   clickToFlip = true,
   className,
-}: FlipCardProps) {
+  style,
+  ...rest
+}, ref) {
   const { theme } = useThemeSnapshot();
   const motionAllowed = useMotionAllowed();
 
@@ -75,6 +78,7 @@ export function FlipCard({
     perspective,
     width: "100%",
     height: "100%",
+    ...style,
   };
 
   const faceBase: CSSProperties = {
@@ -90,7 +94,9 @@ export function FlipCard({
     return (
       <FlipCtx.Provider value={ctx}>
         <div
+          ref={ref}
           className={className}
+          {...rest}
           style={containerStyle}
           onClick={clickToFlip ? toggle : undefined}
           role={clickToFlip ? "button" : undefined}
@@ -108,7 +114,9 @@ export function FlipCard({
   return (
     <FlipCtx.Provider value={ctx}>
       <div
+        ref={ref}
         className={className}
+        {...rest}
         style={containerStyle}
         onClick={clickToFlip ? toggle : undefined}
         role={clickToFlip ? "button" : undefined}
@@ -147,4 +155,5 @@ export function FlipCard({
       </div>
     </FlipCtx.Provider>
   );
-}
+  },
+);

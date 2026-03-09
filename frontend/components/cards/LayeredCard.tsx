@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { useState, type MouseEvent } from "react";
+import { forwardRef, useState, type MouseEvent } from "react";
 
 import type { LayeredCardProps } from "../../theme/motion-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -21,7 +21,8 @@ function clamp(v: number, min: number, max: number): number {
  * Distinct from TiltCard — this focuses on multi-layer separation
  * rather than single-surface tilt + glow.
  */
-export function LayeredCard({
+export const LayeredCard = forwardRef<HTMLDivElement, LayeredCardProps>(
+  function LayeredCard({
   layers,
   tiltDegree = 15,
   layerDepth = 30,
@@ -29,7 +30,9 @@ export function LayeredCard({
   width,
   height,
   className,
-}: LayeredCardProps) {
+  style,
+  ...rest
+}, ref) {
   const { theme } = useThemeSnapshot();
   const fullMotion = useFullMotion();
   const transition = useThemeTransition("hover");
@@ -60,7 +63,9 @@ export function LayeredCard({
   if (!tiltEnabled) {
     return (
       <div
+        ref={ref}
         className={className}
+        {...rest}
         style={{
           position: "relative",
           width,
@@ -69,6 +74,7 @@ export function LayeredCard({
           border: `${theme.foundation.borderWidth}px ${theme.foundation.borderStyle} ${theme.foundation.borderColor}`,
           background: theme.foundation.surface,
           overflow: "hidden",
+          ...style,
         }}
       >
         {layers.map((layer, i) => (
@@ -81,9 +87,10 @@ export function LayeredCard({
   }
 
   return (
-    <div style={{ perspective: 1200 }}>
+    <div ref={ref} style={{ perspective: 1200 }}>
       <motion.div
         className={className}
+        {...rest}
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
         animate={{
@@ -102,6 +109,7 @@ export function LayeredCard({
           background: theme.foundation.surface,
           overflow: "hidden",
           cursor: "default",
+          ...style,
         }}
       >
         {layers.map((layer, i) => {
@@ -152,4 +160,5 @@ export function LayeredCard({
       </motion.div>
     </div>
   );
-}
+  },
+);

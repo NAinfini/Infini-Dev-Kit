@@ -1,4 +1,6 @@
+import { forwardRef } from "react";
 import { motion } from "motion/react";
+import clsx from "clsx";
 
 import type { PageTransitionProps } from "../../theme/motion-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -76,36 +78,47 @@ function useTransitionConfig(type: TransitionType, durationMs: number) {
   };
 }
 
-export function PageTransition({
-  children,
-  type = "fade",
-  duration,
-  className,
-}: PageTransitionProps) {
-  const { theme } = useThemeSnapshot();
-  const motionAllowed = useMotionAllowed();
+export const PageTransition = forwardRef<HTMLDivElement, PageTransitionProps>(
+  function PageTransition({
+    children,
+    type = "fade",
+    duration,
+    className,
+    style,
+    ...rest
+  }, ref) {
+    const { theme } = useThemeSnapshot();
+    const motionAllowed = useMotionAllowed();
 
-  if (!motionAllowed) {
-    return <div className={className}>{children}</div>;
+    const states = getTransitionStates(type);
+    const config = useTransitionConfig(type, duration ?? theme.motion.enterMs);
+
+    if (!motionAllowed) {
+      return (
+        <div ref={ref} className={clsx(className)} style={style} {...rest}>
+          {children}
+        </div>
+      );
+    }
+
+    return (
+      <motion.div
+        ref={ref}
+        className={clsx(className)}
+        style={style}
+        initial={states.initial}
+        animate={{
+          ...states.animate,
+          transition: config.enter,
+        }}
+        exit={{
+          ...states.exit,
+          transition: config.exit,
+        }}
+        {...rest}
+      >
+        {children}
+      </motion.div>
+    );
   }
-
-  const states = getTransitionStates(type);
-  const config = useTransitionConfig(type, duration ?? theme.motion.enterMs);
-
-  return (
-    <motion.div
-      className={className}
-      initial={states.initial}
-      animate={{
-        ...states.animate,
-        transition: config.enter,
-      }}
-      exit={{
-        ...states.exit,
-        transition: config.exit,
-      }}
-    >
-      {children}
-    </motion.div>
-  );
-}
+);

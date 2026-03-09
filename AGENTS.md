@@ -53,7 +53,7 @@ pnpm install      # install dependencies
 | `frontend/theme/mantine/` | Mantine adapter: `composeMantineTheme()`, CSS variables, component tokens |
 | `frontend/theme/mantine/theme-effects/` | Per-theme CSS Modules (decorative effects) |
 | `frontend/theme/echarts/` | ECharts adapter: `buildEChartsTheme()` |
-| **frontend/components/** | **50 base components (flat) + `infini/` dispatch layer** |
+| **frontend/components/** | **74 base components (13 categories) + `infini/` dispatch layer** |
 | `frontend/components/index.ts` | Barrel export — alphabetically sorted |
 | `frontend/components/infini/` | Dispatch wrappers (`InfiniButton`, `InfiniCard`) + dispatch hooks |
 | `frontend/components/infini/index.ts` | Barrel export for Infini dispatch wrappers and hooks |
@@ -280,7 +280,7 @@ import type { ThemeId } from "../theme/theme-specs";
 - **No unused code** — `noUnusedLocals` and `noUnusedParameters` enforced
 - **No bundler config** — source-first, consumers bundle
 - **No `.js` output** — only `.ts`/`.tsx` source files
-- **No subdirectories inside `frontend/components/`** except `infini/` (auto-dispatch wrappers)
+- **No subdirectories inside `frontend/components/`** except the 13 category folders (`backgrounds/`, `borders/`, `buttons/`, `cards/`, `code/`, `controls/`, `data-display/`, `effects/`, `feedback/`, `layout/`, `navigation/`, `text/`) and `infini/` (auto-dispatch wrappers)
 - **No mock/fallback paths** — let errors surface explicitly
 - **No `@ts-ignore`** — fix the type, don't suppress it
 - **Components must have a non-animated fallback** — check `useMotionAllowed()`

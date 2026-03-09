@@ -1,60 +1,96 @@
-export type ToastStatus = "info" | "success" | "warning" | "error";
+export type ToastStatus = "success" | "error" | "warning" | "info";
 
-export interface ToastPayload {
+export type ToastPayload = {
   title: string;
-  description?: string;
   status: ToastStatus;
-}
+  description?: string;
+  duration?: number;
+};
 
-export type ConfirmIntent = "neutral" | "danger" | "warning";
+export type ToastResult = {
+  delivered: boolean;
+};
 
-export interface ConfirmPayload {
+export type ConfirmPayload = {
   title: string;
   description?: string;
-  intent: ConfirmIntent;
-}
+  intent?: "danger" | "warning" | "neutral";
+  confirmLabel?: string;
+  cancelLabel?: string;
+};
 
-export interface OverlayHandlers {
+export type PromptPayload = {
+  title: string;
+  description?: string;
+  placeholder?: string;
+  defaultValue?: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+};
+
+export type DrawerPayload = {
+  id: string;
+  position?: "left" | "right" | "top" | "bottom";
+  size?: string | number;
+  title?: string;
+};
+
+export type OverlayHandlers = {
   toast?: (payload: ToastPayload) => void;
-  confirm?: (payload: ConfirmPayload) => Promise<boolean> | boolean;
-}
+  confirm?: (payload: ConfirmPayload) => Promise<boolean>;
+  prompt?: (payload: PromptPayload) => Promise<string | null>;
+  drawer?: (payload: DrawerPayload) => Promise<void>;
+};
 
-export interface OverlayService {
-  register(handlers: OverlayHandlers): () => void;
-  toast(payload: ToastPayload): { delivered: boolean };
+export type OverlayService = {
+  toast(payload: ToastPayload): ToastResult;
   confirm(payload: ConfirmPayload): Promise<boolean>;
-}
+  prompt(payload: PromptPayload): Promise<string | null>;
+  drawer(payload: DrawerPayload): Promise<void>;
+  register(handlers: Partial<OverlayHandlers>): () => void;
+};
 
 export function createOverlayService(): OverlayService {
-  let handlers: OverlayHandlers | undefined;
+  let current: Partial<OverlayHandlers> = {};
 
   return {
-    register(nextHandlers) {
-      handlers = nextHandlers;
+    toast(payload) {
+      if (current.toast) {
+        current.toast(payload);
+        return { delivered: true };
+      }
+      return { delivered: false };
+    },
 
+    async confirm(payload) {
+      if (current.confirm) {
+        return current.confirm(payload);
+      }
+      return false;
+    },
+
+    async prompt(payload) {
+      if (current.prompt) {
+        return current.prompt(payload);
+      }
+      return null;
+    },
+
+    async drawer(payload) {
+      if (current.drawer) {
+        return current.drawer(payload);
+      }
+    },
+
+    register(handlers) {
+      current = { ...current, ...handlers };
       return () => {
-        if (handlers === nextHandlers) {
-          handlers = undefined;
+        for (const key of Object.keys(handlers) as (keyof OverlayHandlers)[]) {
+          if (current[key] === handlers[key]) {
+            delete current[key];
+          }
         }
       };
-    },
-    toast(payload) {
-      const toastHandler = handlers?.toast;
-      if (!toastHandler) {
-        return { delivered: false };
-      }
-
-      toastHandler(payload);
-      return { delivered: true };
-    },
-    async confirm(payload) {
-      const confirmHandler = handlers?.confirm;
-      if (!confirmHandler) {
-        return false;
-      }
-
-      const result = await confirmHandler(payload);
-      return result;
     },
   };
 }

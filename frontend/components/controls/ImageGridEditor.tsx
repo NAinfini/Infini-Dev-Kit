@@ -19,6 +19,8 @@ export interface ImageGridEditorItem {
   src?: string;
   /** Alt text */
   alt?: string;
+  /** Optional: the converted File object for upload */
+  file?: File;
 }
 
 export interface ImageGridEditorProps {
@@ -28,9 +30,8 @@ export interface ImageGridEditorProps {
   onReorder: (items: ImageGridEditorItem[]) => void;
   /** Called when the user clicks the delete button on an image */
   onDelete?: (item: ImageGridEditorItem) => void;
-  /** Called when the user selects files to upload.
-   *  The consumer is responsible for actual upload logic. */
-  onSelectFiles?: (files: File[]) => void;
+  /** Called when the user selects files to upload. */
+  onFilesSelected?: (files: File[]) => void;
   /** Max number of images allowed. Upload slot hidden when reached. */
   maxImages?: number;
   /** Size of each thumbnail cell in px (default: 80) */
@@ -45,6 +46,7 @@ export interface ImageGridEditorProps {
   uploadLabel?: ReactNode;
   /** Disable all interactions */
   disabled?: boolean;
+  className?: string;
   /** Style overrides on the outer container */
   style?: CSSProperties;
   /** Aria label for the grid */
@@ -149,7 +151,7 @@ function DraggableImageCell({
       }
     : undefined;
 
-  const hasUrl = item.src && /^https?:\/\//i.test(item.src);
+  const hasUrl = item.src && (/^(https?|blob):\/\//i.test(item.src) || item.src.startsWith("/"));
 
   return (
     <Reorder.Item
@@ -222,7 +224,7 @@ export const ImageGridEditor = forwardRef<HTMLDivElement, ImageGridEditorProps>(
       items,
       onReorder,
       onDelete,
-      onSelectFiles,
+      onFilesSelected,
       maxImages = 10,
       imageSize = 80,
       borderRadius = 8,
@@ -230,8 +232,10 @@ export const ImageGridEditor = forwardRef<HTMLDivElement, ImageGridEditorProps>(
       accept = "image/*",
       uploadLabel,
       disabled = false,
+      className,
       style: styleProp,
       "aria-label": ariaLabel,
+      ...rest
     },
     ref,
   ) {
@@ -241,21 +245,22 @@ export const ImageGridEditor = forwardRef<HTMLDivElement, ImageGridEditorProps>(
     const fileInputRef = useRef<HTMLInputElement>(null);
     const inputId = useId();
 
-    const canUpload = !disabled && items.length < maxImages && onSelectFiles;
+    const canUpload = !disabled && items.length < maxImages && onFilesSelected;
 
     const handleFileChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
         const fileList = e.target.files;
-        if (!fileList || fileList.length === 0 || !onSelectFiles) return;
+        if (!fileList || fileList.length === 0 || !onFilesSelected) return;
         const remaining = maxImages - items.length;
         const selected = Array.from(fileList).slice(0, Math.max(0, remaining));
+
         if (selected.length > 0) {
-          onSelectFiles(selected);
+          onFilesSelected(selected);
         }
-        // reset so re-selecting the same file triggers onChange
+
         e.target.value = "";
       },
-      [items.length, maxImages, onSelectFiles],
+      [items.length, maxImages, onFilesSelected],
     );
 
     const uploadSlotStyle: CSSProperties = {
@@ -284,7 +289,7 @@ export const ImageGridEditor = forwardRef<HTMLDivElement, ImageGridEditorProps>(
     };
 
     return (
-      <div ref={ref} style={containerStyle} aria-label={ariaLabel}>
+      <div ref={ref} className={className} style={containerStyle} aria-label={ariaLabel} {...rest}>
         <Reorder.Group
           axis="x"
           values={items}

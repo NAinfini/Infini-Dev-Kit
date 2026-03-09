@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
+import clsx from "clsx";
 
 import { pickReadableTextColor } from "../../../utils/color";
 import type { ProgressButtonPhase, ProgressButtonProps } from "../../theme/motion-types";
@@ -20,7 +21,7 @@ const PHASE_COLORS: Record<ProgressButtonPhase, (theme: ReturnType<typeof useThe
  * Enhanced with theme-aware colors, configurable indicator style,
  * smooth phase transitions using Motion, and fakePress for programmatic trigger.
  */
-export function ProgressButton({
+export const ProgressButton = forwardRef<HTMLButtonElement, ProgressButtonProps>(function ProgressButton({
   children,
   onPress,
   loadingLabel = "Processing\u2026",
@@ -30,8 +31,12 @@ export function ProgressButton({
   indicator = "bar",
   fakePress = false,
   disabled,
+  before,
+  after,
   className,
-}: ProgressButtonProps) {
+  style,
+  ...rest
+}, ref) {
   const { theme } = useThemeSnapshot();
   const motionAllowed = useMotionAllowed();
   const fullMotion = useFullMotion();
@@ -123,8 +128,10 @@ export function ProgressButton({
 
   return (
     <motion.button
+      ref={ref}
       type="button"
-      className={className}
+      className={clsx(className)}
+      {...rest}
       onClick={() => void handleClick()}
       disabled={isDisabled}
       whileHover={motionAllowed && !isDisabled ? { scale: theme.motion.hoverScale } : undefined}
@@ -144,6 +151,7 @@ export function ProgressButton({
         opacity: isDisabled && phase === "idle" ? 0.6 : 1,
         outline: "none",
         minWidth: 120,
+        ...style,
       }}
     >
       {/* Progress bar indicator */}
@@ -180,6 +188,7 @@ export function ProgressButton({
           exit={fullMotion ? { opacity: 0, y: -6 } : { opacity: 0 }}
           transition={{ duration: 0.15 }}
         >
+          {before}
           {/* Spinner for loading phase */}
           {phase === "loading" && indicator === "spinner" && (
             <motion.span
@@ -199,9 +208,9 @@ export function ProgressButton({
           {phase === "success" && <span aria-hidden>&#10003;</span>}
           {phase === "error" && <span aria-hidden>&#10007;</span>}
           <span>{label}</span>
+          {after}
         </motion.span>
       </AnimatePresence>
     </motion.button>
   );
-}
-
+});

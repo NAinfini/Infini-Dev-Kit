@@ -1,5 +1,7 @@
 import { motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
+import clsx from "clsx";
+import { useMergedRef } from "@mantine/hooks";
 
 import { pickReadableTextColor } from "../../../utils/color";
 import type { ShimmerButtonProps } from "../../theme/motion-types";
@@ -7,7 +9,7 @@ import { useThemeSnapshot } from "../../provider/InfiniProvider";
 import { useFullMotion, useMotionAllowed } from "../../hooks/use-motion-allowed";
 import { useThemeTransition } from "../../hooks/use-theme-transition";
 
-export function ShimmerButton({
+export const ShimmerButton = forwardRef<HTMLButtonElement, ShimmerButtonProps>(function ShimmerButton({
   children,
   shimmerColor,
   shimmerDuration,
@@ -21,12 +23,16 @@ export function ShimmerButton({
   before,
   after,
   className,
-}: ShimmerButtonProps) {
+  style,
+  ...rest
+}, ref) {
   const { theme } = useThemeSnapshot();
   const motionAllowed = useMotionAllowed();
   const fullMotion = useFullMotion();
   const transition = useThemeTransition("press");
   const releaseTimer = useRef<number | null>(null);
+  const internalRef = useRef<HTMLButtonElement>(null);
+  const mergedRef = useMergedRef(ref, internalRef);
   const [phase, setPhase] = useState<"idle" | "loading" | "success">("idle");
   const color = shimmerColor ?? theme.effects.hover.shimmerColor;
   const duration = Math.max(0.35, (shimmerDuration ?? theme.effects.hover.shimmerDuration) / 1000);
@@ -45,13 +51,13 @@ export function ShimmerButton({
     [],
   );
 
-  const handleClick = async () => {
+  const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     if (isDisabled) {
       return;
     }
 
     if (!onPress) {
-      onClick?.();
+      onClick?.(event);
       return;
     }
 
@@ -83,10 +89,12 @@ export function ShimmerButton({
 
   return (
     <motion.button
+      ref={mergedRef}
       type={htmlType}
-      className={className}
-      onClick={() => {
-        void handleClick();
+      className={clsx(className)}
+      {...rest}
+      onClick={(event) => {
+        void handleClick(event);
       }}
       disabled={isDisabled}
       whileHover={motionAllowed && !isDisabled ? { scale: theme.motion.hoverScale } : undefined}
@@ -106,6 +114,7 @@ export function ShimmerButton({
         cursor: isDisabled ? "not-allowed" : "pointer",
         opacity: isDisabled ? 0.82 : 1,
         boxShadow: `0 ${raiseLevel}px 0 color-mix(in srgb, ${buttonShadow} 88%, transparent)`,
+        ...style,
       }}
     >
       <motion.span
@@ -171,5 +180,4 @@ export function ShimmerButton({
       </span>
     </motion.button>
   );
-}
-
+});

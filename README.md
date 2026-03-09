@@ -8,7 +8,7 @@ Private monorepo TypeScript toolkit for building Infini ecosystem applications.
 
 | Package | Path | Purpose |
 |---------|------|---------|
-| `@infini-dev-kit/frontend` | `frontend/` | Theme system, 50 base components + 2 Infini dispatch wrappers, Mantine/ECharts adapters |
+| `@infini-dev-kit/frontend` | `frontend/` | Theme system, 74 base components + 2 Infini dispatch wrappers, Mantine/ECharts adapters |
 | `@infini-dev-kit/utils` | `utils/` | Color, storage, a11y, types (`Result<T,E>`, `Option<T>`), env |
 | `@infini-dev-kit/api-client` | `api-client/` | HTTP API client with retry, auth, RFC 7807 errors |
 | `@infini-dev-kit/bot-core` | `bot-core/` | Platform-agnostic bot framework |
@@ -45,7 +45,19 @@ infini-dev-kit/
 │   │   ├── mantine/          # Mantine theme adapter
 │   │   ├── echarts/          # ECharts theme adapter
 │   │   └── themes/           # 6 theme definitions
-│   ├── components/           # 50 base components (flat) + infini/ dispatch layer
+│   ├── components/           # 74 base components (categorized) + infini/ dispatch layer
+│   │   ├── buttons/          # 7 button variants
+│   │   ├── cards/            # 8 card variants
+│   │   ├── text/             # 4 text effects
+│   │   ├── data-display/     # 11 data display components
+│   │   ├── controls/         # 9 form controls
+│   │   ├── layout/           # 9 layout components
+│   │   ├── effects/          # 10 visual effects
+│   │   ├── backgrounds/      # 6 background effects
+│   │   ├── code/             # 2 code display components
+│   │   ├── borders/          # 2 border effects
+│   │   ├── navigation/       # 3 navigation components
+│   │   ├── feedback/         # 3 feedback components
 │   │   └── infini/           # dispatch wrappers + dispatch hooks
 │   ├── hooks/                # Motion hooks + variants/
 │   ├── provider/             # InfiniProvider, KitApp, ThemeToolbar
@@ -83,30 +95,38 @@ Theme-driven UI layer with Mantine integration.
 | Path | Purpose |
 |------|---------|
 | `frontend/theme` | Theme specs, controller, Mantine/ECharts adapters, motion contracts |
-| `frontend/components` | 60 base components + 2 Infini dispatch wrappers |
+| `frontend/components` | 74 base components + 2 Infini dispatch wrappers (all `forwardRef` + `{...rest}`) |
 | `frontend/hooks` | Motion hooks (useMotionAllowed, useThemeSpring, useThemeTransition) |
 | `frontend/provider` | InfiniProvider, KitApp, ThemeToolbar |
 | `frontend/overlays` | Toast/confirm overlay service |
 
-### Components (50 base + 2 wrappers)
+### Components (74 base + 2 wrappers)
 
-**Buttons:** MotionButton, DepthButton, ShimmerButton, LiquidButton, GlitchButton, ProgressButton, SocialButton
+All components use `forwardRef` + `{...rest}` spread + `style` merge + `className` merge via `clsx`. Props extend `MotionSafeProps<T>` (omits Motion-conflicting React handlers). Internal refs merged via `useMergedRef`.
 
-**Cards:** TiltCard, GlowCard, RevealCard, LayeredCard, CyberpunkCard, ChibiCard, NeuBrutalCard
+**Buttons (7):** MotionButton, DepthButton, ShimmerButton, LiquidButton, GlitchButton, ProgressButton, SocialButton
 
-**Text:** AnimatedText, GradientText, GlitchText, AnimatedCounter, NumberTicker, ShinyText
+**Cards (8):** TiltCard, GlowCard, RevealCard, LayeredCard, FlipCard, CyberpunkCard, ChibiCard, NeuBrutalCard
 
-**Inputs/Forms:** AnimatedTabs
+**Text (4):** AnimatedText, GradientText, GlitchText, ShinyText
 
-**Navigation:** MotionBreadcrumb, MotionStepper
+**Data Display (11):** NumberTicker, AnimatedCounter, ScrollProgress, RingsProgress, InfiniStatCard, InfiniTimeline, InfiniTable, InfiniDataGrid, InfiniCalendar, InfiniKanban, MediaGallery
 
-**Feedback:** MotionToast, Result
+**Controls (9):** DepthToggle, InfiniColorPicker, InfiniTagInput, InfiniDateRangePicker, InfiniForm, TipTapEditor, LayoutIndicator, AvailabilityGridEditor, ImageGridEditor
 
-**Backgrounds:** BubbleBackground, GrainyBackground, RippleBackground, MorphingBlob, MatrixCodeRain, ParticleEffect
+**Layout (9):** GlassEffect, Marquee, PageTransition, Parallax, StaggerList, InfiniAppShell, InfiniPageHeader, InfiniSplitView, InfiniResponsiveGrid
 
-**Layout/UX:** Marquee, Terminal, ScrollProgress, Parallax, PageTransition, ImageComparison, ImageScanner, AnimatedCodeBlock, StaggerList, RevealOnScroll, ScrollAnimationTrigger
+**Effects (10):** GlitchOverlay, RevealOnScroll, ScrollAnimationTrigger, CustomCursor, ImageComparison, ImageScanner, LampHeading, MagneticElement, InfiniConfetti, InfiniTransitionGroup
 
-**Effects:** GlitchOverlay, GlassEffect, GlowBorder, GradientBorder, LampHeading, LayoutIndicator, MagneticElement, CustomCursor
+**Backgrounds (6):** BubbleBackground, GrainyBackground, RippleBackground, MorphingBlob, MatrixCodeRain, ParticleEffect
+
+**Code (2):** AnimatedCodeBlock, Terminal
+
+**Borders (2):** GlowBorder, GradientBorder
+
+**Navigation (3):** AnimatedTabs, SelectStepper, CommandPalette
+
+**Feedback (3):** Result, InfiniSkeleton, ErrorBoundary
 
 **Infini dispatch wrappers** (`components/infini/`): `InfiniButton`, `InfiniCard` (theme-based delegate selection).
 

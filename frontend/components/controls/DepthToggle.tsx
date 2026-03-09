@@ -39,6 +39,7 @@ export interface DepthToggleProps {
   className?: string;
   /** Style overrides (merged after computed inline styles) */
   style?: CSSProperties;
+  title?: string;
   "aria-label"?: string;
 }
 
@@ -99,6 +100,7 @@ export const DepthToggle = forwardRef<HTMLButtonElement, DepthToggleProps>(funct
   before,
   after,
   "aria-label": ariaLabel,
+  ...rest
 }, ref) {
   const { theme } = useThemeSnapshot();
   const motionAllowed = useMotionAllowed();
@@ -229,6 +231,7 @@ export const DepthToggle = forwardRef<HTMLButtonElement, DepthToggleProps>(funct
         disabled={isDisabled}
         aria-pressed={pressed}
         aria-label={ariaLabel}
+        {...rest}
         style={{
           ...baseStyle,
           transform: pressed ? `translateY(${pressedY}px)` : "translateY(0)",
@@ -251,6 +254,7 @@ export const DepthToggle = forwardRef<HTMLButtonElement, DepthToggleProps>(funct
       disabled={isDisabled}
       aria-pressed={pressed}
       aria-label={ariaLabel}
+      {...rest}
       animate={{
         y: pressed ? pressedY : 0,
         boxShadow: pressed

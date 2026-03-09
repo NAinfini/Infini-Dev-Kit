@@ -23,19 +23,62 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `bot-core/` — platform-agnostic bot framework (extracted from `bots/core/`)
   - `bot-discord/` — Discord.js adapter (extracted from `bots/discord/`)
   - `bot-wechat/` — Wechaty adapter (extracted from `bots/wechat/`)
-- **50 motion components** (original 60 minus 12 removed reimplementations + 2 new cards):
-  - Buttons: MotionButton, DepthButton, ShimmerButton, LiquidButton, GlitchButton, ProgressButton, SocialButton
-  - Cards: TiltCard, GlowCard, RevealCard, LayeredCard, CyberpunkCard, ChibiCard, NeuBrutalCard
-  - Text: AnimatedText, GradientText, GlitchText, AnimatedCounter, NumberTicker, ShinyText
-  - Inputs/Forms: AnimatedTabs
-  - Navigation: MotionBreadcrumb, MotionStepper
-  - Feedback: MotionToast, Result
-  - Backgrounds: BubbleBackground, GrainyBackground, RippleBackground, MorphingBlob, MatrixCodeRain, ParticleEffect
-  - Layout: Marquee, Terminal, ScrollProgress, Parallax, PageTransition, ImageComparison, ImageScanner, AnimatedCodeBlock, StaggerList, RevealOnScroll, ScrollAnimationTrigger
-  - Effects: GlitchOverlay, GlassEffect, GlowBorder, GradientBorder, LampHeading, LayoutIndicator, MagneticElement, CustomCursor
+- **74 base components + 2 dispatch wrappers** across 13 categories:
+  - Buttons (7): MotionButton, DepthButton, ShimmerButton, LiquidButton, GlitchButton, ProgressButton, SocialButton
+  - Cards (8): TiltCard, GlowCard, RevealCard, LayeredCard, FlipCard, CyberpunkCard, ChibiCard, NeuBrutalCard
+  - Text (4): AnimatedText, GradientText, GlitchText, ShinyText
+  - Data Display (11): NumberTicker, AnimatedCounter, ScrollProgress, RingsProgress, InfiniStatCard, InfiniTimeline, InfiniTable, InfiniDataGrid, InfiniCalendar, InfiniKanban, MediaGallery
+  - Controls (9): DepthToggle, InfiniColorPicker, InfiniTagInput, InfiniDateRangePicker, InfiniForm, TipTapEditor, LayoutIndicator, AvailabilityGridEditor, ImageGridEditor
+  - Layout (9): GlassEffect, Marquee, PageTransition, Parallax, StaggerList, InfiniAppShell, InfiniPageHeader, InfiniSplitView, InfiniResponsiveGrid
+  - Effects (10): GlitchOverlay, RevealOnScroll, ScrollAnimationTrigger, CustomCursor, ImageComparison, ImageScanner, LampHeading, MagneticElement, InfiniConfetti, InfiniTransitionGroup
+  - Backgrounds (6): BubbleBackground, GrainyBackground, RippleBackground, MorphingBlob, MatrixCodeRain, ParticleEffect
+  - Code (2): AnimatedCodeBlock, Terminal
+  - Borders (2): GlowBorder, GradientBorder
+  - Navigation (3): AnimatedTabs, SelectStepper, CommandPalette
+  - Feedback (3): Result, InfiniSkeleton, ErrorBoundary
 - **Infini dispatch layer** — `InfiniButton`, `InfiniCard` auto-select delegate component based on active theme signals
 - **Keyboard focus-visible accessibility** — global `:focus-visible` ring via CSS for all interactive elements
 - **Theme-adaptive animation props** — extended 8 component interfaces with animation control props (entranceStyle, expandStyle, collapseStyle, etc.) with per-theme defaults
+
+### Added (Props Refactor)
+- **`forwardRef` on all components** — every exported component (except `ErrorBoundary` class component and `CommandPalette` modal portal) now accepts a forwarded `ref` via `React.forwardRef`
+- **`{...rest}` spread on all components** — consumers can now pass `id`, `data-*`, `aria-*`, `role`, `tabIndex`, `onKeyDown`, and any other HTML attribute directly
+- **`style` merge on all components** — consumer `style` prop is merged with computed styles (`{ ...computed, ...style }`) so inline overrides work
+- **`className` merge via `clsx`** — consumer `className` is merged with internal classes
+- **`MotionSafeProps<T>` type** — new helper type in `motion-types.ts` that omits Motion-conflicting React handlers (`onDrag`, `onDragStart`, `onDragEnd`, `onDragOver`, `onAnimationStart`, `onAnimationEnd`, `onAnimationIteration`) from `ComponentPropsWithoutRef<T>`
+- **Shared base types** in `shared-types.ts` — `DivProps`, `ButtonProps`, `SpanProps`, `CanvasProps`, `FormProps`, `AnchorProps` (all Motion-safe)
+- **Internal refs merged via `useMergedRef`** from `@mantine/hooks` — components with internal refs (e.g. `Parallax`, `MagneticElement`, `InfiniConfetti`) now correctly merge forwarded + internal refs
+- **`onClick` upgraded to `MouseEventHandler`** — all `onClick?: () => void` signatures replaced with `MouseEventHandler<HTMLElement>` for proper event access
+- **New component props:**
+  - `InfiniCard` — `padding` prop (eliminates wrapper div boilerplate)
+  - `InfiniButton` — `size` prop (`"sm" | "md" | "lg"`)
+  - `GlitchButton` — `loading` prop
+  - `LiquidButton` — `before` / `after` icon slots
+  - `ProgressButton` — `before` / `after` icon slots
+  - `SocialButton` — `loading` prop
+- **New components:**
+  - `InfiniForm` — generic forwardRef form wrapper with `.Field` and `.Submit` statics
+  - `ImageGridEditor` — grid-based image editor control
+  - `InfiniDataGrid` — generic data grid with sorting/pagination
+  - `InfiniCalendar` — theme-aware calendar control
+  - `InfiniKanban` — kanban board with drag support
+  - `MediaGallery` — media gallery with image/video/audio support
+  - `InfiniStatCard` — stat display card
+  - `InfiniTimeline` — timeline component
+  - `InfiniSkeleton` — skeleton loading placeholder
+  - `InfiniAppShell` — app shell layout wrapper
+  - `InfiniPageHeader` — page header with breadcrumbs
+  - `InfiniSplitView` — resizable split pane layout
+  - `InfiniResponsiveGrid` — responsive grid layout
+  - `InfiniColorPicker` — color picker control
+  - `InfiniTagInput` — tag input control
+  - `InfiniDateRangePicker` — date range picker
+  - `FlipCard` — 3D flip card
+  - `RingsProgress` — ring progress indicator
+  - `AvailabilityGridEditor` — availability grid editor
+  - `TipTapEditor` — TipTap rich text editor wrapper
+  - `SelectStepper` — step-by-step select wizard
+  - `CommandPalette` — Cmd+K command palette modal
 
 ### Changed
 - `frontend/package.json` exports updated to reflect new directory structure

@@ -1,6 +1,6 @@
 import { Button } from "@mantine/core";
 import { AnimatePresence, motion } from "motion/react";
-import { useRef, useState, type ButtonHTMLAttributes, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { forwardRef, useRef, useState, type ButtonHTMLAttributes, type CSSProperties, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 
 import type { ThemeId } from "../../theme/theme-specs";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -181,7 +181,7 @@ function ThemeLoadingIndicator({ themeId, color, animated }: ThemeLoadingIndicat
   );
 }
 
-export function MotionButton({
+export const MotionButton = forwardRef<HTMLButtonElement, MotionButtonProps>(function MotionButton({
   children,
   loading,
   disabled,
@@ -195,7 +195,7 @@ export function MotionButton({
   fullWidth,
   onClick,
   ...props
-}: MotionButtonProps) {
+}, ref) {
   const { state, theme } = useThemeSnapshot();
   const motionAllowed = useMotionAllowed();
   const fullMotion = useFullMotion();
@@ -261,6 +261,7 @@ export function MotionButton({
   if (!motionAllowed) {
     return (
       <Button
+        ref={ref}
         {...props}
         onClick={onClick}
         type={htmlType}
@@ -290,6 +291,7 @@ export function MotionButton({
       onPointerDown={spawnRipple}
     >
       <Button
+        ref={ref}
         {...props}
         onClick={onClick}
         type={htmlType}
@@ -368,4 +370,4 @@ export function MotionButton({
       </Button>
     </motion.div>
   );
-}
+});

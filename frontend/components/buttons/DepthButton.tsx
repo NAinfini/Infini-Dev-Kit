@@ -73,6 +73,8 @@ export const DepthButton = forwardRef<HTMLButtonElement, DepthButtonProps>(funct
   disabled,
   size = "md",
   className,
+  style,
+  ...rest
 }, ref) {
   const { theme } = useThemeSnapshot();
   const motionAllowed = useMotionAllowed();
@@ -162,6 +164,7 @@ export const DepthButton = forwardRef<HTMLButtonElement, DepthButtonProps>(funct
     outline: "none",
     overflow: "hidden",
     textDecoration: "none",
+    ...style,
   };
 
   const contentEl = (
@@ -212,7 +215,7 @@ export const DepthButton = forwardRef<HTMLButtonElement, DepthButtonProps>(funct
   if (href && !isDisabled) {
     if (!motionAllowed) {
       return (
-        <a ref={ref as any} href={href} target={target ?? "_blank"} rel="noopener noreferrer" className={className} style={{ ...baseStyle, boxShadow: `0 ${depth}px 0 color-mix(in srgb, ${shadow} 88%, transparent)` }}>
+        <a ref={ref as any} href={href} target={target ?? "_blank"} rel="noopener noreferrer" className={className} {...rest as any} style={{ ...baseStyle, boxShadow: `0 ${depth}px 0 color-mix(in srgb, ${shadow} 88%, transparent)` }}>
           {contentEl}
         </a>
       );
@@ -224,9 +227,10 @@ export const DepthButton = forwardRef<HTMLButtonElement, DepthButtonProps>(funct
         target={target ?? "_blank"}
         rel="noopener noreferrer"
         className={className}
-        onClick={handleRipple}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        onClick={handleRipple as any}
+        onMouseMove={handleMouseMove as any}
+        onMouseLeave={handleMouseLeave as any}
+        {...rest as any}
         whileHover={{ y: tiltSkew.liftY, skewY: tiltSkew.skew, boxShadow: `0 ${depth + 2}px 0 color-mix(in srgb, ${shadow} 88%, transparent)` }}
         whileTap={{ y: depth, skewY: 0, boxShadow: `0 0px 0 color-mix(in srgb, ${shadow} 88%, transparent)` }}
         transition={transition}
@@ -244,6 +248,7 @@ export const DepthButton = forwardRef<HTMLButtonElement, DepthButtonProps>(funct
         ref={ref}
         type={htmlType}
         className={className}
+        {...rest}
         onClick={isDisabled ? undefined : onClick}
         disabled={isDisabled}
         style={{ ...baseStyle, boxShadow: `0 ${depth}px 0 color-mix(in srgb, ${shadow} 88%, transparent)` }}
@@ -258,9 +263,10 @@ export const DepthButton = forwardRef<HTMLButtonElement, DepthButtonProps>(funct
       ref={ref}
       type={htmlType}
       className={className}
+      {...rest}
       onClick={(e) => {
         handleRipple(e);
-        if (!isDisabled) onClick?.();
+        if (!isDisabled) onClick?.(e);
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}

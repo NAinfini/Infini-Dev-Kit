@@ -1,4 +1,6 @@
 import { motion } from "motion/react";
+import { forwardRef } from "react";
+import clsx from "clsx";
 
 import type { SocialButtonProps, SocialPlatform, SocialSharePayload } from "../../theme/motion-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -91,7 +93,7 @@ const DEFAULT_POPUP = { width: 600, height: 400 };
  * Enhanced with 12 platforms, built-in share logic with popup windows,
  * and theme-aware borders + motion gating.
  */
-export function SocialButton({
+export const SocialButton = forwardRef<HTMLButtonElement, SocialButtonProps>(function SocialButton({
   platform,
   label,
   href,
@@ -100,15 +102,19 @@ export function SocialButton({
   onClick,
   hideIcon = false,
   disabled,
+  loading,
   className,
-}: SocialButtonProps) {
+  style,
+  ...rest
+}, ref) {
   const { theme } = useThemeSnapshot();
   const motionAllowed = useMotionAllowed();
   const transition = useThemeTransition("press");
 
   const config = PLATFORM_CONFIG[platform];
   const displayLabel = label ?? config.label;
-  const isDisabled = Boolean(disabled);
+  const isLoading = Boolean(loading);
+  const isDisabled = Boolean(disabled) || isLoading;
 
   const openSharePopup = () => {
     if (!sharer) return;
@@ -147,13 +153,29 @@ export function SocialButton({
     openSharePopup();
   };
 
-  const handleClick = () => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (isDisabled) return;
     if (sharer) {
       handleShare();
     }
-    onClick?.();
+    onClick?.(event);
   };
+
+  const spinner = (
+    <span
+      aria-hidden
+      style={{
+        width: 14,
+        height: 14,
+        borderRadius: "50%",
+        border: "2px solid rgba(255,255,255,0.35)",
+        borderTopColor: "#ffffff",
+        display: "inline-block",
+        flexShrink: 0,
+        animation: "spin 0.7s linear infinite",
+      }}
+    />
+  );
 
   const icon = !hideIcon ? (
     <svg viewBox="0 0 24 24" width={16} height={16} fill="currentColor" aria-hidden style={{ flexShrink: 0 }}>
@@ -161,7 +183,7 @@ export function SocialButton({
     </svg>
   ) : null;
 
-  const style = {
+  const computedStyle = {
     display: "inline-flex",
     alignItems: "center" as const,
     gap: 8,
@@ -179,9 +201,11 @@ export function SocialButton({
     outline: "none",
   };
 
+  const mergedStyle = { ...computedStyle, ...style };
+
   const content = (
     <>
-      {icon}
+      {isLoading ? spinner : icon}
       <span>{displayLabel}</span>
     </>
   );
@@ -190,18 +214,19 @@ export function SocialButton({
   if (href && !sharer && !isDisabled) {
     if (!motionAllowed) {
       return (
-        <a href={href} target="_blank" rel="noopener noreferrer" className={className} style={style}>
+        <a href={href} target="_blank" rel="noopener noreferrer" className={clsx(className)} style={mergedStyle}>
           {content}
         </a>
       );
     }
     return (
       <motion.a
+        ref={ref as any}
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className={className}
-        style={style}
+        className={clsx(className)}
+        style={mergedStyle}
         whileHover={{ scale: 1.04, boxShadow: `0 4px 16px color-mix(in srgb, ${config.color} 40%, transparent)` }}
         whileTap={{ scale: 0.97 }}
         transition={transition}
@@ -214,7 +239,15 @@ export function SocialButton({
   // Button mode
   if (!motionAllowed) {
     return (
-      <button type="button" onClick={handleClick} disabled={isDisabled} className={className} style={style}>
+      <button
+        ref={ref}
+        type="button"
+        className={clsx(className)}
+        {...rest}
+        onClick={handleClick}
+        disabled={isDisabled}
+        style={mergedStyle}
+      >
         {content}
       </button>
     );
@@ -222,11 +255,13 @@ export function SocialButton({
 
   return (
     <motion.button
+      ref={ref}
       type="button"
+      className={clsx(className)}
+      {...rest}
       onClick={handleClick}
       disabled={isDisabled}
-      className={className}
-      style={style}
+      style={mergedStyle}
       whileHover={!isDisabled ? { scale: 1.04, boxShadow: `0 4px 16px color-mix(in srgb, ${config.color} 40%, transparent)` } : undefined}
       whileTap={!isDisabled ? { scale: 0.97 } : undefined}
       transition={transition}
@@ -234,5 +269,4 @@ export function SocialButton({
       {content}
     </motion.button>
   );
-}
-
+});

@@ -1,4 +1,6 @@
 import { motion } from "motion/react";
+import { forwardRef } from "react";
+import clsx from "clsx";
 
 import type { ImageScannerProps } from "../../theme/motion-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -17,97 +19,103 @@ const SCAN_AXIS = {
  * A glowing line sweeps across the content in the specified direction,
  * creating a sci-fi scanning/analyzing effect.
  */
-export function ImageScanner({
-  children,
-  scanColor,
-  duration = 2,
-  direction = "down",
-  autoStart = true,
-  loop = true,
-  lineWidth = 2,
-  glowSpread = 20,
-  className,
-}: ImageScannerProps) {
-  const { theme } = useThemeSnapshot();
-  const fullMotion = useFullMotion();
+export const ImageScanner = forwardRef<HTMLDivElement, ImageScannerProps>(
+  function ImageScanner({
+    children,
+    scanColor,
+    duration = 2,
+    direction = "down",
+    autoStart = true,
+    loop = true,
+    lineWidth = 2,
+    glowSpread = 20,
+    className,
+    style,
+    ...rest
+  }, ref) {
+    const { theme } = useThemeSnapshot();
+    const fullMotion = useFullMotion();
 
-  const effectiveColor = scanColor ?? theme.palette.primary;
-  const axis = SCAN_AXIS[direction];
-  const isVertical = direction === "down" || direction === "up";
+    const effectiveColor = scanColor ?? theme.palette.primary;
+    const axis = SCAN_AXIS[direction];
+    const isVertical = direction === "down" || direction === "up";
 
-  if (!fullMotion) {
+    if (!fullMotion) {
+      return (
+        <div ref={ref} className={clsx(className)} style={{ position: "relative", overflow: "hidden", ...style }} {...rest}>
+          {children}
+        </div>
+      );
+    }
+
     return (
-      <div className={className} style={{ position: "relative", overflow: "hidden" }}>
+      <div
+        ref={ref}
+        className={clsx(className)}
+        style={{ position: "relative", overflow: "hidden", ...style }}
+        {...rest}
+      >
         {children}
+
+        {/* Scan line */}
+        {autoStart && (
+          <motion.div
+            aria-hidden
+            style={{
+              position: "absolute",
+              [axis.prop]: 0,
+              left: isVertical ? 0 : undefined,
+              top: !isVertical ? 0 : undefined,
+              [isVertical ? "width" : "height"]: "100%",
+              [isVertical ? "height" : "width"]: lineWidth,
+              background: effectiveColor,
+              boxShadow: `
+                0 0 ${glowSpread}px ${effectiveColor},
+                0 0 ${glowSpread * 2}px color-mix(in srgb, ${effectiveColor} 50%, transparent),
+                0 0 ${glowSpread * 3}px color-mix(in srgb, ${effectiveColor} 25%, transparent)
+              `,
+              pointerEvents: "none",
+              zIndex: 1,
+            }}
+            animate={{ [axis.prop]: [axis.from, axis.to] }}
+            transition={{
+              duration,
+              ease: "linear",
+              repeat: loop ? Number.POSITIVE_INFINITY : 0,
+              repeatDelay: 0.5,
+            }}
+          />
+        )}
+
+        {/* Scan reveal gradient — fades content behind the scan line */}
+        {autoStart && (
+          <motion.div
+            aria-hidden
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: isVertical
+                ? `linear-gradient(to ${direction}, color-mix(in srgb, ${effectiveColor} 6%, transparent) 0%, transparent 30%)`
+                : `linear-gradient(to ${direction}, color-mix(in srgb, ${effectiveColor} 6%, transparent) 0%, transparent 30%)`,
+              pointerEvents: "none",
+              zIndex: 0,
+              mixBlendMode: "screen",
+            }}
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{
+              duration: duration * 2,
+              repeat: loop ? Number.POSITIVE_INFINITY : 0,
+              ease: "easeInOut",
+            }}
+          />
+        )}
+
+        {/* Corner brackets for sci-fi framing */}
+        <ScanCorners color={effectiveColor} />
       </div>
     );
   }
-
-  return (
-    <div
-      className={className}
-      style={{ position: "relative", overflow: "hidden" }}
-    >
-      {children}
-
-      {/* Scan line */}
-      {autoStart && (
-        <motion.div
-          aria-hidden
-          style={{
-            position: "absolute",
-            [axis.prop]: 0,
-            left: isVertical ? 0 : undefined,
-            top: !isVertical ? 0 : undefined,
-            [isVertical ? "width" : "height"]: "100%",
-            [isVertical ? "height" : "width"]: lineWidth,
-            background: effectiveColor,
-            boxShadow: `
-              0 0 ${glowSpread}px ${effectiveColor},
-              0 0 ${glowSpread * 2}px color-mix(in srgb, ${effectiveColor} 50%, transparent),
-              0 0 ${glowSpread * 3}px color-mix(in srgb, ${effectiveColor} 25%, transparent)
-            `,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-          animate={{ [axis.prop]: [axis.from, axis.to] }}
-          transition={{
-            duration,
-            ease: "linear",
-            repeat: loop ? Number.POSITIVE_INFINITY : 0,
-            repeatDelay: 0.5,
-          }}
-        />
-      )}
-
-      {/* Scan reveal gradient — fades content behind the scan line */}
-      {autoStart && (
-        <motion.div
-          aria-hidden
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: isVertical
-              ? `linear-gradient(to ${direction}, color-mix(in srgb, ${effectiveColor} 6%, transparent) 0%, transparent 30%)`
-              : `linear-gradient(to ${direction}, color-mix(in srgb, ${effectiveColor} 6%, transparent) 0%, transparent 30%)`,
-            pointerEvents: "none",
-            zIndex: 0,
-            mixBlendMode: "screen",
-          }}
-          animate={{ opacity: [0.3, 0.6, 0.3] }}
-          transition={{
-            duration: duration * 2,
-            repeat: loop ? Number.POSITIVE_INFINITY : 0,
-            ease: "easeInOut",
-          }}
-        />
-      )}
-
-      {/* Corner brackets for sci-fi framing */}
-      <ScanCorners color={effectiveColor} />
-    </div>
-  );
-}
+);
 
 function ScanCorners({ color }: { color: string }) {
   const cornerStyle = {

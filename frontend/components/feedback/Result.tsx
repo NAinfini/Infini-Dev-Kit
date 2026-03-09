@@ -1,4 +1,5 @@
-import { type CSSProperties, type ReactNode } from "react";
+import { forwardRef, type CSSProperties, type ReactNode } from "react";
+import clsx from "clsx";
 
 export type ResultStatus = "success" | "error" | "warning" | "info" | "404" | "403" | "500";
 
@@ -8,6 +9,8 @@ export interface ResultProps {
   subTitle?: ReactNode;
   extra?: ReactNode;
   icon?: ReactNode;
+  className?: string;
+  style?: CSSProperties;
 }
 
 const STATUS_COLORS: Record<ResultStatus, string> = {
@@ -107,13 +110,20 @@ function DefaultIcon({ status }: { status: ResultStatus }) {
   );
 }
 
-export function Result({ status, title, subTitle, extra, icon }: ResultProps) {
-  return (
-    <div style={containerStyle}>
-      {icon != null ? icon : <DefaultIcon status={status} />}
-      <div style={titleStyle}>{title}</div>
-      {subTitle != null && <div style={subTitleStyle}>{subTitle}</div>}
-      {extra != null && <div style={extraStyle}>{extra}</div>}
-    </div>
-  );
-}
+export const Result = forwardRef<HTMLDivElement, ResultProps>(
+  function Result({ status, title, subTitle, extra, icon, className, style, ...rest }, ref) {
+    return (
+      <div
+        ref={ref}
+        className={clsx(className)}
+        style={{ ...containerStyle, ...style }}
+        {...rest}
+      >
+        {icon != null ? icon : <DefaultIcon status={status} />}
+        <div style={titleStyle}>{title}</div>
+        {subTitle != null && <div style={subTitleStyle}>{subTitle}</div>}
+        {extra != null && <div style={extraStyle}>{extra}</div>}
+      </div>
+    );
+  }
+);

@@ -1,5 +1,5 @@
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { AnimatedCodeBlockProps } from "../../theme/motion-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -11,15 +11,18 @@ import { useFullMotion, useMotionAllowed } from "../../hooks/use-motion-allowed"
  * Features a language header, monospace font from theme, blinking cursor,
  * and configurable typing speed. Falls back to static display when motion is off.
  */
-export function AnimatedCodeBlock({
-  code,
-  language = "code",
-  speed = 40,
-  cursor = true,
-  autoStart = true,
-  onComplete,
-  className,
-}: AnimatedCodeBlockProps) {
+export const AnimatedCodeBlock = forwardRef<HTMLDivElement, AnimatedCodeBlockProps>(
+  function AnimatedCodeBlock({
+    code,
+    language = "code",
+    speed = 40,
+    cursor = true,
+    autoStart = true,
+    onComplete,
+    className,
+    style,
+    ...rest
+  }, ref) {
   const { theme } = useThemeSnapshot();
   const motionAllowed = useMotionAllowed();
   const fullMotion = useFullMotion();
@@ -80,13 +83,16 @@ export function AnimatedCodeBlock({
 
   return (
     <div
+      ref={ref}
       className={className}
       style={{
         borderRadius: theme.foundation.radius,
         border: `${theme.foundation.borderWidth}px ${theme.foundation.borderStyle} ${theme.foundation.borderColor}`,
         overflow: "hidden",
         background: theme.foundation.surface,
+        ...style,
       }}
+      {...rest}
     >
       {/* Header bar */}
       <div
@@ -159,5 +165,5 @@ export function AnimatedCodeBlock({
       </pre>
     </div>
   );
-}
-
+  }
+);

@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { forwardRef } from "react";
 
 import type { ChibiCardProps } from "../../theme/motion-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -10,15 +11,17 @@ import { useThemeTransition } from "../../hooks/use-theme-transition";
  * Soft cloud shadows, large radius, gentle float-up on hover.
  * No 3D tilt — avoids clipping into neighboring cards.
  */
-export function ChibiCard({
-  children,
-  glowColor,
-  shadowLayers,
-  interactive = true,
-  onClick,
-  style,
-  className,
-}: ChibiCardProps) {
+export const ChibiCard = forwardRef<HTMLDivElement, ChibiCardProps>(
+  function ChibiCard({
+    children,
+    glowColor,
+    shadowLayers,
+    interactive = true,
+    onClick,
+    style,
+    className,
+    ...rest
+  }, ref) {
   const { theme } = useThemeSnapshot();
   const fullMotion = useFullMotion();
   const transition = useThemeTransition("hover");
@@ -56,7 +59,7 @@ export function ChibiCard({
 
   if (!fullMotion) {
     return (
-      <div className={className} style={baseStyle} onClick={onClick}>
+      <div ref={ref} className={className} style={baseStyle} onClick={onClick} {...rest}>
         <div style={{ position: "relative" }}>{children}</div>
       </div>
     );
@@ -64,8 +67,10 @@ export function ChibiCard({
 
   return (
     <motion.div
+      ref={ref}
       className={className}
       onClick={onClick}
+      {...rest}
       whileHover={interactive ? {
         y: -4,
         boxShadow: hoverShadow,
@@ -82,4 +87,5 @@ export function ChibiCard({
       <div style={{ position: "relative" }}>{children}</div>
     </motion.div>
   );
-}
+  },
+);

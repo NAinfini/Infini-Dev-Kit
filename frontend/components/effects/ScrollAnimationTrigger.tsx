@@ -1,5 +1,7 @@
 import { type MotionValue, motion, useScroll, useTransform } from "motion/react";
-import { useRef } from "react";
+import { forwardRef, useRef } from "react";
+import { useMergedRef } from "@mantine/hooks";
+import clsx from "clsx";
 
 import type { ScrollAnimationTriggerProps } from "../../theme/motion-types";
 import { useMotionAllowed } from "../../hooks/use-motion-allowed";
@@ -18,44 +20,50 @@ import { useMotionAllowed } from "../../hooks/use-motion-allowed";
  *     <Card>Content</Card>
  *   </ScrollAnimationTrigger>
  */
-export function ScrollAnimationTrigger({
-  children,
-  keyframes,
-  startOffset = 0,
-  endOffset = 1,
-  className,
-}: ScrollAnimationTriggerProps) {
-  const motionAllowed = useMotionAllowed();
-  const ref = useRef<HTMLDivElement>(null);
+export const ScrollAnimationTrigger = forwardRef<HTMLDivElement, ScrollAnimationTriggerProps>(
+  function ScrollAnimationTrigger({
+    children,
+    keyframes,
+    startOffset = 0,
+    endOffset = 1,
+    className,
+    style,
+    ...rest
+  }, ref) {
+    const motionAllowed = useMotionAllowed();
+    const innerRef = useRef<HTMLDivElement>(null);
+    const mergedRef = useMergedRef(innerRef, ref);
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: [`start ${1 - startOffset}`, `end ${1 - endOffset}`],
-  });
+    const { scrollYProgress } = useScroll({
+      target: innerRef,
+      offset: [`start ${1 - startOffset}`, `end ${1 - endOffset}`],
+    });
 
-  // Build a style object with useTransform for each keyframe property
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const animatedStyle: Record<string, MotionValue<any>> = {};
-  for (const [prop, [start, end]] of Object.entries(keyframes)) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    animatedStyle[prop] = useTransform(scrollYProgress, [0, 1], [start, end]);
-  }
+    // Build a style object with useTransform for each keyframe property
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const animatedStyle: Record<string, MotionValue<any>> = {};
+    for (const [prop, [start, end]] of Object.entries(keyframes)) {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      animatedStyle[prop] = useTransform(scrollYProgress, [0, 1], [start, end]);
+    }
 
-  if (!motionAllowed) {
+    if (!motionAllowed) {
+      return (
+        <div ref={mergedRef} className={clsx(className)} style={style} {...rest}>
+          {children}
+        </div>
+      );
+    }
+
     return (
-      <div ref={ref} className={className}>
+      <motion.div
+        ref={mergedRef}
+        className={clsx(className)}
+        style={{ ...animatedStyle, ...style }}
+        {...rest}
+      >
         {children}
-      </div>
+      </motion.div>
     );
   }
-
-  return (
-    <motion.div
-      ref={ref}
-      className={className}
-      style={animatedStyle}
-    >
-      {children}
-    </motion.div>
-  );
-}
+);

@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { useMemo, useState, type MouseEvent } from "react";
+import { forwardRef, useMemo, useState, type MouseEvent } from "react";
 
 import type { TiltCardProps } from "../../theme/motion-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -19,14 +19,18 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(value, max));
 }
 
-export function TiltCard({
-  children,
-  tiltDegree,
-  glowColor,
-  glowIntensity,
-  interactive = true,
-  className,
-}: TiltCardProps) {
+export const TiltCard = forwardRef<HTMLDivElement, TiltCardProps>(
+  function TiltCard({
+    children,
+    tiltDegree,
+    glowColor,
+    glowIntensity,
+    interactive = true,
+    className,
+    style,
+    onClick,
+    ...rest
+  }, ref) {
   const { theme } = useThemeSnapshot();
   const fullMotion = useFullMotion();
   const transition = useThemeTransition("hover");
@@ -70,7 +74,7 @@ export function TiltCard({
 
   if (!tiltEnabled) {
     return (
-      <div className={className} style={{ borderRadius: theme.foundation.radius, boxShadow: baseShadow }}>
+      <div ref={ref} className={className} onClick={onClick} {...rest} style={{ borderRadius: theme.foundation.radius, boxShadow: baseShadow, cursor: onClick ? "pointer" : undefined, ...style }}>
         {children}
       </div>
     );
@@ -79,9 +83,12 @@ export function TiltCard({
   return (
     <div style={{ perspective: 1000 }}>
     <motion.div
+      ref={ref}
       className={className}
+      onClick={onClick}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
+      {...rest}
       animate={{
         rotateX: tilt.rotateX,
         rotateY: tilt.rotateY,
@@ -94,6 +101,8 @@ export function TiltCard({
         borderRadius: theme.foundation.radius,
         boxShadow: baseShadow,
         border: `${theme.foundation.borderWidth}px ${theme.foundation.borderStyle} color-mix(in srgb, ${effectiveGlowColor} 35%, ${theme.foundation.borderColor})`,
+          cursor: onClick ? "pointer" : undefined,
+          ...style,
       }}
     >
       <motion.span
@@ -150,4 +159,5 @@ export function TiltCard({
     </motion.div>
     </div>
   );
-}
+  },
+);

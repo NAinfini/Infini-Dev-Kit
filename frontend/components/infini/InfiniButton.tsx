@@ -1,3 +1,5 @@
+import { forwardRef } from "react";
+
 import type { InfiniButtonProps } from "./dispatch-types";
 import { useButtonDispatch } from "./use-button-dispatch";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -12,7 +14,8 @@ import { ShimmerButton } from "../buttons/ShimmerButton";
  * Consumers write `<InfiniButton onClick={fn}>Submit</InfiniButton>` —
  * cyberpunk auto-glitches, neu-brutalism auto-depths, default auto-shimmers.
  */
-export function InfiniButton({
+export const InfiniButton = forwardRef<HTMLButtonElement, InfiniButtonProps>(
+  function InfiniButton({
   children,
   onClick,
   href,
@@ -22,9 +25,11 @@ export function InfiniButton({
   htmlType = "button",
   loading,
   disabled,
+  size,
   className,
   overrides,
-}: InfiniButtonProps) {
+  ...rest
+}, ref) {
   const dispatch = useButtonDispatch();
   const { theme } = useThemeSnapshot();
 
@@ -54,12 +59,15 @@ export function InfiniButton({
     case "glitch":
       return (
         <GlitchButton
+          ref={ref}
           onClick={onClick}
           href={href}
           htmlType={htmlType}
           disabled={isDisabled}
           className={className}
           intensity={theme.motion.glitchIntensity != null && theme.motion.glitchIntensity >= 0.7 ? "heavy" : "medium"}
+          loading={loading}
+          {...rest}
           {...overrides?.glitch}
         >
           {content}
@@ -69,6 +77,7 @@ export function InfiniButton({
     case "depth":
       return (
         <DepthButton
+          ref={ref}
           onClick={onClick}
           href={href}
           target={target}
@@ -79,6 +88,8 @@ export function InfiniButton({
           className={className}
           raiseLevel={theme.button.raiseLevel}
           hoverTilt={false}
+          size={size}
+          {...rest}
           {...overrides?.depth}
         >
           {content}
@@ -88,16 +99,19 @@ export function InfiniButton({
     case "shimmer":
       return (
         <ShimmerButton
+          ref={ref}
           onClick={onClick}
           before={before}
           after={after}
           htmlType={htmlType}
           disabled={isDisabled}
           className={className}
+          {...rest}
           {...overrides?.shimmer}
         >
           {content}
         </ShimmerButton>
       );
   }
-}
+  },
+);

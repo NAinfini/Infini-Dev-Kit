@@ -1,7 +1,11 @@
-export * from "./transition-utils";
-export * from "./use-animated-counter";
-export * from "./use-gesture-feedback";
-export * from "./use-motion-allowed";
-export * from "./use-theme-spring";
-export * from "./use-theme-transition";
-export * from "./variants";
+export { usePageTransition } from "./usePageTransition";
+export type { PageTransitionState, UsePageTransitionOptions } from "./usePageTransition";
+export { useInfiniParallax } from "./useInfiniParallax";
+export type { UseInfiniParallaxOptions } from "./useInfiniParallax";
+export { useA11yAnnouncer } from "./useA11yAnnouncer";
+export type { UseA11yAnnouncerReturn } from "./useA11yAnnouncer";
+export { useFocusTrap } from "./useFocusTrap";
+export type { UseFocusTrapOptions } from "./useFocusTrap";
+export { useThemeTransition } from "./use-theme-transition";
+export { getPageVariants } from "./variants/page-variants";
+export { staggerChild } from "./variants/stagger-child-variants";

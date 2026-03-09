@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
-import { useMemo, useState, type MouseEvent } from "react";
+import { forwardRef, useMemo, useState, type MouseEvent } from "react";
+import clsx from "clsx";
 
 import { pickReadableTextColor } from "../../../utils/color";
 import type { LiquidButtonProps } from "../../theme/motion-types";
@@ -13,14 +14,18 @@ import { useThemeTransition } from "../../hooks/use-theme-transition";
  * The border and background subtly warp using SVG filter turbulence,
  * enhanced with a flowing gradient highlight that follows the cursor.
  */
-export function LiquidButton({
+export const LiquidButton = forwardRef<HTMLButtonElement, LiquidButtonProps>(function LiquidButton({
   children,
   color,
   viscosity = 1,
   onClick,
   disabled,
+  before,
+  after,
   className,
-}: LiquidButtonProps) {
+  style,
+  ...rest
+}, ref) {
   const { theme } = useThemeSnapshot();
   const motionAllowed = useMotionAllowed();
   const fullMotion = useFullMotion();
@@ -54,8 +59,10 @@ export function LiquidButton({
   if (!motionAllowed) {
     return (
       <button
+        ref={ref}
         type="button"
-        className={className}
+        className={clsx(className)}
+        {...rest}
         onClick={isDisabled ? undefined : onClick}
         disabled={isDisabled}
         style={{
@@ -68,9 +75,14 @@ export function LiquidButton({
           padding: "0.55rem 1.2rem",
           cursor: isDisabled ? "not-allowed" : "pointer",
           opacity: isDisabled ? 0.6 : 1,
+          ...style,
         }}
       >
-        {children}
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          {before}
+          {children}
+          {after}
+        </span>
       </button>
     );
   }
@@ -94,8 +106,10 @@ export function LiquidButton({
       </svg>
 
       <motion.button
+        ref={ref}
         type="button"
-        className={className}
+        className={clsx(className)}
+        {...rest}
         onClick={isDisabled ? undefined : onClick}
         disabled={isDisabled}
         onMouseMove={handleMouseMove}
@@ -123,6 +137,7 @@ export function LiquidButton({
           cursor: isDisabled ? "not-allowed" : "pointer",
           opacity: isDisabled ? 0.6 : 1,
           outline: "none",
+          ...style,
         }}
       >
         {/* Flowing gradient highlight that follows cursor */}
@@ -159,10 +174,11 @@ export function LiquidButton({
           />
         )}
         <span style={{ position: "relative", zIndex: 1, display: "inline-flex", alignItems: "center", gap: 8 }}>
+          {before}
           {children}
+          {after}
         </span>
       </motion.button>
     </>
   );
-}
-
+});

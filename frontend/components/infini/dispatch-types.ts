@@ -1,4 +1,15 @@
-import type { ReactNode } from "react";
+import type { ComponentPropsWithoutRef, ElementType, MouseEventHandler, ReactNode } from "react";
+
+type MotionConflictingProps =
+  | "onDrag"
+  | "onDragStart"
+  | "onDragEnd"
+  | "onDragOver"
+  | "onAnimationStart"
+  | "onAnimationEnd"
+  | "onAnimationIteration";
+
+type MotionSafeProps<T extends ElementType> = Omit<ComponentPropsWithoutRef<T>, MotionConflictingProps>;
 
 import type {
   DepthButtonProps,
@@ -14,9 +25,9 @@ import type {
 
 export type ButtonDispatchKey = "glitch" | "depth" | "shimmer";
 
-export interface InfiniButtonProps {
+export interface InfiniButtonProps extends Omit<MotionSafeProps<"button">, "children" | "onClick" | "disabled" | "type"> {
   children: ReactNode;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
   href?: string;
   target?: string;
   before?: ReactNode;
@@ -26,7 +37,8 @@ export interface InfiniButtonProps {
   /** Show loading state — disables button and shows spinner */
   loading?: boolean;
   disabled?: boolean;
-  className?: string;
+  /** Button size — mapped to variant-specific size systems */
+  size?: "sm" | "md" | "lg";
   /** Variant-specific overrides — only the active variant's overrides are applied */
   overrides?: {
     depth?: Partial<Omit<DepthButtonProps, "children" | "onClick" | "disabled" | "className" | "href" | "target" | "before" | "after" | "htmlType">>;
@@ -39,13 +51,13 @@ export interface InfiniButtonProps {
 
 export type CardDispatchKey = "cyberpunk" | "chibi" | "glow" | "glow-laser" | "glow-cosmic" | "neu-brutal";
 
-export interface InfiniCardProps {
+export interface InfiniCardProps extends Omit<MotionSafeProps<"div">, "children" | "onClick"> {
   children: ReactNode;
-  className?: string;
-  onClick?: () => void;
-  style?: React.CSSProperties;
+  onClick?: MouseEventHandler<HTMLDivElement>;
   /** When false, disables hover/tap/glow motion effects (container-only card). Default: true */
   interactive?: boolean;
+  /** Inner content padding */
+  padding?: string | number;
   /** Variant-specific overrides — only the active variant's overrides are applied */
   overrides?: {
     chibi?: Partial<Omit<ChibiCardProps, "children" | "className">>;
@@ -54,4 +66,3 @@ export interface InfiniCardProps {
     neuBrutal?: Partial<Omit<NeuBrutalCardProps, "children" | "className">>;
   };
 }
-

@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { forwardRef } from "react";
 
 import type { NeuBrutalCardProps } from "../../theme/motion-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -10,16 +11,18 @@ import { useThemeTransition } from "../../hooks/use-theme-transition";
  * Shadow shifts down-right on hover and snaps back on press.
  * Zero border-radius, thick borders, sticker-stack feel.
  */
-export function NeuBrutalCard({
-  children,
-  shadowColor,
-  borderWidth,
-  accentColor,
-  interactive = true,
-  onClick,
-  style,
-  className,
-}: NeuBrutalCardProps) {
+export const NeuBrutalCard = forwardRef<HTMLDivElement, NeuBrutalCardProps>(
+  function NeuBrutalCard({
+    children,
+    shadowColor,
+    borderWidth,
+    accentColor,
+    interactive = true,
+    onClick,
+    style,
+    className,
+    ...rest
+  }, ref) {
   const { theme } = useThemeSnapshot();
   const fullMotion = useFullMotion();
   const transition = useThemeTransition("hover");
@@ -34,8 +37,10 @@ export function NeuBrutalCard({
   if (!fullMotion) {
     return (
       <div
+        ref={ref}
         className={className}
         onClick={onClick}
+        {...rest}
         style={{
           position: "relative",
           background: theme.foundation.surface,
@@ -65,8 +70,10 @@ export function NeuBrutalCard({
 
   return (
     <motion.div
+      ref={ref}
       className={className}
       onClick={onClick}
+      {...rest}
       whileHover={interactive ? {
         boxShadow: hoverShadow,
         y: -2,
@@ -105,4 +112,5 @@ export function NeuBrutalCard({
       <div style={{ position: "relative", paddingTop: border }}>{children}</div>
     </motion.div>
   );
-}
+  },
+);

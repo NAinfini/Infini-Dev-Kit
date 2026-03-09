@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
-import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type CSSProperties } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type CSSProperties } from "react";
+import clsx from "clsx";
 
 import type { GlitchOverlayProps } from "../../theme/motion-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -74,25 +75,28 @@ function generateLayerKeyframes(
  * clone layers, chromatic aberration, pulse echo, glitch time envelope,
  * and multiple trigger modes (hover, interval, always, click, manual).
  */
-export function GlitchOverlay({
-  children,
-  intensity = "medium",
-  trigger = "hover",
-  intervalMs = 5000,
-  layerCount = 6,
-  sliceCount = 8,
-  displacement,
-  chromatic = true,
-  shake = true,
-  pulse = false,
-  pulseScale = 1.4,
-  glitchTimeSpan,
-  cssFilters,
-  hideOverflow = false,
-  apiRef,
-  display = "inline-block",
-  className,
-}: GlitchOverlayProps) {
+export const GlitchOverlay = forwardRef<HTMLDivElement, GlitchOverlayProps>(
+  function GlitchOverlay({
+    children,
+    intensity = "medium",
+    trigger = "hover",
+    intervalMs = 5000,
+    layerCount = 6,
+    sliceCount = 8,
+    displacement,
+    chromatic = true,
+    shake = true,
+    pulse = false,
+    pulseScale = 1.4,
+    glitchTimeSpan,
+    cssFilters,
+    hideOverflow = false,
+    apiRef,
+    display = "inline-block",
+    className,
+    style,
+    ...rest
+  }, ref) {
   const { motion: motionState } = useThemeSnapshot();
   const motionAllowed = useMotionAllowed();
   const transition = useThemeTransition("hover");
@@ -192,7 +196,7 @@ export function GlitchOverlay({
   }, [isAnimated, trigger, activateBurst]);
 
   if (!isAnimated) {
-    return <div className={className}>{children}</div>;
+    return <div ref={ref} className={clsx(className)} style={style} {...rest}>{children}</div>;
   }
 
   // Hue offset per layer for chromatic spread
@@ -200,13 +204,16 @@ export function GlitchOverlay({
 
   return (
     <motion.div
-      className={className}
+      ref={ref}
+      className={clsx(className)}
       style={{
         position: "relative",
         display,
         isolation: "isolate",
         overflow: hideOverflow ? "hidden" : undefined,
+        ...style,
       } as CSSProperties}
+      {...rest}
       {...eventHandlers}
       animate={
         isEffectActive && shake
@@ -259,7 +266,8 @@ export function GlitchOverlay({
       )}
     </motion.div>
   );
-}
+  }
+);
 
 // ── Individual glitch clone layer ──
 

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 
 import type { RevealCardProps } from "../../theme/motion-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -18,13 +18,16 @@ const DIRECTION_MAP = {
  * The reveal overlay slides in from the specified direction, covering
  * the original content with new content.
  */
-export function RevealCard({
+export const RevealCard = forwardRef<HTMLDivElement, RevealCardProps>(
+  function RevealCard({
   children,
   revealContent,
   direction = "up",
   duration = 0.35,
   className,
-}: RevealCardProps) {
+  style,
+  ...rest
+}, ref) {
   const { theme } = useThemeSnapshot();
   const fullMotion = useFullMotion();
   const [isHovered, setIsHovered] = useState(false);
@@ -34,13 +37,16 @@ export function RevealCard({
   if (!fullMotion) {
     return (
       <div
+        ref={ref}
         className={className}
+        {...rest}
         style={{
           position: "relative",
           borderRadius: theme.foundation.radius,
           border: `${theme.foundation.borderWidth}px ${theme.foundation.borderStyle} ${theme.foundation.borderColor}`,
           background: theme.foundation.surface,
           overflow: "hidden",
+          ...style,
         }}
       >
         {children}
@@ -50,7 +56,9 @@ export function RevealCard({
 
   return (
     <div
+      ref={ref}
       className={className}
+      {...rest}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
@@ -60,6 +68,7 @@ export function RevealCard({
         background: theme.foundation.surface,
         overflow: "hidden",
         cursor: "pointer",
+        ...style,
       }}
     >
       {/* Base content */}
@@ -91,4 +100,5 @@ export function RevealCard({
       </AnimatePresence>
     </div>
   );
-}
+  },
+);

@@ -1,5 +1,7 @@
+import { forwardRef } from "react";
 import { motion } from "motion/react";
 import { useMemo } from "react";
+import clsx from "clsx";
 
 import type { MorphingBlobProps } from "../../theme/motion-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -17,99 +19,106 @@ const BLOB_PATHS = [
  * Renders soft gradient blobs that continuously morph shape and float,
  * creating a dynamic, organic background effect.
  */
-export function MorphingBlob({
-  count = 3,
-  colors,
-  opacity = 0.35,
-  className,
-  children,
-}: MorphingBlobProps) {
-  const { theme } = useThemeSnapshot();
-  const fullMotion = useFullMotion();
+export const MorphingBlob = forwardRef<HTMLDivElement, MorphingBlobProps>(
+  function MorphingBlob({
+    count = 3,
+    colors,
+    opacity = 0.35,
+    className,
+    style,
+    children,
+    ...rest
+  }, ref) {
+    const { theme } = useThemeSnapshot();
+    const fullMotion = useFullMotion();
 
-  const defaultColors = useMemo(
-    () => [theme.palette.primary, theme.palette.accent, theme.palette.secondary],
-    [theme.palette.primary, theme.palette.accent, theme.palette.secondary],
-  );
+    const defaultColors = useMemo(
+      () => [theme.palette.primary, theme.palette.accent, theme.palette.secondary],
+      [theme.palette.primary, theme.palette.accent, theme.palette.secondary],
+    );
 
-  const blobColors = colors ?? defaultColors;
+    const blobColors = colors ?? defaultColors;
 
-  const blobs = useMemo(() => {
-    return Array.from({ length: Math.max(1, Math.min(count, 6)) }, (_, i) => ({
-      id: i,
-      color: blobColors[i % blobColors.length],
-      path: BLOB_PATHS[i % BLOB_PATHS.length],
-      // Stagger positions so blobs don't stack exactly
-      x: 20 + (i * 25) % 60,
-      y: 15 + (i * 30) % 55,
-      scale: 0.8 + (i % 3) * 0.15,
-      duration: 8 + i * 2.5,
-    }));
-  }, [count, blobColors]);
+    const blobs = useMemo(() => {
+      return Array.from({ length: Math.max(1, Math.min(count, 6)) }, (_, i) => ({
+        id: i,
+        color: blobColors[i % blobColors.length],
+        path: BLOB_PATHS[i % BLOB_PATHS.length],
+        // Stagger positions so blobs don't stack exactly
+        x: 20 + (i * 25) % 60,
+        y: 15 + (i * 30) % 55,
+        scale: 0.8 + (i % 3) * 0.15,
+        duration: 8 + i * 2.5,
+      }));
+    }, [count, blobColors]);
 
-  return (
-    <div
-      className={className}
-      style={{
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      {/* Blob layer */}
+    return (
       <div
-        aria-hidden
+        ref={ref}
+        className={clsx(className)}
         style={{
-          position: "absolute",
-          inset: 0,
-          pointerEvents: "none",
-          opacity,
-          filter: "blur(40px)",
+          position: "relative",
+          overflow: "hidden",
+          ...style,
         }}
+        {...rest}
       >
-        {blobs.map((blob) => (
-          <motion.svg
-            key={blob.id}
-            viewBox="-100 -100 200 200"
-            style={{
-              position: "absolute",
-              left: `${blob.x}%`,
-              top: `${blob.y}%`,
-              width: `${blob.scale * 280}px`,
-              height: `${blob.scale * 280}px`,
-              transform: "translate(-50%, -50%)",
-            }}
-            animate={
-              fullMotion
-                ? {
-                    x: [0, 15, -10, 0],
-                    y: [0, -12, 8, 0],
-                    rotate: [0, 15, -10, 0],
-                    scale: [1, 1.08, 0.95, 1],
-                  }
-                : undefined
-            }
-            transition={
-              fullMotion
-                ? {
-                    duration: blob.duration,
-                    ease: "easeInOut",
-                    repeat: Number.POSITIVE_INFINITY,
-                    delay: blob.id * 1.2,
-                  }
-                : undefined
-            }
-          >
-            <path d={blob.path} fill={blob.color} />
-          </motion.svg>
-        ))}
-      </div>
-
-      {/* Content rendered above blobs */}
-      {children && (
-        <div style={{ position: "relative", zIndex: 1 }}>
-          {children}
+        {/* Blob layer */}
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            opacity,
+            filter: "blur(40px)",
+          }}
+        >
+          {blobs.map((blob) => (
+            <motion.svg
+              key={blob.id}
+              viewBox="-100 -100 200 200"
+              style={{
+                position: "absolute",
+                left: `${blob.x}%`,
+                top: `${blob.y}%`,
+                width: `${blob.scale * 280}px`,
+                height: `${blob.scale * 280}px`,
+                transform: "translate(-50%, -50%)",
+              }}
+              animate={
+                fullMotion
+                  ? {
+                      x: [0, 15, -10, 0],
+                      y: [0, -12, 8, 0],
+                      rotate: [0, 15, -10, 0],
+                      scale: [1, 1.08, 0.95, 1],
+                    }
+                  : undefined
+              }
+              transition={
+                fullMotion
+                  ? {
+                      duration: blob.duration,
+                      ease: "easeInOut",
+                      repeat: Number.POSITIVE_INFINITY,
+                      delay: blob.id * 1.2,
+                    }
+                  : undefined
+              }
+            >
+              <path d={blob.path} fill={blob.color} />
+            </motion.svg>
+          ))}
         </div>
-      )}
-    </div>
-  );
-}
+
+        {/* Content rendered above blobs */}
+        {children && (
+          <div style={{ position: "relative", zIndex: 1 }}>
+            {children}
+          </div>
+        )}
+      </div>
+    );
+  }
+);

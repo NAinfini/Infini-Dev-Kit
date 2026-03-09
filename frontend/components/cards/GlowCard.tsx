@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMergedRef } from "@mantine/hooks";
 
 import type { GlowCardProps, GlowCardVariant } from "../../theme/motion-types";
 import { useThemeSnapshot } from "../../provider/InfiniProvider";
@@ -32,48 +33,79 @@ const VELOCITY_DECAY = 0.997;
  * Inspired by nyxui's GlowCard. All variants are theme-aware
  * and respect the motion gating system.
  */
-export function GlowCard({
-  children,
-  variant = "spotlight",
-  glowColor,
-  glowIntensity = 0.6,
-  glowRadius = 200,
-  trackMouse = true,
-  spinSpeed = 1.5,
-  interactive = true,
-  onClick,
-  style,
-  className,
-}: GlowCardProps) {
-  const { theme } = useThemeSnapshot();
-  const fullMotion = useFullMotion();
-  const transition = useThemeTransition("hover");
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isHovered, setIsHovered] = useState(false);
+export const GlowCard = forwardRef<HTMLDivElement, GlowCardProps>(
+  function GlowCard({
+    children,
+    variant = "spotlight",
+    glowColor,
+    glowIntensity = 0.6,
+    glowRadius = 200,
+    trackMouse = true,
+    spinSpeed = 1.5,
+    interactive = true,
+    onClick,
+    style,
+    className,
+    ...rest
+  }, ref) {
+    const { theme } = useThemeSnapshot();
+    const fullMotion = useFullMotion();
+    const transition = useThemeTransition("hover");
+    const internalRef = useRef<HTMLDivElement>(null);
+    const mergedRef = useMergedRef(ref, internalRef);
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const [isHovered, setIsHovered] = useState(false);
 
-  const effectiveGlowColor = glowColor ?? theme.palette.primary;
+    const effectiveGlowColor = glowColor ?? theme.palette.primary;
 
-  const onMouseMove = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      if (!trackMouse || !fullMotion) return;
-      const rect = event.currentTarget.getBoundingClientRect();
-      setMousePos({
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top,
-      });
-    },
-    [trackMouse, fullMotion],
-  );
+    const onMouseMove = useCallback(
+      (event: React.MouseEvent<HTMLDivElement>) => {
+        if (!trackMouse || !fullMotion) return;
+        const rect = event.currentTarget.getBoundingClientRect();
+        setMousePos({
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top,
+        });
+      },
+      [trackMouse, fullMotion],
+    );
 
-  const onMouseEnter = useCallback(() => setIsHovered(true), []);
-  const onMouseLeave = useCallback(() => setIsHovered(false), []);
+    const onMouseEnter = useCallback(() => setIsHovered(true), []);
+    const onMouseLeave = useCallback(() => setIsHovered(false), []);
 
-  if (!fullMotion) {
+    if (!fullMotion) {
+      return (
+        <div
+          ref={mergedRef}
+          className={className}
+          onClick={onClick}
+          {...rest}
+          style={{
+            position: "relative",
+            borderRadius: theme.foundation.radius,
+            border: `${theme.foundation.borderWidth}px ${theme.foundation.borderStyle} ${theme.foundation.borderColor}`,
+            background: theme.foundation.surface,
+            overflow: "hidden",
+            cursor: onClick ? "pointer" : undefined,
+            ...style,
+          }}
+        >
+          {children}
+        </div>
+      );
+    }
+
     return (
-      <div
+      <motion.div
+        ref={mergedRef}
         className={className}
         onClick={onClick}
+        onMouseMove={interactive ? onMouseMove : undefined}
+        onMouseEnter={interactive ? onMouseEnter : undefined}
+        onMouseLeave={interactive ? onMouseLeave : undefined}
+        {...rest}
+        whileHover={interactive ? { scale: 1.01 } : undefined}
+        transition={transition}
         style={{
           position: "relative",
           borderRadius: theme.foundation.radius,
@@ -84,64 +116,40 @@ export function GlowCard({
           ...style,
         }}
       >
-        {children}
-      </div>
+        {/* Variant-specific glow layer */}
+        <GlowVariantLayer
+          variant={variant}
+          isHovered={isHovered}
+          mousePos={mousePos}
+          glowColor={effectiveGlowColor}
+          glowIntensity={glowIntensity}
+          glowRadius={glowRadius}
+          radius={theme.foundation.radius}
+          spinSpeed={spinSpeed}
+        />
+        {/* Border glow overlay */}
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: -1,
+            borderRadius: theme.foundation.radius,
+            pointerEvents: "none",
+            boxShadow: isHovered
+              ? `inset 0 0 0 1px color-mix(in srgb, ${effectiveGlowColor} ${Math.round(glowIntensity * 50)}%, transparent)`
+              : "none",
+            transition: "box-shadow 0.3s ease",
+            zIndex: 1,
+          }}
+        />
+        {/* Content */}
+        <div style={{ position: "relative", zIndex: 2 }}>
+          {children}
+        </div>
+      </motion.div>
     );
-  }
-
-  return (
-    <motion.div
-      ref={cardRef}
-      className={className}
-      onClick={onClick}
-      onMouseMove={interactive ? onMouseMove : undefined}
-      onMouseEnter={interactive ? onMouseEnter : undefined}
-      onMouseLeave={interactive ? onMouseLeave : undefined}
-      whileHover={interactive ? { scale: 1.01 } : undefined}
-      transition={transition}
-      style={{
-        position: "relative",
-        borderRadius: theme.foundation.radius,
-        border: `${theme.foundation.borderWidth}px ${theme.foundation.borderStyle} ${theme.foundation.borderColor}`,
-        background: theme.foundation.surface,
-        overflow: "hidden",
-        cursor: onClick ? "pointer" : undefined,
-        ...style,
-      }}
-    >
-      {/* Variant-specific glow layer */}
-      <GlowVariantLayer
-        variant={variant}
-        isHovered={isHovered}
-        mousePos={mousePos}
-        glowColor={effectiveGlowColor}
-        glowIntensity={glowIntensity}
-        glowRadius={glowRadius}
-        radius={theme.foundation.radius}
-        spinSpeed={spinSpeed}
-      />
-      {/* Border glow overlay */}
-      <span
-        aria-hidden
-        style={{
-          position: "absolute",
-          inset: -1,
-          borderRadius: theme.foundation.radius,
-          pointerEvents: "none",
-          boxShadow: isHovered
-            ? `inset 0 0 0 1px color-mix(in srgb, ${effectiveGlowColor} ${Math.round(glowIntensity * 50)}%, transparent)`
-            : "none",
-          transition: "box-shadow 0.3s ease",
-          zIndex: 1,
-        }}
-      />
-      {/* Content */}
-      <div style={{ position: "relative", zIndex: 2 }}>
-        {children}
-      </div>
-    </motion.div>
-  );
-}
+  },
+);
 
 // ── Variant-specific rendering ──
 
