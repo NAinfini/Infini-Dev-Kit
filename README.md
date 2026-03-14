@@ -1,274 +1,163 @@
 # Infini Dev Kit
 
-Private pnpm workspace monorepo — TypeScript toolkit for building Infini ecosystem applications.
+**中文（默认）** | [English](./README_en.md)
 
-> **AI agents:** Read [`AGENTS.md`](./AGENTS.md) first — it has a machine-readable file index, import patterns, and modification guides.
+Infini 体系内部使用的私有 pnpm 工作区 monorepo，提供主题内核、React 组件、框架适配层、API 客户端、机器人基础能力与通用工具。
 
-## Quick Start
+默认文档语言：中文。
 
-### Installation
+> AI 代理先读 [`AGENTS.md`](./AGENTS.md)。
+
+## 预览
+
+当前 README 使用来自 `Infini-Demo` 的最新中文界面截图：
+
+| 主题实验室 · Default | 主题实验室 · Cyberpunk | API 实验室 |
+| --- | --- | --- |
+| ![主题实验室 Default](./docs/images/theme-lab-default-zh.png) | ![主题实验室 Cyberpunk](./docs/images/theme-lab-cyberpunk-zh.png) | ![API 实验室](./docs/images/api-lab-zh.png) |
+
+## 仓库定位
+
+`Infini-Dev-Kit` 不是单一 UI 包，而是一层可复用的平台基础：
+
+- `packages/theme-core`
+  主题规范、主题注册、主题桥接、字体加载、CSS 变量生成、动效契约。
+- `packages/adapter-*`
+  把 `ThemeSpec` 映射到 Mantine、shadcn、MUI、Ant Design、Radix Themes。
+- `packages/react`
+  共享 React 组件、hooks、动效封装与若干前端工具。
+- `packages/api-client`
+  可复用的 HTTP 客户端与错误模型。
+- `packages/bot-core`、`packages/bot-discord`、`packages/bot-wechat`
+  机器人抽象与平台适配。
+- `packages/utils`
+  颜色、存储、ID、滚动、环境判断、类型工具等纯函数能力。
+
+## 快速开始
 
 ```bash
 pnpm install
+pnpm typecheck
+pnpm test
+pnpm build
 ```
 
-Import via workspace package names:
+## 常用导入
 
-```typescript
-import { DepthButton, TiltCard } from "@infini-dev-kit/react";
-import { getThemeSpec, buildScopedCssVariables } from "@infini-dev-kit/theme-core";
-import { composeMantineTheme } from "@infini-dev-kit/adapter-mantine";
-import { buildShadcnVariables } from "@infini-dev-kit/adapter-shadcn";
-import { buildMuiTheme } from "@infini-dev-kit/adapter-mui";
-import { buildAntdTheme } from "@infini-dev-kit/adapter-antd";
-import { buildRadixThemeProps } from "@infini-dev-kit/adapter-radix";
+```ts
+import {
+  buildScopedCssVariables,
+  createThemeProviderBridge,
+  getThemeSpec,
+  listThemeIds,
+  loadThemeFonts,
+} from "@infini-dev-kit/theme-core";
+
+import {
+  applyLocaleTypography,
+  buildScopedCssVariables as buildMantineScopedCssVariables,
+  getThemeOverrides,
+} from "@infini-dev-kit/adapter-mantine";
+
+import {
+  AnimatedTabs,
+  CrystalPrismButton,
+  DepthButton,
+  ScrollProgress,
+  SoftClayButton,
+} from "@infini-dev-kit/react";
+
 import { createApiClient } from "@infini-dev-kit/api-client";
-import { contrastRatio } from "@infini-dev-kit/utils";
-```
-
-### Theme Setup (Mantine)
-
-```tsx
-import { createThemeProviderBridge } from "@infini-dev-kit/theme-core";
-import { MantineProvider } from "@mantine/core";
-
-const bridge = createThemeProviderBridge({ defaultTheme: "default" });
-
-function App() {
-  return (
-    <MantineProvider theme={bridge.mantineTheme}>
-      <YourApp />
-    </MantineProvider>
-  );
-}
-```
-
-### Theme Setup (Other Frameworks)
-
-```tsx
-// shadcn/ui — pure CSS variables, no framework dependency
-import { buildShadcnVariables, infiniTailwindPreset } from "@infini-dev-kit/adapter-shadcn";
-
-// MUI
-import { buildMuiTheme } from "@infini-dev-kit/adapter-mui";
-const theme = createTheme(buildMuiTheme("cyberpunk"));
-
-// Ant Design
-import { buildAntdTheme } from "@infini-dev-kit/adapter-antd";
-<ConfigProvider theme={buildAntdTheme("cyberpunk")} />
-
-// Radix Themes
-import { buildRadixThemeProps, buildRadixCssOverrides } from "@infini-dev-kit/adapter-radix";
-<Theme {...buildRadixThemeProps("cyberpunk")} style={buildRadixCssOverrides("cyberpunk")} />
-```
-
-**Available Themes**: `default`, `chibi`, `cyberpunk`, `neu-brutalism`, `black-gold`, `red-gold`
-**Motion Levels**: `off`, `minimum`, `reduced`, `full`
-
-### Components
-
-```tsx
-import { DepthButton, TiltCard } from "@infini-dev-kit/react";
-
-<TiltCard>
-  <DepthButton type="primary" onClick={handleClick}>Click Me</DepthButton>
-</TiltCard>
-```
-
-### API Client
-
-```tsx
-import { createApiClient } from "@infini-dev-kit/api-client";
-
-const client = createApiClient({
-  baseUrl: "https://api.example.com",
-  getAuthToken: () => localStorage.getItem("token"),
-});
-
-const users = await client.request<User[]>({ method: "GET", path: "/users" });
-```
-
-### Bot Framework
-
-```tsx
 import { createBot } from "@infini-dev-kit/bot-core";
-import { createDiscordAdapter } from "@infini-dev-kit/bot-discord";
-
-const bot = createBot({
-  adapter: createDiscordAdapter({ token: process.env.DISCORD_TOKEN }),
-});
-bot.command("/hello", async (ctx) => ctx.reply("Hello!"));
-await bot.start();
+import { contrastRatio, createBrowserLocalStorageAdapter } from "@infini-dev-kit/utils";
 ```
 
-## Documentation
+## 主题能力
 
-- **[QUICK-START.md](./docs/QUICK-START.md)** — Getting started guide
-- **[THEMING.md](./docs/THEMING.md)** — Theme customization guide
-- **[TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md)** — Common issues and solutions
-- **[CHANGELOG.md](./CHANGELOG.md)** — Version history and breaking changes
+当前内置主题：
 
-## Package Reference
+- `default`
+- `chibi`
+- `cyberpunk`
+- `neu-brutalism`
+- `black-gold`
+- `red-gold`
 
-| Package | Path | Purpose |
-|---------|------|---------|
-| `@infini-dev-kit/theme-core` | `packages/theme-core/` | Framework-agnostic theme system (ThemeSpec, CSS variables, fonts, motion) |
-| `@infini-dev-kit/adapter-mantine` | `packages/adapter-mantine/` | ThemeSpec → Mantine theme config |
-| `@infini-dev-kit/adapter-shadcn` | `packages/adapter-shadcn/` | ThemeSpec → shadcn/Tailwind CSS variables (HSL) |
-| `@infini-dev-kit/adapter-mui` | `packages/adapter-mui/` | ThemeSpec → MUI `createTheme()` options |
-| `@infini-dev-kit/adapter-antd` | `packages/adapter-antd/` | ThemeSpec → Ant Design v5 design tokens |
-| `@infini-dev-kit/adapter-radix` | `packages/adapter-radix/` | ThemeSpec → Radix Themes props + CSS overrides |
-| `@infini-dev-kit/react` | `packages/react/` | 71 base components, hooks, motion utilities |
-| `@infini-dev-kit/utils` | `packages/utils/` | Color, storage, a11y, types (`Result<T,E>`, `Option<T>`), env |
-| `@infini-dev-kit/api-client` | `packages/api-client/` | HTTP API client with retry, auth, RFC 7807 errors |
-| `@infini-dev-kit/bot-core` | `packages/bot-core/` | Platform-agnostic bot framework |
-| `@infini-dev-kit/bot-discord` | `packages/bot-discord/` | Discord.js adapter |
-| `@infini-dev-kit/bot-wechat` | `packages/bot-wechat/` | Wechaty adapter |
+当前动效等级：
 
-## Prerequisites
+- `off`
+- `minimum`
+- `reduced`
+- `full`
 
-- Node.js (ES2022 compatible)
-- pnpm 10.29.1+
-- TypeScript 5.8+
+`theme-core` 负责输出主题状态、字体、动效和 CSS 变量；具体框架如何消费这些变量，由各适配层或上层应用决定。
 
-```bash
-pnpm install
-pnpm typecheck  # tsc --noEmit across all packages
-pnpm test       # vitest run
-pnpm build      # tsc build across all packages
-```
+## 包一览
 
-## Architecture
+| 包名 | 作用 |
+| --- | --- |
+| `@infini-dev-kit/theme-core` | 无框架主题内核、字体、CSS 变量、动效契约 |
+| `@infini-dev-kit/adapter-mantine` | Mantine 主题变量、局部变量生成、排版辅助 |
+| `@infini-dev-kit/adapter-shadcn` | shadcn / Tailwind 变量映射 |
+| `@infini-dev-kit/adapter-mui` | MUI 主题映射 |
+| `@infini-dev-kit/adapter-antd` | Ant Design 主题映射 |
+| `@infini-dev-kit/adapter-radix` | Radix Themes 属性与覆写 |
+| `@infini-dev-kit/react` | React 组件、hooks、动效封装 |
+| `@infini-dev-kit/utils` | 纯工具函数与类型工具 |
+| `@infini-dev-kit/api-client` | API 客户端与错误模型 |
+| `@infini-dev-kit/bot-core` | 机器人基础抽象 |
+| `@infini-dev-kit/bot-discord` | Discord 适配 |
+| `@infini-dev-kit/bot-wechat` | Wechaty 适配 |
 
-```
-infini-dev-kit/
+## 工作区结构
+
+```text
+Infini-Dev-Kit/
 ├── packages/
-│   ├── theme-core/              # Framework-agnostic theme system
-│   │   ├── theme-types.ts       # ThemeSpec, ThemeId, all type definitions
-│   │   ├── theme-specs.ts       # Theme registry + getThemeSpec()
-│   │   ├── theme-controller.ts  # Headless state machine
-│   │   ├── theme-provider-bridge.ts  # Orchestrator
-│   │   ├── motion-contracts.ts  # Motion intent → transition mapping
-│   │   ├── spring-profiles.ts   # Spring physics presets
-│   │   ├── tokens/              # CSS variable generation, font loading
-│   │   ├── echarts/             # ECharts theme adapter
-│   │   └── themes/              # 6 theme definitions
-│   ├── adapter-mantine/         # ThemeSpec → Mantine theme config
-│   ├── adapter-shadcn/          # ThemeSpec → shadcn/Tailwind CSS vars (HSL)
-│   ├── adapter-mui/             # ThemeSpec → MUI createTheme() options
-│   ├── adapter-antd/            # ThemeSpec → Ant Design v5 tokens
-│   ├── adapter-radix/           # ThemeSpec → Radix Themes props
-│   ├── react/                   # 71 base components + hooks + motion
-│   │   ├── components/          # All UI components
-│   │   ├── hooks/               # Motion hooks + variants
-│   │   └── tests/               # Vitest tests
-│   ├── utils/                   # Shared pure utilities
-│   ├── api-client/              # HTTP API client
-│   ├── bot-core/                # Platform-agnostic bot framework
-│   ├── bot-discord/             # Discord.js adapter
-│   └── bot-wechat/              # Wechaty adapter
+│   ├── theme-core/
+│   ├── adapter-mantine/
+│   ├── adapter-shadcn/
+│   ├── adapter-mui/
+│   ├── adapter-antd/
+│   ├── adapter-radix/
+│   ├── react/
+│   ├── utils/
+│   ├── api-client/
+│   ├── bot-core/
+│   ├── bot-discord/
+│   └── bot-wechat/
+├── docs/
+├── package.json
 ├── pnpm-workspace.yaml
-├── tsconfig.base.json           # Shared TS config with path aliases
-└── package.json                 # Root workspace scripts
+└── tsconfig.base.json
 ```
 
----
+## 常用命令
 
-## Adapter Pattern
-
-The theme system is split into a framework-agnostic core (`theme-core`) and per-framework adapters. Each adapter transforms `ThemeSpec` into the target framework's theme format.
-
-| Adapter | Output | Peer Dependency |
-|---------|--------|----------------|
-| `adapter-mantine` | `MantineThemeOverride` + CSS variables | `@mantine/core ^8.0.0` |
-| `adapter-shadcn` | HSL CSS variables + Tailwind preset | none (pure CSS) |
-| `adapter-mui` | MUI `ThemeOptions` for `createTheme()` | `@mui/material ^6.0.0` |
-| `adapter-antd` | Ant Design v5 seed + component tokens | `antd ^5.0.0` |
-| `adapter-radix` | Radix `<Theme>` props + CSS overrides | `@radix-ui/themes ^3.0.0` |
-
----
-
-## React Components (`packages/react/`)
-
-71 base components + hooks. All use `forwardRef` + `{...rest}` spread + `style`/`className` merge via `clsx`.
-
-**Buttons (3):** DepthButton, ProgressButton, SocialButton
-**Cards (8):** TiltCard, GlowCard, RevealCard, LayeredCard, FlipCard, CyberpunkCard, ChibiCard, NeuBrutalCard
-**Text (4):** AnimatedText, GradientText, GlitchText, ShinyText
-**Data Display (11):** NumberTicker, AnimatedCounter, ScrollProgress, RingsProgress, InfiniStatCard, InfiniTimeline, InfiniTable, InfiniDataGrid, InfiniCalendar, InfiniKanban, MediaGallery
-**Controls (9):** DepthToggle, InfiniColorPicker, InfiniTagInput, InfiniDateRangePicker, InfiniForm, TipTapEditor, LayoutIndicator, AvailabilityGridEditor, ImageGridEditor
-**Layout (9):** GlassEffect, Marquee, PageTransition, Parallax, StaggerList, InfiniAppShell, InfiniPageHeader, InfiniSplitView, InfiniResponsiveGrid
-**Effects (11):** GlitchOverlay, PowerGlitch, RevealOnScroll, ScrollAnimationTrigger, CustomCursor, ImageComparison, ImageScanner, LampHeading, MagneticElement, InfiniConfetti, InfiniTransitionGroup
-**Backgrounds (6):** BubbleBackground, GrainyBackground, RippleBackground, MorphingBlob, MatrixCodeRain, ParticleEffect
-**Code (2):** AnimatedCodeBlock, Terminal
-**Borders (2):** GlowBorder, GradientBorder
-**Navigation (3):** AnimatedTabs, SelectStepper, CommandPalette
-**Feedback (3):** Result, InfiniSkeleton, ErrorBoundary
-
----
-
-## API Client (`packages/api-client/`)
-
-```typescript
-import { createApiClient } from "@infini-dev-kit/api-client";
+```bash
+pnpm install
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm lint
 ```
 
-| Option | Type | Purpose |
-|--------|------|---------|
-| `baseUrl` | `string` | Prepended to all request paths |
-| `getAuthToken` | `() => string \| null` | Auto-injects `Authorization: Bearer` |
-| `retry` | `Partial<RetryOptions>` | Default: 2 retries, GET/HEAD only |
-| `timeoutMs` | `number` | Default 15000ms |
-| `dedupe` | `boolean` | Optional GET in-flight dedupe |
+## 相关文档
 
-Errors are `ApiClientError` with kind: `http`, `network`, `timeout`, `aborted`, `parse`.
+- [快速开始](./docs/QUICK-START.md)
+- [主题说明](./docs/THEMING.md)
+- [国际化说明](./docs/I18N.md)
+- [性能说明](./docs/PERFORMANCE.md)
+- [故障排查](./docs/TROUBLESHOOTING.md)
+- [更新日志](./CHANGELOG.md)
 
----
+## 约束
 
-## Bot Framework (`packages/bot-core/`, `bot-discord/`, `bot-wechat/`)
+1. 以 workspace 包名作为正式导入面，不在 README 中鼓励内部路径导入。
+2. 先跑 `pnpm typecheck`，再谈完成。
+3. 主题定义保持数据化，运行时逻辑留在 `theme-core`、适配层或消费端。
+4. README 默认使用中文；如果后续补英文版本，中文仍作为主入口。
 
-```typescript
-import { createBot } from "@infini-dev-kit/bot-core";
-```
-
-Built-in middleware: error-boundary, filter, logger, rate-limiter.
-
-| Package | Peer Dependency |
-|---------|----------------|
-| `@infini-dev-kit/bot-discord` | `discord.js ^14.16.0` |
-| `@infini-dev-kit/bot-wechat` | `wechaty ^1.20.0` |
-
----
-
-## Utils (`packages/utils/`)
-
-Shared pure utilities. No framework dependencies.
-
-| Module | Key Exports |
-|--------|-------------|
-| `color.ts` | `contrastRatio()`, `readableTextColor()`, hex↔RGB |
-| `error.ts` | `toError()` — coerce unknown to Error |
-| `id.ts` | `createRequestId()`, `createTraceId()`, `createSpanId()` |
-| `lru-map.ts` | `LRUMap<K,V>` — bounded LRU cache |
-| `storage.ts` | `memoryStorage()`, `browserStorage()`, `cookieStorage()` |
-| `types.ts` | `Result<T,E>`, `Option<T>`, `Brand<T,B>`, `DeepPartial<T>` |
-| `a11y.ts` | Focus-visible tracking, motion reduction |
-| `env.ts` | Environment detection |
-| `motion.ts` | Motion mode detection |
-| `scroll.ts` | Scroll lock, smooth scroll |
-| `view-transition.ts` | View Transition API wrapper |
-
-## Rules
-
-1. **Type-check before commit.** `pnpm typecheck` — zero errors.
-2. **No bundler config.** Source-first — consumers handle bundling.
-3. **All exports through barrel `index.ts` files.** No internal path imports.
-4. **No `any`.** Use `unknown` + type narrowing.
-5. **Theme specs are data.** No runtime logic in theme files.
-6. **No mock/simulation paths.** Let failures surface explicitly.
-7. **No circular imports.** Dependency direction: `utils` ← `theme-core` ← `adapter-*` ← `react`.
-8. **Adapters are pure mapping layers.** Framework libs are peerDependencies only.
-
-## License
+## 许可证
 
 [MIT](./LICENSE)
