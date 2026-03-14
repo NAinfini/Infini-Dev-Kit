@@ -68,18 +68,6 @@ interface ThemeButtonInput {
   snapShadow?: boolean;
 }
 
-const DEFAULT_ZH: LocaleFontConfig = {
-  body: "'Noto Sans SC', 'Microsoft YaHei', sans-serif",
-  heading: "'Noto Sans SC', 'Microsoft YaHei', sans-serif",
-  mono: "'Noto Sans Mono CJK SC', 'Consolas', monospace",
-};
-
-const DEFAULT_JA: LocaleFontConfig = {
-  body: "'Noto Sans JP', 'Yu Gothic', sans-serif",
-  heading: "'Noto Sans JP', 'Yu Gothic', sans-serif",
-  mono: "'Noto Sans Mono CJK JP', 'Consolas', monospace",
-};
-
 const DEFAULT_SIZES: ThemeTypography["sizes"] = {
   xs: "11px",
   sm: "13px",
@@ -112,15 +100,15 @@ export function createThemeTypography(input: ThemeTypographyInput): ThemeTypogra
   };
 
   const zh: LocaleFontConfig = {
-    body: input.zh?.body ?? DEFAULT_ZH.body,
-    heading: input.zh?.heading ?? DEFAULT_ZH.heading,
-    mono: input.zh?.mono ?? DEFAULT_ZH.mono,
+    body: input.zh?.body ?? input.body,
+    heading: input.zh?.heading ?? input.heading,
+    mono: input.zh?.mono ?? input.mono,
   };
 
   const ja: LocaleFontConfig = {
-    body: input.ja?.body ?? DEFAULT_JA.body,
-    heading: input.ja?.heading ?? DEFAULT_JA.heading,
-    mono: input.ja?.mono ?? DEFAULT_JA.mono,
+    body: input.ja?.body ?? input.body,
+    heading: input.ja?.heading ?? input.heading,
+    mono: input.ja?.mono ?? input.mono,
   };
 
   const weights = {

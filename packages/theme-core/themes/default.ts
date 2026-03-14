@@ -22,10 +22,19 @@ export const defaultTheme: ThemeSpec = {
     textMuted: "#5F6F86",
   },
   typography: createThemeTypography({
-    heading: "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
-    body: "Inter, -apple-system, BlinkMacSystemFont, sans-serif",
-    mono: "JetBrains Mono, Menlo, Monaco, monospace",
+    heading: "Source Han Sans SC, -apple-system, BlinkMacSystemFont, sans-serif",
+    body: "Source Han Sans SC, -apple-system, BlinkMacSystemFont, sans-serif",
+    mono: "monospace",
     weights: { bold: 600, normal: 400 },
+    en: {
+      body: "'Source Han Sans SC', sans-serif",
+      heading: "'Source Han Sans SC', sans-serif",
+      mono: "monospace",
+    },
+    zh: {
+      body: "'Source Han Sans SC', sans-serif",
+      heading: "'Source Han Sans SC', sans-serif",
+    },
   }),
   effects: createThemeEffects({
     glowColor: "#3B82F6",

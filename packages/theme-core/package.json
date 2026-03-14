@@ -1,0 +1,17 @@
+{
+  "name": "@infini-dev-kit/theme-core",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "clean": "node -e \"const fs=require('node:fs');fs.rmSync('dist',{ recursive: true, force: true });\""
+  },
+  "dependencies": {
+    "@infini-dev-kit/utils": "workspace:*"
+  }
+}

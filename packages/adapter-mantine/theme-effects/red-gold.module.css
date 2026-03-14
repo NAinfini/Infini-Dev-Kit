@@ -1,0 +1,177 @@
+/**
+ * Red Gold Imperial Theme Effects
+ * Gold rails, imperial gradients, seal badges, warm halos
+ */
+
+/* Imperial gradient */
+.imperial-gradient {
+  background: linear-gradient(135deg, #900101, #ed2939);
+}
+
+/* Gold rail system */
+.gold-rail-active {
+  border-left: 3px solid #d4af37;
+  padding-left: 1rem;
+}
+
+/* Seal badge */
+.seal-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #900101, #ed2939);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 0.25rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #f2f0e4;
+}
+
+.seal-badge::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Command console frame */
+.command-frame {
+  position: relative;
+  border: 1px solid #3D2A1E;
+}
+
+.command-frame::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #d4af37, #daaa56);
+}
+
+/* Warm metallic halo */
+.warm-halo {
+  box-shadow: 0 0 22px rgba(237, 41, 57, 0.18), 0 0 12px rgba(212, 175, 55, 0.15);
+}
+
+.warm-halo-hover {
+  transition: box-shadow 200ms ease;
+}
+
+.warm-halo-hover:hover {
+  box-shadow: 0 0 30px rgba(237, 41, 57, 0.22), 0 0 18px rgba(212, 175, 55, 0.18);
+}
+
+/* Vault panel */
+.vault-panel {
+  position: relative;
+  background: #1E1318;
+  border: 1px solid #3D2A1E;
+  padding: 1.5rem;
+}
+
+.vault-panel::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Imperial focus */
+.imperial-focus {
+  transition: all 200ms ease;
+}
+
+.imperial-focus:focus {
+  outline: none;
+  border-color: #d4af37;
+  border-left-width: 3px;
+  box-shadow: 0 0 0 1px #d4af37, 0 0 12px rgba(212, 175, 55, 0.18);
+}
+
+/* Regal lift */
+.regal-lift {
+  transition: all 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.regal-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 1px rgba(237, 41, 57, 0.3);
+}
+
+/* Gold metric highlight */
+.gold-metric {
+  color: #d4af37;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+/* Ceremonial border */
+.ceremonial-border {
+  border-top: 1px solid #3D2A1E;
+  border-bottom: 1px solid #3D2A1E;
+  position: relative;
+  padding: 1rem 0;
+}
+
+.ceremonial-border::before,
+.ceremonial-border::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, #d4af37, transparent);
+}
+
+.ceremonial-border::before {
+  top: -1px;
+}
+
+.ceremonial-border::after {
+  bottom: -1px;
+}
+
+/* Authority press */
+.authority-press {
+  transition: all 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.authority-press:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(237, 41, 57, 0.15);
+}
+
+/* Dual-tone border */
+.dual-tone-border {
+  position: relative;
+  border: 1px solid #3D2A1E;
+}
+
+.dual-tone-border::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  border-left: 2px solid #d4af37;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.dual-tone-border:hover::before {
+  opacity: 1;
+}

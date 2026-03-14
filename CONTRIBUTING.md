@@ -34,14 +34,15 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/) strictly:
 
 **Allowed types:** `feat`, `fix`, `refactor`, `chore`, `docs`, `style`, `test`, `perf`, `ci`
 
-**Scope** must be one of: `theme`, `components`, `hooks`, `provider`, `api-client`, `bot-core`, `bot-discord`, `bot-wechat`, `utils`, `build`, `deps`, `docs`
+**Scope** must be one of: `theme-core`, `adapter-mantine`, `adapter-shadcn`, `adapter-mui`, `adapter-antd`, `adapter-radix`, `react`, `api-client`, `bot-core`, `bot-discord`, `bot-wechat`, `utils`, `build`, `deps`, `docs`
 
 Examples:
 ```
-feat(components): add FloatingActionButton component
-fix(theme): correct neu-brutalism switch track dimensions
-chore(deps): bump mantine to 7.19.0
-refactor(hooks): extract motion spring logic into useThemeSpring
+feat(react): add FloatingActionButton component
+fix(adapter-mantine): correct neu-brutalism switch track dimensions
+chore(deps): bump mantine to 8.3.16
+refactor(theme-core): extract motion spring logic into spring-profiles
+feat(adapter-shadcn): add sidebar CSS variable mapping
 ```
 
 ## Code standards
@@ -53,7 +54,7 @@ refactor(hooks): extract motion spring logic into useThemeSpring
 
 ### React components
 - Function components only — no class components.
-- All component props must be defined in `frontend/theme/motion-types.ts`.
+- Components live in `packages/react/components/`.
 - Components must consume static theme tokens via CSS variables (`var(--infini-*)`), not `useThemeSnapshot()`, unless the value is dynamic (mouse position, spring physics, animation state).
 - Use `useMotionAllowed()` / `useFullMotion()` to gate animations. Always provide a static fallback when motion is off.
 
@@ -70,48 +71,62 @@ refactor(hooks): extract motion spring logic into useThemeSpring
 
 ```
 infini-dev-kit/
-├── frontend/
-│   ├── theme/            # Theme specs, controller, Mantine/ECharts adapters
-│   ├── components/       # 50 base components (flat) + infini/ dispatch layer
-│   │   └── infini/       # 19 Infini* auto-dispatch wrappers + theme-defaults
-│   ├── hooks/            # ALL hooks + variants/
-│   ├── provider/         # InfiniProvider, KitApp, ThemeToolbar
-│   ├── overlays/         # Toast/confirm service
-│   └── tests/            # Vitest test files
-├── api-client/           # HTTP API client
-├── bot-core/             # Platform-agnostic bot framework
-├── bot-discord/          # Discord adapter
-├── bot-wechat/           # WeChat adapter
-└── utils/                # Shared pure utilities
+├── packages/
+│   ├── theme-core/          # Framework-agnostic theme system
+│   ├── adapter-mantine/     # ThemeSpec → Mantine config
+│   ├── adapter-shadcn/      # ThemeSpec → shadcn/Tailwind CSS vars
+│   ├── adapter-mui/         # ThemeSpec → MUI createTheme() options
+│   ├── adapter-antd/        # ThemeSpec → Ant Design v5 tokens
+│   ├── adapter-radix/       # ThemeSpec → Radix Themes props
+│   ├── react/               # 71 base components + hooks + motion
+│   │   ├── components/      # All UI components
+│   │   ├── hooks/           # Motion hooks + variants
+│   │   └── tests/           # Vitest test files
+│   ├── utils/               # Shared pure utilities
+│   ├── api-client/          # HTTP API client
+│   ├── bot-core/            # Platform-agnostic bot framework
+│   ├── bot-discord/         # Discord adapter
+│   └── bot-wechat/          # WeChat adapter
+├── pnpm-workspace.yaml
+├── tsconfig.base.json
+└── package.json
 ```
 
 ## Adding a new component
 
-1. Create `frontend/components/YourComponent.tsx`.
-2. Define props in `frontend/theme/motion-types.ts`.
-3. Export from `frontend/components/index.ts` (keep alphabetical order).
-4. Use `useThemeSnapshot()` only for dynamic values. Prefer CSS variables for static tokens.
-5. Gate animations with `useMotionAllowed()` / `useFullMotion()`.
-6. Provide a non-animated fallback render path.
-7. Update `CHANGELOG.md` under `[Unreleased]`.
+1. Create `packages/react/components/YourComponent.tsx`.
+2. Export from `packages/react/components/index.ts` (keep alphabetical order).
+3. Use `useThemeSnapshot()` only for dynamic values. Prefer CSS variables for static tokens.
+4. Gate animations with `useMotionAllowed()` / `useFullMotion()`.
+5. Provide a non-animated fallback render path.
 
 ## Adding a new theme
 
-1. Create `frontend/theme/themes/<theme-name>.ts` implementing `ThemeSpec`.
-2. Create `frontend/theme/themes/<ThemeName>Prompt.md` (LLM generation prompt).
-3. Register in `frontend/theme/themes/index.ts`.
-4. Add the theme ID to the `ThemeId` union in `frontend/theme/theme-types.ts`.
-5. Add a theme-effects CSS Module in `frontend/theme/mantine/theme-effects/<theme-name>.module.css`.
-6. If the theme needs component-level overrides (e.g. different switch dimensions), add an entry in `frontend/theme/theme-overrides.ts`.
+1. Create `packages/theme-core/themes/<theme-name>.ts` implementing `ThemeSpec`.
+2. Create `packages/theme-core/themes/<ThemeName>Prompt.md` (LLM generation prompt).
+3. Register in `packages/theme-core/themes/index.ts`.
+4. Add the theme ID to the `ThemeId` union in `packages/theme-core/theme-types.ts`.
+5. If the theme needs component-level overrides, add entries in the relevant adapters (`packages/adapter-mantine/theme-overrides.ts`, etc.).
+
+## Adding a new UI framework adapter
+
+1. Create `packages/adapter-<framework>/` directory.
+2. Add `package.json` with `@infini-dev-kit/adapter-<framework>` name.
+3. Depend on `@infini-dev-kit/theme-core: workspace:*` and `@infini-dev-kit/utils: workspace:*`.
+4. Framework lib as `peerDependency` only.
+5. Add `tsconfig.json` with references to `../utils` and `../theme-core`.
+6. Add path aliases to `tsconfig.base.json`.
+7. Follow the 3-layer pattern: types → token mapping → component overrides.
 
 ## Adding a new bot adapter
 
-1. Create `bot-<platform>/` directory at the repo root.
+1. Create `packages/bot-<platform>/` directory.
 2. Add a `package.json` with `@infini-dev-kit/bot-<platform>` name.
-3. Implement the `BotAdapter` interface from `bot-core/adapter-types.ts`.
+3. Implement the `BotAdapter` interface from `packages/bot-core/adapter-types.ts`.
 4. Add the platform SDK as a `peerDependency`.
-5. Add to `tsconfig.json` `include` array.
-6. Add tests in `bot-<platform>/tests/`.
+5. Add `tsconfig.json` with reference to `../bot-core`.
+6. Add path alias to `tsconfig.base.json`.
+7. Add tests in `packages/bot-<platform>/tests/`.
 
 ## Testing
 
@@ -130,10 +145,8 @@ Before requesting review, confirm:
 - [ ] Commit messages follow Conventional Commits
 - [ ] No `any`, `@ts-ignore`, `!important`, or hardcoded design values
 - [ ] Component tested under >= 2 themes and >= 2 motion levels
-- [ ] `CHANGELOG.md` updated under `[Unreleased]`
 - [ ] No unrelated changes included
-- [ ] New components export from barrel (`frontend/components/index.ts`)
-- [ ] New types defined in `frontend/theme/motion-types.ts`
+- [ ] New components export from barrel (`packages/react/components/index.ts`)
 
 ## What will get your PR rejected
 
@@ -143,9 +156,7 @@ Before requesting review, confirm:
 - Introducing dependencies without prior discussion
 - Ignoring TypeScript strict mode
 - Hardcoded styles instead of design tokens / CSS variables
-- Nested subdirectories inside `frontend/components/` (except `infini/`)
 - Missing non-animated fallback in motion components
-- Incomplete changelog entry
 
 ## License
 

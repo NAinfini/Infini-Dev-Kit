@@ -1,0 +1,52 @@
+.infini-stat-card {
+  /* Container */
+}
+
+.infini-stat-card-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: var(--infini-border-width, 1px) solid var(--infini-color-border, #e5e7eb);
+  border-radius: var(--infini-radius, 8px);
+  background: var(--infini-color-surface, #ffffff);
+}
+
+.infini-stat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.infini-stat-card-title {
+  color: var(--infini-color-text-muted, #6b7280);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.infini-stat-card-icon {
+  display: inline-flex;
+}
+
+.infini-stat-card-value-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.infini-stat-card-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--infini-color-text, #111827);
+}
+
+.infini-stat-card-trend {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.infini-stat-card-sparkline {
+  margin-top: 0.25rem;
+}

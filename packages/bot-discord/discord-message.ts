@@ -1,5 +1,5 @@
-import type { BotAdapter } from "../bot-core/adapter-types";
-import type { BotMessage, MessageKind } from "../bot-core/message-types";
+import type { BotAdapter } from "@infini-dev-kit/bot-core/adapter-types";
+import type { BotMessage, MessageKind } from "@infini-dev-kit/bot-core/message-types";
 import { mapDiscordChannel, type DiscordChannelLike } from "./discord-conversation";
 import { discordForward, discordReply, type DiscordRawMessage } from "./discord-media";
 import { mapDiscordUser, type DiscordUserLike } from "./discord-user";

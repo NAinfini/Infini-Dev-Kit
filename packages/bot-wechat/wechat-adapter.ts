@@ -2,11 +2,11 @@ import {
   createBaseAdapter,
   type AdapterReconnectOptions,
   type BotAdapter,
-} from "../bot-core";
-import type { BotConversation } from "../bot-core/conversation-types";
-import type { BotUser } from "../bot-core/user-types";
-import { LRUMap } from "../utils/lru-map";
-import { toError } from "../utils/error";
+} from "@infini-dev-kit/bot-core";
+import type { BotConversation } from "@infini-dev-kit/bot-core/conversation-types";
+import type { BotUser } from "@infini-dev-kit/bot-core/user-types";
+import { LRUMap } from "@infini-dev-kit/utils/lru-map";
+import { toError } from "@infini-dev-kit/utils/error";
 import { mapDirectConversation, mapRoom, type WechatContactLike, type WechatRoomLike } from "./wechat-conversation";
 import { mapWechatMessage, type WechatMessageLike } from "./wechat-message";
 import { mapContact } from "./wechat-user";
@@ -47,7 +47,25 @@ interface WechatAdapterWithRaw extends BotAdapter {
   [WECHAT_ADAPTER_RAW]?: WechatBotLike;
 }
 
-function createNoopWechatClient(): WechatBotLike {
+function createDefaultWechatClient(options: WechatAdapterOptions): WechatBotLike {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { WechatyBuilder } = require("wechaty");
+    return WechatyBuilder.build({
+      name: options.name ?? "infini-bot",
+      puppet: options.puppet,
+      puppetOptions: options.puppetOptions,
+    });
+  } catch {
+    throw new Error(
+      "wechaty is required but not installed. Either install it (`npm install wechaty`) " +
+      "or provide a clientFactory in WechatAdapterOptions.",
+    );
+  }
+}
+
+/** @internal Test-only noop client — do not use in production. */
+export function _createNoopWechatClientForTesting(): WechatBotLike {
   return {
     async start() {},
     async stop() {},
@@ -74,7 +92,7 @@ function toDisconnectReason(reason: unknown): string {
 }
 
 export function createWechatAdapter(options: WechatAdapterOptions = {}): BotAdapter {
-  const client = options.clientFactory?.() ?? createNoopWechatClient();
+  const client = options.clientFactory?.() ?? createDefaultWechatClient(options);
   const conversationCacheSize = options.cacheSize?.conversations ?? DEFAULT_CONVERSATION_CACHE_SIZE;
   const userCacheSize = options.cacheSize?.users ?? DEFAULT_USER_CACHE_SIZE;
   const reconnect = {

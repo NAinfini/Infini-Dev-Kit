@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { BotAdapter } from "../../bot-core/adapter-types";
+import type { BotAdapter } from "@infini-dev-kit/bot-core/adapter-types";
 import { mapDiscordMessage } from "../discord-message";
 
 function createMockAdapter(): BotAdapter {

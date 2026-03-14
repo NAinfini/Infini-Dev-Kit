@@ -1,0 +1,49 @@
+.infini-error-boundary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+.infini-error-alert {
+  padding: 1rem;
+  border: 1px solid var(--infini-color-danger, #dc2626);
+  border-radius: var(--infini-radius, 8px);
+  background: color-mix(in srgb, var(--infini-color-danger, #dc2626) 8%, var(--infini-color-surface, #ffffff));
+  color: var(--infini-color-text, #111827);
+}
+
+.infini-error-title {
+  margin-bottom: 0.5rem;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--infini-color-danger, #dc2626);
+}
+
+.infini-error-message {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--infini-color-text-muted, #6b7280);
+}
+
+.infini-error-retry {
+  align-self: flex-start;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--infini-color-border, #e5e7eb);
+  border-radius: var(--infini-radius, 8px);
+  background: var(--infini-color-surface, #ffffff);
+  color: var(--infini-color-text, #111827);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--infini-motion-hover, 160ms) var(--infini-motion-easing, ease);
+}
+
+.infini-error-retry:hover {
+  background: color-mix(in srgb, var(--infini-color-primary, #3b82f6) 8%, var(--infini-color-surface, #ffffff));
+  border-color: var(--infini-color-primary, #3b82f6);
+}
+
+.infini-error-retry:active {
+  transform: translateY(1px);
+}

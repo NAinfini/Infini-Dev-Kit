@@ -1,7 +1,7 @@
-import type { BotAdapter } from "../bot-core/adapter-types";
-import type { BotConversation } from "../bot-core/conversation-types";
-import type { BotMessage } from "../bot-core/message-types";
-import type { BotUser } from "../bot-core/user-types";
+import type { BotAdapter } from "@infini-dev-kit/bot-core/adapter-types";
+import type { BotConversation } from "@infini-dev-kit/bot-core/conversation-types";
+import type { BotMessage } from "@infini-dev-kit/bot-core/message-types";
+import type { BotUser } from "@infini-dev-kit/bot-core/user-types";
 import { DISCORD_ADAPTER_RAW, type DiscordClientLike } from "./discord-adapter";
 import type { DiscordChannelLike } from "./discord-conversation";
 import type { DiscordMessageLike } from "./discord-message";

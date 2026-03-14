@@ -22,14 +22,18 @@ export const blackGoldTheme: ThemeSpec = {
     textMuted: "#B8B8B8",
   },
   typography: createThemeTypography({
-    heading: "Space Grotesk, Cinzel, Lora, serif",
-    body: "Inter, Montserrat, sans-serif",
-    mono: "JetBrains Mono, monospace",
+    heading: "YouShe YuFeiTe JianKangTi, serif",
+    body: "YouShe YuFeiTe JianKangTi, serif",
+    mono: "monospace",
     weights: { bold: 700, normal: 400 },
     en: {
-      body: "'Inter', 'Montserrat', sans-serif",
-      heading: "'Space Grotesk', 'Cinzel', serif",
-      mono: "'JetBrains Mono', monospace",
+      body: "'YouShe YuFeiTe JianKangTi', serif",
+      heading: "'YouShe YuFeiTe JianKangTi', serif",
+      mono: "monospace",
+    },
+    zh: {
+      body: "'YouShe YuFeiTe JianKangTi', serif",
+      heading: "'YouShe YuFeiTe JianKangTi', serif",
     },
   }),
   effects: createThemeEffects({

@@ -1,5 +1,5 @@
-import type { MotionMode } from "../../utils/motion";
-import type { StorageAdapter } from "../../utils/storage";
+import type { MotionMode } from "@infini-dev-kit/utils/motion";
+import type { StorageAdapter } from "@infini-dev-kit/utils/storage";
 import { type ThemeId, listThemeIds } from "./theme-specs";
 
 export interface ThemeControllerState {

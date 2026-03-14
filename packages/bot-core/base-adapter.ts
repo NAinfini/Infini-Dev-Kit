@@ -1,4 +1,4 @@
-import { toError } from "../utils/error";
+import { toError } from "@infini-dev-kit/utils/error";
 import type { BotAdapter, BotEvent, BotEventHandler, BotEventMap } from "./adapter-types";
 import type { BotConversation } from "./conversation-types";
 import type { BotMessagePayload, BotPlatform } from "./message-types";

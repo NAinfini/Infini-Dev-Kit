@@ -464,7 +464,16 @@ function buildRequestUrl(
   query: QueryParams | undefined,
 ): string {
   const interpolatedPath = interpolatePath(path, pathParams);
-  const base = baseUrl ? new URL(interpolatedPath, ensureBaseUrl(baseUrl)) : new URL(interpolatedPath);
+  const base = baseUrl
+    ? new URL(interpolatedPath, resolveBaseUrl(baseUrl))
+    : typeof globalThis.location !== "undefined"
+      ? new URL(interpolatedPath, globalThis.location.origin)
+      : (() => { throw new ApiClientError({
+          kind: "network",
+          message: `Cannot resolve relative path "${interpolatedPath}" without baseUrl (no browser context available)`,
+          method: "GET",
+          url: interpolatedPath,
+        }); })();
 
   if (query) {
     for (const [key, value] of Object.entries(query)) {
@@ -475,7 +484,19 @@ function buildRequestUrl(
   return base.toString();
 }
 
-function ensureBaseUrl(baseUrl: string): string {
+function resolveBaseUrl(baseUrl: string): string {
+  // If baseUrl is already absolute (has protocol), just ensure trailing slash
+  if (/^https?:\/\//i.test(baseUrl)) {
+    return baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+  }
+
+  // If baseUrl is relative, resolve it against current location
+  if (typeof globalThis.location !== "undefined") {
+    const absolute = new URL(baseUrl, globalThis.location.origin);
+    return absolute.href.endsWith("/") ? absolute.href : `${absolute.href}/`;
+  }
+
+  // Fallback: treat as absolute and add trailing slash
   return baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
 }
 

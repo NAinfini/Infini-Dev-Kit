@@ -2,11 +2,11 @@ import {
   createBaseAdapter,
   type AdapterReconnectOptions,
   type BotAdapter,
-} from "../bot-core";
-import type { BotConversation } from "../bot-core/conversation-types";
-import type { BotUser } from "../bot-core/user-types";
-import { LRUMap } from "../utils/lru-map";
-import { toError } from "../utils/error";
+} from "@infini-dev-kit/bot-core";
+import type { BotConversation } from "@infini-dev-kit/bot-core/conversation-types";
+import type { BotUser } from "@infini-dev-kit/bot-core/user-types";
+import { LRUMap } from "@infini-dev-kit/utils/lru-map";
+import { toError } from "@infini-dev-kit/utils/error";
 import {
   isSlashCommandInteraction,
   toDiscordCommandPayload,
@@ -66,7 +66,24 @@ interface DiscordAdapterWithRaw extends DiscordAdapterExtended {
   [DISCORD_ADAPTER_RAW]?: DiscordClientLike;
 }
 
-function createNoopDiscordClient(): DiscordClientLike {
+function createDefaultDiscordClient(options: DiscordAdapterOptions): DiscordClientLike {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { Client, GatewayIntentBits } = require("discord.js");
+    return new Client({
+      intents: options.intents ?? [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
+      ...options.clientOptions,
+    });
+  } catch {
+    throw new Error(
+      "discord.js is required but not installed. Either install it (`npm install discord.js`) " +
+      "or provide a clientFactory in DiscordAdapterOptions.",
+    );
+  }
+}
+
+/** @internal Test-only noop client — do not use in production. */
+export function _createNoopDiscordClientForTesting(): DiscordClientLike {
   return {
     async login() {
       return "";
@@ -99,7 +116,7 @@ function toDisconnectReason(reason: unknown): string {
 }
 
 export function createDiscordAdapter(options: DiscordAdapterOptions): BotAdapter {
-  const client = options.clientFactory?.() ?? createNoopDiscordClient();
+  const client = options.clientFactory?.() ?? createDefaultDiscordClient(options);
   const conversationCacheSize = options.cacheSize?.conversations ?? DEFAULT_CONVERSATION_CACHE_SIZE;
   const userCacheSize = options.cacheSize?.users ?? DEFAULT_USER_CACHE_SIZE;
   const reconnect = {

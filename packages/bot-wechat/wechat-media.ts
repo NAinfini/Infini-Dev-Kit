@@ -1,6 +1,6 @@
-import type { BotAdapter } from "../bot-core/adapter-types";
-import type { BotConversation } from "../bot-core/conversation-types";
-import type { BotMessage, BotMessagePayload, MessageKind } from "../bot-core/message-types";
+import type { BotAdapter } from "@infini-dev-kit/bot-core/adapter-types";
+import type { BotConversation } from "@infini-dev-kit/bot-core/conversation-types";
+import type { BotMessage, BotMessagePayload, MessageKind } from "@infini-dev-kit/bot-core/message-types";
 
 export interface WechatSayTarget {
   id: string;

@@ -22,14 +22,18 @@ export const cyberpunkTheme: ThemeSpec = {
     textMuted: "#C5C7D0",
   },
   typography: createThemeTypography({
-    heading: "Orbitron, Rajdhani, Electrolize, sans-serif",
-    body: "Share Tech Mono, Consolas, monospace",
-    mono: "JetBrains Mono, Share Tech Mono, Consolas, monospace",
+    heading: "YouShe BiaoTiHei, sans-serif",
+    body: "YouShe BiaoTiHei, sans-serif",
+    mono: "monospace",
     weights: { bold: 700, normal: 400 },
     en: {
-      body: "'Rajdhani', 'Roboto', sans-serif",
-      heading: "'Orbitron', 'Rajdhani', sans-serif",
-      mono: "'Share Tech Mono', 'Courier New', monospace",
+      body: "'YouShe BiaoTiHei', sans-serif",
+      heading: "'YouShe BiaoTiHei', sans-serif",
+      mono: "monospace",
+    },
+    zh: {
+      body: "'YouShe BiaoTiHei', sans-serif",
+      heading: "'YouShe BiaoTiHei', sans-serif",
     },
   }),
   effects: createThemeEffects({

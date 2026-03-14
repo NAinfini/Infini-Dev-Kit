@@ -1,4 +1,4 @@
-import type { BotAdapter } from "../bot-core/adapter-types";
+import type { BotAdapter } from "@infini-dev-kit/bot-core/adapter-types";
 
 export interface DiscordInteraction {
   commandName?: string;

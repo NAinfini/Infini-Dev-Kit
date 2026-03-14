@@ -5,8 +5,8 @@ interface Rgb {
 }
 
 export function contrastRatio(background: string, foreground: string): number {
-  const bg = relativeLuminance(hexToRgb(background));
-  const fg = relativeLuminance(hexToRgb(foreground));
+  const bg = relativeLuminance(colorToRgb(background));
+  const fg = relativeLuminance(colorToRgb(foreground));
   const [lighter, darker] = bg >= fg ? [bg, fg] : [fg, bg];
 
   return (lighter + 0.05) / (darker + 0.05);
@@ -53,11 +53,11 @@ export function deriveActiveColor(color: string): string {
 }
 
 function isDarkColor(color: string): boolean {
-  return relativeLuminance(hexToRgb(color)) < 0.4;
+  return relativeLuminance(colorToRgb(color)) < 0.4;
 }
 
-function shiftLightness(hex: string, delta: number): string {
-  const { r, g, b } = hexToRgb(hex);
+function shiftLightness(color: string, delta: number): string {
+  const { r, g, b } = colorToRgb(color);
 
   const apply = (channel: number): number => {
     const next = channel + channel * delta + 255 * delta;
@@ -92,6 +92,82 @@ function relativeLuminance({ r, g, b }: Rgb): number {
   return 0.2126 * linearR + 0.7152 * linearG + 0.0722 * linearB;
 }
 
+export function colorToRgb(color: string): Rgb {
+  const trimmed = color.trim();
+
+  // Resolve CSS custom properties via the DOM when available
+  if (trimmed.startsWith("var(")) {
+    const resolved = resolveCssVar(trimmed);
+    if (resolved) {
+      return colorToRgb(resolved);
+    }
+    // Fallback: mid-gray when DOM is unavailable or variable is unset
+    return { r: 128, g: 128, b: 128 };
+  }
+
+  if (isRgbColor(trimmed)) {
+    return parseRgbColor(trimmed);
+  }
+
+  return hexToRgb(trimmed);
+}
+
+function resolveCssVar(cssVar: string): string | null {
+  if (typeof document === "undefined") {
+    return null;
+  }
+  const match = /^var\(\s*(--[^,)]+)/.exec(cssVar);
+  if (!match) {
+    return null;
+  }
+  const value = getComputedStyle(document.documentElement).getPropertyValue(match[1]).trim();
+  return value || null;
+}
+
+function isRgbColor(value: string): boolean {
+  return /^rgba?\(/i.test(value);
+}
+
+function parseRgbColor(value: string): Rgb {
+  const match = /^rgba?\((.+)\)$/i.exec(value.trim());
+  if (!match) {
+    throw new Error(`Invalid rgb color: ${value}`);
+  }
+
+  const channelText = match[1].trim().replace(/\s*\/\s*[\d.]+%?\s*$/, "");
+  const channels = (channelText.includes(",") ? channelText.split(",") : channelText.split(/\s+/))
+    .map((channel) => channel.trim())
+    .filter(Boolean);
+
+  if (channels.length < 3) {
+    throw new Error(`Invalid rgb color: ${value}`);
+  }
+
+  return {
+    r: parseRgbChannel(channels[0]),
+    g: parseRgbChannel(channels[1]),
+    b: parseRgbChannel(channels[2]),
+  };
+}
+
+function parseRgbChannel(channel: string): number {
+  if (channel.endsWith("%")) {
+    const percent = Number.parseFloat(channel.slice(0, -1));
+    if (!Number.isFinite(percent)) {
+      throw new Error(`Invalid rgb channel: ${channel}`);
+    }
+
+    return clamp(Math.round((percent / 100) * 255), 0, 255);
+  }
+
+  const value = Number.parseFloat(channel);
+  if (!Number.isFinite(value)) {
+    throw new Error(`Invalid rgb channel: ${channel}`);
+  }
+
+  return clamp(Math.round(value), 0, 255);
+}
+
 function hexToRgb(hex: string): Rgb {
   const normalized = normalizeHex(hex);
 
@@ -114,12 +190,13 @@ function normalizeHex(hex: string): string {
     return trimmed
       .split("")
       .map((character) => `${character}${character}`)
-      .join("");
+      .join("")
+      .toUpperCase();
   }
 
-  if (trimmed.length !== 6) {
+  if (trimmed.length !== 6 || /[^0-9A-F]/i.test(trimmed)) {
     throw new Error(`Invalid hex color: ${hex}`);
   }
 
-  return trimmed;
+  return trimmed.toUpperCase();
 }

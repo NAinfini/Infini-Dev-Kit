@@ -22,14 +22,18 @@ export const chibiTheme: ThemeSpec = {
     textMuted: "#5A4560",
   },
   typography: createThemeTypography({
-    heading: "M PLUS Rounded 1c, Comfortaa, Varela Round, sans-serif",
-    body: "Baloo 2, Varela Round, sans-serif",
-    mono: "Courier Prime, monospace",
-    weights: { bold: 700, normal: 500 },
+    heading: "MaoKen ZhuYuanTi, sans-serif",
+    body: "MaoKen ZhuYuanTi, sans-serif",
+    mono: "monospace",
+    weights: { bold: 700, normal: 400 },
     en: {
-      body: "'Baloo 2', 'Varela Round', sans-serif",
-      heading: "'M PLUS Rounded 1c', 'Comfortaa', sans-serif",
-      mono: "'Courier Prime', monospace",
+      body: "'MaoKen ZhuYuanTi', sans-serif",
+      heading: "'MaoKen ZhuYuanTi', sans-serif",
+      mono: "monospace",
+    },
+    zh: {
+      body: "'MaoKen ZhuYuanTi', sans-serif",
+      heading: "'MaoKen ZhuYuanTi', sans-serif",
     },
   }),
   effects: createThemeEffects({

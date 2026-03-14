@@ -1,7 +1,7 @@
 import type { BotEventHandler } from "./adapter-types";
 import { createCommandRouter, type CommandDefinition } from "./command-router";
 import { composeMiddleware, type BotContext, type Middleware } from "./middleware";
-import { toError } from "../utils/error";
+import { toError } from "@infini-dev-kit/utils/error";
 
 export interface UnifiedBotOptions {
   adapter: import("./adapter-types").BotAdapter;

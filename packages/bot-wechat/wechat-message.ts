@@ -1,5 +1,5 @@
-import type { BotAdapter } from "../bot-core/adapter-types";
-import type { BotMessage, MessageKind } from "../bot-core/message-types";
+import type { BotAdapter } from "@infini-dev-kit/bot-core/adapter-types";
+import type { BotMessage, MessageKind } from "@infini-dev-kit/bot-core/message-types";
 import { mapDirectConversation, mapRoom, type WechatContactLike, type WechatRoomLike } from "./wechat-conversation";
 import { wechatSend } from "./wechat-media";
 import { mapContact } from "./wechat-user";

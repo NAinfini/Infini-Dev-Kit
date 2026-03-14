@@ -22,14 +22,18 @@ export const neuBrutalismTheme: ThemeSpec = {
     textMuted: "#555555",
   },
   typography: createThemeTypography({
-    heading: "Space Grotesk, Bebas Neue, Impact, sans-serif",
-    body: "Rubik, DM Sans, sans-serif",
-    mono: "Space Mono, monospace",
-    weights: { bold: 400, normal: 600 },
+    heading: "MaoKen ShiJinHei, sans-serif",
+    body: "MaoKen ShiJinHei, sans-serif",
+    mono: "monospace",
+    weights: { bold: 400, normal: 400 },
     en: {
-      body: "'Rubik', 'DM Sans', sans-serif",
-      heading: "'Space Grotesk', 'Bebas Neue', sans-serif",
-      mono: "'Space Mono', monospace",
+      body: "'MaoKen ShiJinHei', sans-serif",
+      heading: "'MaoKen ShiJinHei', sans-serif",
+      mono: "monospace",
+    },
+    zh: {
+      body: "'MaoKen ShiJinHei', sans-serif",
+      heading: "'MaoKen ShiJinHei', sans-serif",
     },
   }),
   effects: createThemeEffects({

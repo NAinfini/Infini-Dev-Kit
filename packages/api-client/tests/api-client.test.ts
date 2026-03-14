@@ -510,6 +510,67 @@ describe("createApiClient", () => {
     expect(secondResult).toContain("\"ok\":true");
   });
 
+  it("resolves relative path using location.origin when baseUrl is omitted (browser)", async () => {
+    const originalLocation = globalThis.location;
+    Object.defineProperty(globalThis, "location", {
+      value: { origin: "https://my-app.example.com" },
+      writable: true,
+      configurable: true,
+    });
+
+    const fetcher = vi.fn(async () => responseJson(200, { ok: true }));
+
+    const client = createApiClient({ fetcher });
+    await client.request({ method: "GET", path: "/api/health" });
+
+    const firstCall = fetcher.mock.calls[0] as unknown[] | undefined;
+    const calledUrl = String(firstCall?.[0] ?? "");
+    expect(calledUrl).toBe("https://my-app.example.com/api/health");
+
+    Object.defineProperty(globalThis, "location", {
+      value: originalLocation,
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  it("throws ApiClientError for relative path without baseUrl in non-browser context", async () => {
+    const originalLocation = globalThis.location;
+    // @ts-expect-error -- simulating Node env
+    delete globalThis.location;
+
+    const fetcher = vi.fn(async () => responseJson(200, { ok: true }));
+    const client = createApiClient({ fetcher });
+
+    await expect(
+      client.request({ method: "GET", path: "/api/users" }),
+    ).rejects.toMatchObject({
+      kind: "network",
+      message: expect.stringContaining("without baseUrl"),
+    });
+
+    expect(fetcher).not.toHaveBeenCalled();
+
+    Object.defineProperty(globalThis, "location", {
+      value: originalLocation,
+      writable: true,
+      configurable: true,
+    });
+  });
+
+  it("resolves absolute baseUrl correctly", async () => {
+    const fetcher = vi.fn(async () => responseJson(200, { ok: true }));
+    const client = createApiClient({
+      baseUrl: "https://api.example.com",
+      fetcher,
+    });
+
+    await client.request({ method: "GET", path: "/users/1" });
+    const firstCall = fetcher.mock.calls[0] as unknown[] | undefined;
+    const calledUrl = String(firstCall?.[0] ?? "");
+    expect(calledUrl).toBe("https://api.example.com/users/1");
+  });
+
   it("does not dedupe in-flight GET requests when headers differ", async () => {
     const resolvers: Array<(response: Response) => void> = [];
     const fetcher = vi.fn(async () => {
